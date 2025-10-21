@@ -1,0 +1,15 @@
+services:
+  queue-worker:
+    image: sail-8.4/app
+    user: "sail"
+    depends_on:
+      - redis
+      - mysql
+      - laravel.test
+    working_dir: /var/www/html
+    entrypoint: /bin/sh -lc
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - sail

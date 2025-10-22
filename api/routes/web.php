@@ -31,3 +31,6 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::get('/health/db', /* 既存クロージャ */);
     Route::get('/health/redis', /* 既存クロージャ */);
 });
+Route::get('/diagnose', function () {
+    return view('diagnose'); // resources/views/diagnose.blade.php
+});

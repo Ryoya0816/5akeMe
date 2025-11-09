@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 use App\Jobs\PingJob;
 
+// トップ（/）アクセスを /diagnose へリダイレクト
+Route::get('/', function () {
+    return redirect('/diagnose');
+});
+
 Route::get('/debug/queue', function () {
     PingJob::dispatch('hello-from-queue');
     return 'queued';
@@ -34,3 +39,4 @@ Route::middleware('throttle:10,1')->group(function () {
 Route::get('/diagnose', function () {
     return view('diagnose'); // resources/views/diagnose.blade.php
 });
+Route::view('/diagnose', 'diagnose.index'); 

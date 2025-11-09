@@ -1,18 +1,64 @@
+# ルート宣言
 root = true
 
+# デフォルト: テキスト一般
 [*]
 charset = utf-8
 end_of_line = lf
-indent_size = 4
 indent_style = space
+indent_size = 4           # ← PHP/Bladeにちょうどいい
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# Markdown は行末スペースを残す（改行意図を壊さない）
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{yml,yaml}]
+# PHP（PSR-12準拠の基本: 4スペース）
+[*.php]
+indent_style = space
+indent_size = 4
+
+# Blade テンプレートも 4スペースで読みやすく
+[*.blade.php]
+indent_style = space
+indent_size = 4
+
+# TypeScript/JavaScript は 2スペース（Prettier系と相性◎）
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_style = space
 indent_size = 2
 
+# JSON / JSON5 / webmanifest は 2スペース固定が無難
+[*.{json,json5,webmanifest}]
+indent_style = space
+indent_size = 2
+
+# CSS / SCSS / PostCSS も 2スペース
+[*.{css,scss,pcss}]
+indent_style = space
+indent_size = 2
+
+# YAML は基本 2スペース（AnsibleやGitHub Actions、K8s等にも合う）
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# もし docker-compose だけ 4スペにしたいなら個別で上書き
 [docker-compose.yml]
+indent_style = space
 indent_size = 4
+
+# Dockerfile は見出し行が多いので 2スペでOK（実質は整形用）
+[Dockerfile*]
+indent_style = space
+indent_size = 2
+
+# .env 系は改行コードだけ合わせればOK（インデントは任意）
+[.env*]
+end_of_line = lf
+insert_final_newline = true
+
+# Makefile は絶対にタブ。ここで上書きして事故防止
+[Makefile]
+indent_style = tab

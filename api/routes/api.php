@@ -14,5 +14,5 @@ Route::prefix('diagnose')->group(function () {
     Route::post('/score',    [DiagnoseController::class, 'score'])->name('diagnose.score');
 });
 
-/** 店舗レコメンド（任意） */
-// Route::get('/recommend/stores', [RecommendController::class, 'index'])->name('recommend.stores');
+/** 店舗レコメンド */
+Route::get('/recommend/stores', [RecommendController::class, 'index'])->name('recommend.stores');

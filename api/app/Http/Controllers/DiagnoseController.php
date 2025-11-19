@@ -2,59 +2,94 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\DiagnoseService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class DiagnoseController extends Controller
 {
-    public function __construct(private DiagnoseService $svc) {}
-
-    /** GET /api/diagnose/questions */
-    public function questions()
+    /**
+     * POST /api/diagnose/score
+     * 期待ボディ: { "answers": { "q1":"a", "q2":"b", "a1":"c", "b1":"a", "c1":"b" } }
+     * レスポンス: { "result_id": "res_xxx", "result": { primary, candidates, mood } }
+     */
+    public function score(Request $request, DiagnoseService $service)
     {
-        // config('diagnose.questions') が空なら Service の defaultConf が使われる想定
-        $all = $this->svc->getQuestions();
-        return response()->json(['questions' => $all]);
-    }
+        // 1) バリデーション
+        $data = $request->validate([
+            'answers' => 'required|array',
+            'seed'    => 'nullable|integer',
+        ]);
 
-    /** POST /api/diagnose/session  { seed?: int } */
-    public function createSession(Request $req)
-    {
-        $session = $this->svc->createSession($req->integer('seed'));
-        // フロントは ID 配列を期待
+        // 2) 期待キー（固定2 + カテゴリ）を設定から収集
+        $fixed = config('diagnose.fixed_questions') ?? [];  // 例: [['key'=>'q1'],['key'=>'q2']]
+        $cats  = config('diagnose.categories') ?? [];       // 例: ['A'=>[['key'=>'a1']], 'B'=>...]
+        $all   = array_merge($fixed, ...array_values($cats));
+        $validKeys = array_column($all, 'key'); // 例: ['q1','q2','a1','b1','c1']
+
+        // 3) 受け取った answers を正規化（"a" でも {"id":"a"} でもOK）
+        $normalized = [];
+        foreach ($data['answers'] as $qKey => $val) {
+            if (!in_array($qKey, $validKeys, true)) continue;
+
+            if (is_array($val)) {
+                $choice = $val['id'] ?? $val['key'] ?? $val['value'] ?? null;
+                if (is_string($choice) && $choice !== '') {
+                    $normalized[$qKey] = $choice;
+                }
+            } elseif (is_string($val) || is_numeric($val)) {
+                $normalized[$qKey] = (string)$val;
+            }
+        }
+
+        // 4) 必要数チェック（固定2 + カテゴリ3 = 5問）
+        if (count($normalized) < 5) {
+            $missing = array_values(array_diff($validKeys, array_keys($normalized)));
+            Log::warning('[Diagnose] not enough answers', [
+                'got_raw'    => $data['answers'],
+                'normalized' => $normalized,
+                'missing'    => $missing,
+            ]);
+            return response()->json([
+                'message' => 'Not enough answers',
+                'need'    => 5,
+                'got'     => count($normalized),
+                'missing' => $missing,
+            ], 422);
+        }
+
+        Log::debug('[Diagnose] incoming', [
+            'seed'    => $data['seed'] ?? null,
+            'answers' => $normalized,
+        ]);
+
+        // 5) 採点（★ここで $service を使って一度だけ呼ぶ）
+        $result = $service->score($normalized);   // ← Undefined variable 対策はこれでOK
+
+        // 6) 結果保存（セッション境界を避けるため Cache に保存）
+        $id = uniqid('res_', true);
+        Cache::put("diagnose_result_{$id}", $result, now()->addMinutes(15));
+
         return response()->json([
-            'seed' => $session['seed'],
-            'question_ids' => $session['question_ids'],
+            'result_id' => $id,
+            'result'    => $result,
         ]);
     }
 
-    /** POST /api/diagnose/score { answers: [{id,label}*5] } */
-    public function score(Request $req)
+    /**
+     * GET /diagnose/result/{id}
+     * Cache から結果を取得して表示
+     */
+    public function showResult(string $id)
     {
-        $answers = $req->validate([
-            'answers' => ['required','array','size:5'],
-            'answers.*.id' => ['required','string'],
-            'answers.*.label' => ['required','string'],
-        ])['answers'];
-
-        $res = $this->svc->score($answers);
-
-        // ついでにトップ3のチャート用データも返す（既存ロジックを流用）
-        $labels = [
-            'SA-K'=>'日本酒・辛口','SA-A'=>'日本酒・甘口','SH-I'=>'焼酎・芋','SH-M'=>'焼酎・麦','SH-K'=>'焼酎・米',
-            'RW'=>'赤ワイン','WW'=>'白ワイン','SP'=>'スパークリング','CB'=>'クラフトビール','CT'=>'甘いカクテル'
-        ];
-        arsort($res['scores']); $chart = [];
-        foreach (array_slice($res['scores'], 0, 3, true) as $code => $v) {
-            $chart[] = ['label' => $labels[$code] ?? $code, 'value' => $v];
+        $data = Cache::get("diagnose_result_{$id}");
+        if (!$data) {
+            return redirect('/diagnose')->with('error', '診断データが見つかりません。');
         }
-
-        return response()->json([
-            'scores'      => $res['scores'],
-            'candidates'  => $res['candidates'],
-            'primary'     => $res['primary'],
-            'mood'        => $res['mood'],
-            'chartData'   => $chart,
+        return view('diagnose_result', [
+            'result' => $data,
+            'id'     => $id,
         ]);
     }
 }

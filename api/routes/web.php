@@ -4,39 +4,36 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 use App\Jobs\PingJob;
+use App\Http\Controllers\DiagnoseController;
 
-// トップ（/）アクセスを /diagnose へリダイレクト
-Route::get('/', function () {
-    return redirect('/diagnose');
-});
+// トップを /diagnose へ
+Route::get('/', fn() => redirect('/diagnose'));
 
-Route::get('/debug/queue', function () {
-    PingJob::dispatch('hello-from-queue');
-    return 'queued';
-});
-
-
-Route::get('/health/db', function () {
-    try { DB::select('select 1'); $dbOk = true; } catch (\Throwable $e) { $dbOk = false; }
-    return view('health', ['dbOk' => $dbOk]);
-});
-
-Route::get('/health/redis', function () {
-    try { Redis::ping(); $redisOk = true; } catch (\Throwable $e) { $redisOk = false; }
-    return response()->json(['redis' => $redisOk ? 'ok' : 'ng']);
-});
-
+// デバッグ用
 if (!app()->isProduction()) {
-    Route::get('/debug/queue', function () {
-        \App\Jobs\PingJob::dispatch('hello-from-queue');
-        return 'queued';
-    });
+    Route::get('/debug/queue', fn() => (PingJob::dispatch('hello-from-queue')) && 'queued');
 }
+
+// ヘルスチェック
 Route::middleware('throttle:10,1')->group(function () {
-    Route::get('/health/db', /* 既存クロージャ */);
-    Route::get('/health/redis', /* 既存クロージャ */);
+    Route::get('/health/db', function () {
+        try { DB::select('select 1'); $dbOk = true; } catch (\Throwable $e) { $dbOk = false; }
+        return view('health', ['dbOk' => $dbOk]);
+    });
+    Route::get('/health/redis', function () {
+        try { Redis::ping(); $redisOk = true; } catch (\Throwable $e) { $redisOk = false; }
+        return response()->json(['redis' => $redisOk ? 'ok' : 'ng']);
+    });
 });
-Route::get('/diagnose', function () {
-    return view('diagnose'); // resources/views/diagnose.blade.php
-});
-Route::view('/diagnose', 'diagnose.index'); 
+
+// ---- 診断系 ----
+Route::view('/diagnose', 'diagnose')->name('diagnose');
+// ↑ ここはあなたのBlade名に合わせて変更
+
+
+    // /diagnose 画面（チャットUI）
+Route::view('/diagnose', 'diagnose')->name('diagnose');
+
+// 結果ページ（Web側で表示）
+Route::get('/diagnose/result/{id}', [DiagnoseController::class, 'showResult'])
+    ->name('diagnose.result');

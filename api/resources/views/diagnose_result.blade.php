@@ -93,6 +93,12 @@
             font-size: 15px;
         }
 
+        .dr-mood-text {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 12px;
+        }
+
         .dr-actions {
             display: flex;
             flex-direction: column;
@@ -171,13 +177,81 @@
     </style>
 
     @php
-        // 結果テキスト用
-        $pairingLabel   = $result['pairing_label']   ?? ($result['name'] ?? '○○ × ○○');
-        $pairingMessage = $result['pairing_message'] ?? ($result['message'] ?? '○○ × ○○ が楽しめるお酒を紹介します！！！');
+        /**
+         * $result は今こういう想定：
+         * - Eloquentモデル App\Models\DiagnoseResult
+         *   - primary_type   (例: sake_dry)
+         *   - primary_label  (例: 日本酒・辛口)
+         *   - mood           (lively/chill/silent/light/strong)
+         *   - candidates     (type/score/label の配列)
+         *
+         * さらに、config/diagnose_results.php で
+         * タイプごとの詳細マスタを持っている想定：
+         *
+         * return [
+         *   'sake_dry' => [
+         *      'pairing_label'   => '日本酒・辛口 × 刺身',
+         *      'pairing_message' => 'キリッと辛口で刺身の旨みを引き立てるタイプです。',
+         *      'chart_labels'    => [...],
+         *      'chart_values'    => [...],
+         *   ],
+         *   ...
+         * ];
+         */
 
-        // グラフ用データ
-        $chartLabels = $result['chart_labels'] ?? ['タイプA', 'タイプB', 'タイプC', 'タイプD', 'タイプE', 'タイプF'];
-        $chartValues = $result['chart_values'] ?? [3, 4, 2, 5, 3, 4];
+        // モデルでも配列でも data_get で安全に取れるようにしておく
+        $primaryType  = data_get($result, 'primary_type');
+        $primaryLabel = data_get($result, 'primary_label');
+        $mood         = data_get($result, 'mood');
+        $candidates   = data_get($result, 'candidates', []);
+
+        // 診断結果マスタ（存在しなければ空配列）
+        $master = config('diagnose_results', []);
+        $detail = $primaryType && isset($master[$primaryType]) ? $master[$primaryType] : [];
+
+        // 表示用ラベル
+        $pairingLabel = $detail['pairing_label']
+            ?? $detail['name']
+            ?? $primaryLabel
+            ?? '○○ × ○○';
+
+        $pairingMessage = $detail['pairing_message']
+            ?? $detail['message']
+            ?? '○○ × ○○ が楽しめるお酒を紹介します！！！';
+
+        // moodテキスト（任意）
+        $moodLabels = [
+            'lively' => '今日は、みんなでわいわい飲みたい気分みたい。そんなあなたに…',
+            'chill'  => '今日は、少人数でしっぽり語りたい気分みたい。そんなあなたに…',
+            'silent' => '今日は、ひとりで静かに飲みたい気分みたい。そんなあなたに…',
+            'light'  => '今日は、サクッと軽く飲みたい気分みたい。そんなあなたに…',
+            'strong' => '今日は、がっつり飲みたい気分みたい。そんなあなたに…',
+        ];
+        $moodText = $mood ? ($moodLabels[$mood] ?? null) : null;
+
+        // レーダーチャート用データ
+        // 1. マスタに chart_labels / chart_values があればそちら優先
+        // 2. なければ candidates の上位6件を使う
+        if (!empty($detail['chart_labels']) && !empty($detail['chart_values'])) {
+            $chartLabels = $detail['chart_labels'];
+            $chartValues = $detail['chart_values'];
+        } else {
+            // candidates から上位6件を抽出
+            $top = is_array($candidates) ? array_slice($candidates, 0, 6) : [];
+            $chartLabels = [];
+            $chartValues = [];
+
+            foreach ($top as $row) {
+                $chartLabels[] = $row['label'] ?? ($row['type'] ?? 'タイプ');
+                $chartValues[] = isset($row['score']) ? round((float)$row['score'], 1) : 0;
+            }
+
+            // 万が一何もない場合のフォールバック
+            if (empty($chartLabels)) {
+                $chartLabels = ['タイプA', 'タイプB', 'タイプC', 'タイプD', 'タイプE', 'タイプF'];
+                $chartValues = [3, 4, 2, 5, 3, 4];
+            }
+        }
     @endphp
 
     <div class="dr-page">
@@ -194,7 +268,7 @@
         <div class="dr-step-label"></div>
         <div class="dr-arrow"></div>
 
-        {{-- 六角形は消して、チャートのみ --}}
+        {{-- チャートのみ --}}
         <section class="dr-hex-section">
             <div class="dr-hex-wrap">
                 <canvas id="diagnose-chart"></canvas>
@@ -202,6 +276,12 @@
         </section>
 
         <section class="dr-result-main">
+            @if($moodText)
+                <div class="dr-mood-text">
+                    {{ $moodText }}
+                </div>
+            @endif
+
             <div class="dr-main-text">
                 ペアリングのおすすめは、 {{ $pairingLabel }}
             </div>
@@ -223,10 +303,11 @@
         </div>
 
         <div class="dr-note">
-            ※ グラフは上位6種類のお酒タイプをチャートで表示しています。
+            ※ グラフは、あなたの回答から算出した「上位6種類のお酒タイプ」をチャートで表示しています。
         </div>
     </div>
 
+    {{-- Chart.js CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -272,6 +353,7 @@
         const btnShowStores = document.getElementById('btn-show-stores');
         if (btnShowStores) {
             btnShowStores.addEventListener('click', function () {
+                // TODO: ここで「おすすめのお店リスト」画面に遷移させる
                 alert('ここで「おすすめのお店リスト」を表示するように実装します！（後から作る）');
             });
         }

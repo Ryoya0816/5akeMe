@@ -5,21 +5,41 @@ use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\RecommendController;
 use App\Http\Controllers\StoreSuggestionController;
 
-/** 疎通 */
-Route::get('/ping', fn () => response()->json(['pong' => now()->toISOString()]));
+/**
+ * 疎通確認
+ * GET /api/ping
+ */
+Route::get('/ping', fn () => response()->json([
+    'pong' => now()->toISOString(),
+]));
 
-/** 診断API */
-Route::prefix('diagnose')->middleware('api')->group(function () {
-    Route::get('/questions', [DiagnoseController::class, 'questions'])->name('diagnose.questions');
-    Route::post('/session',   [DiagnoseController::class, 'session'])->name('diagnose.session');
-    Route::post('/score',     [DiagnoseController::class, 'score'])->name('diagnose.score');
+/**
+ * 診断 API
+ *  - POST /api/diagnose/start  … 質問セット生成（5問）
+ *  - POST /api/diagnose/score  … 採点して result_id を返す
+ */
+Route::prefix('diagnose')->group(function () {
+    Route::post('/start', [DiagnoseController::class, 'start'])
+        ->name('diagnose.start');
+
+    Route::post('/score', [DiagnoseController::class, 'score'])
+        ->name('diagnose.score');
 });
 
-/** 店舗レコメンド */
-Route::get('/recommend/stores', [RecommendController::class, 'index'])->name('recommend.stores');
+/**
+ * 店舗レコメンド系（今回はおまけ）
+ */
+Route::get('/recommend/stores', [RecommendController::class, 'index'])
+    ->name('recommend.stores');
 
-Route::get('/stores/suggest', [StoreSuggestionController::class, 'suggest'])->name('stores.suggest');
+Route::get('/stores/suggest', [StoreSuggestionController::class, 'suggest'])
+    ->name('stores.suggest');
+// トップページ
+Route::get('/', function () {
+    return view('top');
+})->name('top');
 
-// スコア計算API（POST専用）
-Route::post('/diagnose/score', [DiagnoseController::class, 'score'])
-    ->name('diagnose.score');
+// 診断ページ（中身はこれから育てる用のプレースホルダ）
+Route::get('/diagnose', function () {
+    return view('diagnose');
+})->name('diagnose.show');

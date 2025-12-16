@@ -1,11 +1,601 @@
+/* =========================================
+   Tailwind 読み込み & スキャン設定
+   ========================================= */
+
+/* Tailwind 本体の読み込み */
 @import 'tailwindcss';
 
+/* Tailwind に「どのファイルをスキャンするか」を教える設定 */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/* Tailwind のテーマ（フォントなど）の上書き */
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* =========================================
+   5akeMe ブランドカラー設定
+   （ロゴと世界観に合わせた色）
+   ========================================= */
+
+:root {
+    --brand-main: #9c3f2e; /* ロゴに合わせた赤茶色 */
+    --brand-text: #8a3a28; /* 濃いめの補助テキスト色 */
+}
+
+/* 全体のベース背景（和紙っぽいクリーム色） */
+body {
+    background-color: #fbf3e8; /* 5akeMe 全画面共通のベース色 */
+    color: #3f3f3f;
+}
+
+/* =========================================
+   5akeMe 診断チャット用スタイル
+   （/diagnose 画面のチャットUI）
+   ========================================= */
+
+/* チャット全体の背景 */
+#chat {
+    background-color: #fff7ee; /* 暖色寄りに統一 */
+    padding: 8px 4px;
+    font-size: 14px;
+}
+
+/* 行（1メッセージ分） */
+#chat .row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 12px;
+}
+
+/* BOT側の行は左寄せ */
+#chat .row.bot {
+    justify-content: flex-start;
+}
+
+/* 自分側の行は右寄せ */
+#chat .row.me {
+    justify-content: flex-end;
+}
+
+/* アイコン共通 */
+#chat .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* アイコン画像を中にフィットさせる */
+#chat .avatar img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+/* BOTアイコンは左に余白 */
+#chat .bot-avatar {
+    margin-right: 8px;
+}
+
+/* 自分のアイコンは右に余白 */
+#chat .me-avatar {
+    margin-left: 8px;
+}
+
+/* 吹き出し本体 */
+#chat .bubble {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 16px;
+    max-width: 70%;
+    word-break: break-word;
+
+    /* ★ BOTの吹き出しカラー：優しいミント色 */
+    background-color: #e0f5e9;     /* 柔らかい緑 */
+    color: #2d4b39;                /* 読みやすい濃い緑 */
+}
+
+/* 時刻表示 */
+#chat .time {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* 既読マーク（お好みで） */
+#chat .time .read {
+    margin-left: 4px;
+}
+
+/* 選択肢の塊 */
+#chat .choices {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* 選択肢ボタン */
+#chat .choice {
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* 押した後（無効化された状態） */
+#chat .choice:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* タイピング中の「…」 */
+#chat .typing {
+    display: inline-flex;
+    gap: 4px;
+    padding: 6px 8px;
+    border-radius: 999px;
+    background-color: #e5e7eb;
+    margin-left: 48px; /* アイコン1個ぶん右にずらす */
+}
+
+#chat .typing .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background-color: #9ca3af;
+    animation: typing-bounce 1s infinite ease-in-out;
+}
+
+#chat .typing .dot:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+#chat .typing .dot:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* タイピング中アニメーション */
+@keyframes typing-bounce {
+    0%,
+    80%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    40% {
+        transform: translateY(-3px);
+        opacity: 1;
+    }
+}
+
+/* =========================================
+   共通ヘッダー（ロゴ・タイトル）
+   （layouts/app.blade.php の header 部分）
+   ========================================= */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    background-color: #fbf3e8;        /* 背景と揃える */
+    border-bottom: 1px solid #f1dfd0; /* うっすら境界線 */
+}
+
+/* ヘッダーロゴのリンク（クリックでトップへ） */
+.header-logo-link {
+    display: inline-block;
+}
+
+/* ヘッダーロゴ画像のサイズ調整 */
+.header-logo-image {
+    height: 30px; /* 画像の表示サイズ。大きさはここで調整 */
+    width: auto;
+}
+
+/* 右側のタイトルテキスト */
+.app-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* =========================================
+   新フッター（ナビ・ブランド・SNS）
+   （layouts/app.blade.php の footer 部分）
+   ========================================= */
+
+.app-footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    border-top: 1px solid #f1dfd0;
+    background-color: #faece0;  /* やや濃いクリームで締める */
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    /* PCでは1行で3ブロック横並び */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+/* 3つのブロック共通の基本形 */
+.footer-left,
+.footer-center,
+.footer-right {
+    display: flex;
+    align-items: center;
+}
+
+/* 左：プライバシーポリシー（リンクが増えても横並び維持） */
+.footer-left {
+    gap: 8px;
+}
+
+/* 中央：ブランドは上下2行にしたいので縦方向 */
+.footer-center {
+    flex-direction: column;
+    text-align: center;
+}
+
+/* 右：SNSリンクを横並びに */
+.footer-right {
+    gap: 12px;
+}
+
+/* 左ナビのリンク & SNSリンクの基本色をブランドカラーに */
+.footer-link,
+.sns-link {
+    color: var(--brand-main);
+    text-decoration: none;
+}
+
+/* ホバー時は少し濃い色に */
+.footer-link:hover,
+.sns-link:hover {
+    color: var(--brand-text);
+}
+
+/* 中央ブランド */
+.footer-brand {
+    font-weight: bold;
+    margin: 0;
+    color: var(--brand-main); /* ロゴ色と揃える */
+}
+
+.footer-copy {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+/* スマホ表示（縦並びにする） */
+@media (max-width: 640px) {
+    .footer-inner {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-left,
+    .footer-right {
+        justify-content: center;
+    }
+}
+
+/* =========================================
+   TOPページ：ヒーロー＆マスコット
+   ========================================= */
+
+.top-hero {
+    max-width: 960px;
+    margin: 40px auto 60px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.top-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--brand-main);
+}
+
+.top-lead {
+    font-size: 14px;
+    color: #8c6d57; /* グレーより少し赤茶寄り */
+    margin-bottom: 32px;
+}
+
+.top-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+/* 左側（マスコット＋ふきだし） */
+.top-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.top-mascot-wrap {
+    position: relative;
+    display: inline-block;
+    max-width: 220px; /* マスコット全体の枠も制限 */
+}
+
+/* マスコット画像 */
+.top-mascot-image {
+    width: 200px;
+    max-width: 200px;
+    height: auto;
+    border-radius: 16px;
+    object-fit: contain;
+}
+
+/* ふきだし */
+.top-speech {
+    position: absolute;
+    top: -20px;
+    right: -40px;
+    min-width: 160px;
+    padding: 10px 14px;
+    background-color: #fff3d6;   /* 和紙系クリーム */
+    border-radius: 18px;
+    border: 1px solid #f2d9a0;
+    font-size: 13px;
+    color: #5b4635;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* 右側（でっかいスタートボタン） */
+.top-right {
+    flex: 1;
+    text-align: center;
+}
+
+.start-button-wrap {
+    display: inline-flex;
+    text-decoration: none;
+}
+
+.start-button {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #ffd3c8, #e97b6d 65%, #b04434 100%);
+    box-shadow: 0 12px 24px rgba(185, 68, 52, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+}
+
+.start-button-label {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+/* ホバー時にちょっと浮く */
+.start-button-wrap:hover .start-button {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 26px rgba(185, 68, 52, 0.45);
+}
+
+.start-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+/* スマホレイアウト：縦並びにする */
+@media (max-width: 768px) {
+    .top-main {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .top-mascot-image {
+        width: 160px;
+        max-width: 160px;
+    }
+
+    .top-speech {
+        right: -10px;
+    }
+
+    .start-button {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* =========================================
+   暖簾アニメーション
+   sakeice.jp みたいな「白い暖簾が左右に開く」イメージ
+   ========================================= */
+
+.noren-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #7b3f3a;        /* 深めの赤茶（ブランドに寄せる） */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;       /* クリックを下に通す */
+}
+
+/* 白い暖簾（左右どちらも共通） */
+.noren-panel {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* 左パネル：左にスライドして消える */
+.noren-panel-left {
+    left: 0;
+    border-right: 1px solid #e5e7eb;
+    animation: noren-left-open 1.2s ease-in-out forwards;
+}
+
+/* 右パネル：右にスライドして消える */
+.noren-panel-right {
+    right: 0;
+    border-left: 1px solid #e5e7eb;
+    animation: noren-right-open 1.2s ease-in-out forwards;
+}
+
+/* 中央のロゴ（暖簾の真ん中に描かれているイメージ） */
+.noren-center-logo {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: var(--brand-main);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+}
+
+.noren-center-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.noren-center-sub {
+    font-size: 12px;
+    color: #f9fafb;
+}
+
+/* 左右に開くアニメーション */
+@keyframes noren-left-open {
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes noren-right-open {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+/* JSから付与して全体をフェードアウトさせる用 */
+.noren-overlay--hide {
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+}
+/* =========================================
+   チャット吹き出し色を統一（左＝淡い緑 / 右＝濃い緑）
+   ========================================= */
+
+/* BOT側（左）の吹き出し */
+.dm-msg-row.bot .dm-msg-bubble,
+.dm-msg-bubble.dm-question-bubble {
+    background-color: #e0f5e9 !important;  /* 淡いミントグリーン */
+    color: #2d4b39 !important;             /* 読みやすい緑 */
+}
+
+/* 自分側（右）の吹き出し */
+.dm-msg-row.user .dm-msg-bubble,
+.dm-msg-bubble.dm-answer-bubble {
+    background-color: #34c759 !important;  /* iMessage系の濃い緑 */
+    color: #ffffff !important;
+}
+/* =========================================
+   5akeMe 共通カラートークン（全画面統一）
+   ========================================= */
+:root {
+    /* ブランド（赤茶） */
+    --brand-main: #9c3f2e; /* ロゴに合わせた赤茶色 */
+    --brand-text: #8a3a28; /* 濃いめ */
+
+    /* ベース（和紙クリーム） */
+    --bg-base:   #fbf3e8;  /* 全体背景 */
+    --bg-soft:   #fff7ee;  /* セクション背景 */
+    --bg-footer: #faece0;  /* フッター */
+
+    /* 境界線 */
+    --line-soft: #f1dfd0;
+
+    /* テキスト */
+    --text-main: #3f3f3f;
+    --text-sub:  #8c6d57;
+
+    /* チャット（緑） */
+    --chat-bot-bg:  #e0f5e9; /* 左（淡い緑） */
+    --chat-bot-tx:  #2d4b39;
+    --chat-me-bg:   #34c759; /* 右（濃い緑） */
+    --chat-me-tx:   #ffffff;
+
+    /* カード */
+    --card-bg: #ffffff;
+    --shadow:  0 10px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================================
+   全ページ共通のベース
+   ========================================= */
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+}
+
+/* main の横幅と余白を統一（layouts/app.blade.php の .wrap 前提） */
+.wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 20px 40px;
+}
+/* =========================================
+   共通カード（結果/年齢確認/トップなどで使える）
+   ========================================= */
+.ui-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+}
+
+/* 見出し系 */
+.ui-title {
+    color: var(--brand-main);
+    font-weight: 700;
+}
+
+/* サブテキスト */
+.ui-sub {
+    color: var(--text-sub);
 }

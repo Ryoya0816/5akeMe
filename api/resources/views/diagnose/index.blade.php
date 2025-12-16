@@ -5,10 +5,12 @@
 
 @section('content')
   {{-- data-* で JS に設定を渡す（Blade→JSの最小コスト連携） --}}
-  <div id="chat-root"
-       data-api-endpoint="{{ url('/api/diagnose') }}"
-       data-bot-icon="{{ asset('images/bot.png') }}"
-       data-user-icon="{{ asset('images/user.png') }}">
+  <<div id="chat-root"
+  data-start-endpoint="/api/diagnose/start"
+  data-score-endpoint="/api/diagnose/score"
+  data-bot-icon="/images/bot.png"
+  data-user-icon="/images/user.png">
+
     <div id="chat" class="chat" aria-live="polite"></div>
 
     <div class="footer">

@@ -2,94 +2,180 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DiagnoseResult;
 use App\Services\DiagnoseService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DiagnoseController extends Controller
 {
     /**
+     * 質問セットを返す API
+     *
+     * POST /api/diagnose/start
+     *
+     * リクエスト（任意）:
+     *   { "seed": 123 }
+     *
+     * レスポンス:
+     * {
+     *   "seed": 123,
+     *   "questions": [
+     *     { "id": "q1", "text": "...", "choices": [...] },
+     *     { "id": "q2", "text": "...", "choices": [...] },
+     *     { "id": "A?", ... },
+     *     { "id": "B?", ... },
+     *     { "id": "C?", ... }
+     *   ]
+     * }
+     */
+    public function start(Request $request, DiagnoseService $service)
+    {
+        // JSON / フォーム / クエリ どこに来ても OK にしておく
+        $data = $request->validate([
+            'seed' => 'nullable|integer',
+        ]);
+
+        $seed = $data['seed'] ?? null;
+
+        // サービス側で「固定2 + A/B/C 各1問」の 5問セットを組み立て
+        $session = $service->createSession($seed);
+
+        $questions = $session['questions'] ?? [];
+
+        if (!is_array($questions) || count($questions) === 0) {
+            // 想定外パターンはログを吐いて 500
+            Log::error('[Diagnose] empty questions from createSession', [
+                'seed'    => $seed,
+                'session' => $session,
+            ]);
+
+            return response()->json([
+                'message' => '質問の取得に失敗しました。',
+            ], 500);
+        }
+
+        // 念のため 0,1,2... の連番に揃える
+        $questions = array_values($questions);
+
+        return response()->json([
+            'seed'      => $session['seed'] ?? $seed,
+            'questions' => $questions,
+        ]);
+    }
+
+    /**
+     * 採点 API
+     *
      * POST /api/diagnose/score
-     * 期待ボディ: { "answers": { "q1":"a", "q2":"b", "a1":"c", "b1":"a", "c1":"b" } }
-     * レスポンス: { "result_id": "res_xxx", "result": { primary, candidates, mood } }
+     *
+     * 期待リクエスト:
+     * {
+     *   "answers": {
+     *     "q1": "a",
+     *     "q2": "c",
+     *     "A1": "b",
+     *     ...
+     *   },
+     *   "seed": 123   // 任意
+     * }
+     *
+     * レスポンス:
+     * {
+     *   "result_id": "res_xxx",
+     *   "result": {
+     *     "primary": "sake_dry",
+     *     "primary_label": "日本酒・辛口",
+     *     "candidates": [...],
+     *     "mood": "lively"
+     *   }
+     * }
      */
     public function score(Request $request, DiagnoseService $service)
     {
-        // 1) バリデーション
         $data = $request->validate([
             'answers' => 'required|array',
             'seed'    => 'nullable|integer',
         ]);
 
-        // 2) 期待キー（固定2 + カテゴリ）を設定から収集
-        $fixed = config('diagnose.fixed_questions') ?? [];  // 例: [['key'=>'q1'],['key'=>'q2']]
-        $cats  = config('diagnose.categories') ?? [];       // 例: ['A'=>[['key'=>'a1']], 'B'=>...]
-        $all   = array_merge($fixed, ...array_values($cats));
-        $validKeys = array_column($all, 'key'); // 例: ['q1','q2','a1','b1','c1']
+        $answers = $data['answers'];
+        $seed    = $data['seed'] ?? null;
 
-        // 3) 受け取った answers を正規化（"a" でも {"id":"a"} でもOK）
-        $normalized = [];
-        foreach ($data['answers'] as $qKey => $val) {
-            if (!in_array($qKey, $validKeys, true)) continue;
+        // サービスで採点
+        // 戻り値想定:
+        // ['primary' => 'sake_dry', 'candidates' => [...], 'mood' => 'lively', 'scores' => [...]]
+        $scored = $service->score($answers, $seed);
 
-            if (is_array($val)) {
-                $choice = $val['id'] ?? $val['key'] ?? $val['value'] ?? null;
-                if (is_string($choice) && $choice !== '') {
-                    $normalized[$qKey] = $choice;
-                }
-            } elseif (is_string($val) || is_numeric($val)) {
-                $normalized[$qKey] = (string)$val;
-            }
-        }
-
-        // 4) 必要数チェック（固定2 + カテゴリ3 = 5問）
-        if (count($normalized) < 5) {
-            $missing = array_values(array_diff($validKeys, array_keys($normalized)));
-            Log::warning('[Diagnose] not enough answers', [
-                'got_raw'    => $data['answers'],
-                'normalized' => $normalized,
-                'missing'    => $missing,
+        if (empty($scored['primary'])) {
+            Log::warning('[Diagnose] primary type is null', [
+                'answers' => $answers,
+                'seed'    => $seed,
             ]);
+
             return response()->json([
-                'message' => 'Not enough answers',
-                'need'    => 5,
-                'got'     => count($normalized),
-                'missing' => $missing,
+                'message' => '診断に失敗しました。',
             ], 422);
         }
 
-        Log::debug('[Diagnose] incoming', [
-            'seed'    => $data['seed'] ?? null,
-            'answers' => $normalized,
+        // primary のラベルは candidates から拾う or config labels を再利用
+        $primaryLabel = $this->resolvePrimaryLabel(
+            $scored['primary'],
+            $scored['candidates'] ?? []
+        );
+
+        // result_id を生成（JS が結果画面への遷移に使うID）
+        $resultId = 'res_' . Str::random(16);
+
+        // DB 保存
+        DiagnoseResult::create([
+            'result_id'     => $resultId,
+            'primary_type'  => $scored['primary'],
+            'primary_label' => $primaryLabel,
+            'mood'          => $scored['mood'] ?? null,
+            'candidates'    => $scored['candidates'] ?? [],
+            // 'raw_scores' => $scored['scores'] ?? null,
         ]);
 
-        // 5) 採点（★ここで $service を使って一度だけ呼ぶ）
-        $result = $service->score($normalized);   // ← Undefined variable 対策はこれでOK
-
-        // 6) 結果保存（セッション境界を避けるため Cache に保存）
-        $id = uniqid('res_', true);
-        Cache::put("diagnose_result_{$id}", $result, now()->addMinutes(15));
-
+        // これまでの仕様通り result も一緒に返す
         return response()->json([
-            'result_id' => $id,
-            'result'    => $result,
+            'result_id' => $resultId,
+            'result'    => [
+                'primary'       => $scored['primary'],
+                'primary_label' => $primaryLabel,
+                'candidates'    => $scored['candidates'] ?? [],
+                'mood'          => $scored['mood'] ?? null,
+            ],
         ]);
     }
 
     /**
-     * GET /diagnose/result/{id}
-     * Cache から結果を取得して表示
+     * 診断結果画面
+     * GET /diagnose/result/{result_id}
      */
-    public function showResult(string $id)
+    public function showResult(string $resultId)
     {
-        $data = Cache::get("diagnose_result_{$id}");
-        if (!$data) {
-            return redirect('/diagnose')->with('error', '診断データが見つかりません。');
-        }
+        $result = DiagnoseResult::where('result_id', $resultId)->firstOrFail();
+
         return view('diagnose_result', [
-            'result' => $data,
-            'id'     => $id,
+            'result' => $result,
         ]);
+    }
+
+    /**
+     * primary の label を candidates から解決
+     */
+    private function resolvePrimaryLabel(string $primary, array $candidates): string
+    {
+        foreach ($candidates as $row) {
+            if (($row['type'] ?? null) === $primary && isset($row['label'])) {
+                return (string) $row['label'];
+            }
+        }
+
+        // 候補に見つからなければ config から拾う
+        $labels = config('diagnose.labels', []);
+
+        return (string) ($labels[$primary] ?? $primary);
     }
 }

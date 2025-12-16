@@ -1,111 +1,384 @@
-:root{
-  --bg:#f5f7fb; --bar:#0d6efd; --me:#e6f2ff; --bot:#ffffff;
-  --text:#222; --muted:#7b7f87; --line:#e6e8ee; --accent:#1f2937; --radius:18px;
+/* resources/css/diagnose.css */
+
+/* 画面全体のベース */
+body {
+    background: #f2f4f7;
 }
 
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
-body{
-  margin:0; background:var(--bg); color:var(--text);
-  font-family:"Noto Sans JP",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  font-size:16px; -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+/* 診断ページ用：中央寄せ & 余白 */
+.diagnose-page {
+    max-width: 960px;
+    margin: 24px auto;
+    padding: 0 16px;
 }
 
-.app-header{
-  position:sticky; top:0; z-index:10;
-  background:linear-gradient(90deg,var(--bar),#5b8efc);
-  color:#fff; padding:12px 16px;
-  display:flex; align-items:center; gap:10px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-.logo{ width:28px; height:28px; border-radius:6px; background:#fff2; display:grid; place-items:center; font-weight:700; }
-.app-title{ font-size:16px; margin:0; font-weight:700; letter-spacing:.2px; }
-
-.wrap{ max-width:720px; margin:0 auto; padding:10px 16px calc(24px + env(safe-area-inset-bottom)); }
-
-.chat{
-  background:#fff; border:1px solid var(--line); border-radius:16px;
-  min-height:calc(var(--vh, 1vh) * 60);
-  max-height:calc(var(--vh, 1vh) * 72);
-  overflow:auto; padding:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.04);
-  scroll-behavior:smooth; overscroll-behavior:contain;
+/* カードっぽい箱（Bootstrapの .card を少し補強） */
+.diagnose-card {
+    border-radius: 16px;
+    border: 1px solid #e3e8f0;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
 }
 
-.row{ display:flex; align-items:flex-end; gap:8px; margin:10px 0; width:100%; }
-.row.bot{ justify-content:flex-start; }
-.row.me{ justify-content:flex-end; }
-.avatar{
-  width:38px; height:38px; border-radius:50%; flex:0 0 auto; overflow:hidden;
-  border:1px solid #d9def0; background:#fff; display:grid; place-items:center;
+.diagnose-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
 }
-.avatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
 
-/* 吹き出し側に“使える幅”を配る（縦書き事故の防止） */
-.row.bot > div:last-child{ max-width: calc(100% - 88px); }
-.row.me  > div:first-child{ max-width: calc(100% - 88px); display:flex; flex-direction:column; align-items:flex-end; }
-
-.bubble{
-  padding:10px 14px; line-height:1.5; border-radius:var(--radius);
-  box-shadow:0 2px 6px rgba(0,0,0,.04);
-  display:inline-block; word-break:break-word; white-space:normal;
+.diagnose-card-header h4 {
+    font-size: 18px;
+    margin: 0;
 }
-.row.bot .bubble{
-  background:var(--bot); border-top-left-radius:6px; border:1px solid var(--line); max-width:100%;
-}
-.row.me .bubble{
-  background:var(--me); border-top-right-radius:12px; border-bottom-right-radius:4px;
-  border:1px solid #d9e9ff; max-width:100%;
-}
-/* 短文だけ1行表示（JSで付与） */
-.row.me .bubble.singleline{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-.time{ position:relative; font-size:11px; color:var(--muted); margin-top:4px; text-align:right; }
-.read{ display:none; margin-left:6px; font-size:11px; color:#6e8dfc; letter-spacing:.5px; vertical-align:baseline; transition:opacity .18s ease; opacity:0; }
-.read.show{ display:inline; opacity:1; }
-
-.choices{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
-.choice{
-  appearance:none; border:1px solid var(--line); background:#fff; color:var(--accent);
-  padding:10px 14px; border-radius:999px; cursor:pointer; font-size:14px;
-  transition:transform .02s ease, box-shadow .15s ease; min-height:44px;
+/* チャット全体の枠 */
+#chat-root {
+    padding: 16px 16px 8px;
+    background: #ffffff;
 }
-.choice:hover{ box-shadow:0 4px 14px rgba(13,110,253,.12); }
-.choice:active{ transform:translateY(1px); }
 
-.footer{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
-.btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  background:var(--bar); color:#fff; border:none; border-radius:10px;
-  padding:10px 14px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(13,110,253,.18);
+/* チャット表示エリア（LINEのトーク画面っぽく） */
+#chat {
+    height: 420px;
+    overflow-y: auto;
+    padding: 16px 12px 12px;
+    background: #f5f7fb;
+    border-radius: 16px;
+    border: 1px solid #e5e7f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
-.btn.secondary{ background:#fff; color:var(--bar); border:1px solid var(--bar); box-shadow:none; }
-.mutetip{ color:var(--muted); font-size:12px; }
 
-.typing{ width:52px; height:28px; background:var(--bot); border:1px solid var(--line);
-  border-radius:16px; display:flex; align-items:center; justify-content:center; gap:4px;
-  margin:10px 40px; padding:0 8px; }
-.dot{ width:6px; height:6px; border-radius:50%; background:#c4c8d2; animation:blink 1.2s infinite; }
-.dot:nth-child(2){ animation-delay:.2s; } .dot:nth-child(3){ animation-delay:.4s; }
-@keyframes blink{ 0%{opacity:.2;} 20%{opacity:1;} 100%{opacity:.2;} }
-
-.result-card{
-  background:#fffdf8; border:1px solid #f3e7c8; border-radius:16px;
-  padding:18px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.04); margin-top:6px;
+/* 各メッセージ行 */
+.row.bot,
+.row.me {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 6px;
+    font-size: 14px;
 }
-.result-card h2{ margin:6px 0 4px; font-size:20px; }
-.badge{ display:inline-block; background:#fff; border:1px solid #f0dca6; padding:2px 8px; border-radius:999px; font-size:12px; color:#9a7b2f; }
-.recommend{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
-.pill{ background:#fff; border:1px dashed #f0dca6; padding:6px 10px; border-radius:999px; font-size:13px; }
-details{ margin-top:12px; text-align:left; }
-summary{ cursor:pointer; color:#7a6a2e; }
-pre{ background:#fff; border:1px solid #eee4c8; padding:10px; border-radius:10px; overflow:auto; }
 
-@media (max-width:640px){
-  .wrap{ padding:8px 10px calc(16px + env(safe-area-inset-bottom)); }
-  .chat{ padding:12px; }
-  .avatar{ width:34px; height:34px; }
-  .bubble{ font-size:15px; }
-  .choice{ font-size:15px; padding:10px 12px; }
-  .btn{ padding:10px 12px; }
+/* BOTメッセージ（左寄せ） */
+.row.bot {
+    justify-content: flex-start;
 }
+
+/* ユーザメッセージ（右寄せ） */
+.row.me {
+    justify-content: flex-end;
+}
+
+/* アイコン（アバター） */
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* BOT は左に余白、User は右に余白 */
+.row.bot .avatar {
+    margin-right: 8px;
+}
+
+.row.me .avatar {
+    margin-left: 8px;
+}
+
+/* 吹き出し＋時間をまとめるコンテナ */
+.msg-body {
+    max-width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* 吹き出し本体 */
+.bubble {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 16px;
+    line-height: 1.6;
+    word-break: break-word;
+    box-shadow: 0 1px 1px rgba(15, 23, 42, 0.06);
+}
+
+/* BOT吹き出し（白・左） */
+.row.bot .bubble {
+    background: #ffffff;
+    color: #111827;
+    border-bottom-left-radius: 4px;
+}
+
+/* ユーザ吹き出し（LINEっぽい緑・右寄せ） */
+.row.me .bubble {
+    background: #3bc167;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    margin-left: auto;  /* 右寄せ */
+}
+
+/* 時刻表示 */
+.time {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+/* BOT の時間は左、ユーザは右側っぽく */
+.row.bot .time {
+    margin-left: 4px;
+}
+
+.row.me .time {
+    text-align: right;
+    margin-right: 4px;
+}
+
+/* 選択肢ボタンの並び */
+.choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* 選択肢ボタン（LINEのボタンっぽく丸くする） */
+.choice {
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+    white-space: nowrap;
+}
+
+.choice:hover:not(:disabled) {
+    background: #f3f4ff;
+    box-shadow: 0 1px 4px rgba(129, 140, 248, 0.4);
+    transform: translateY(-1px);
+}
+
+.choice:disabled {
+    opacity: 0.6;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* 「はじめからやり直す」ボタン位置 */
+.diagnose-reset-area {
+    margin-top: 8px;
+    text-align: right;
+}
+
+/* 注意書き */
+.diagnose-note {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 12px;
+}
+
+/* スマホで少し余白を調整 */
+@media (max-width: 768px) {
+    #chat {
+        height: 420px;
+        padding: 12px 8px;
+    }
+
+    .msg-body {
+        max-width: 86%;
+    }
+}
+/* =========================================
+   TOPページ：ヒーロー＆マスコット
+   ========================================= */
+
+.top-hero {
+    max-width: 960px;
+    margin: 40px auto 60px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.top-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--brand-main);
+}
+
+.top-lead {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+.top-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+/* 左側（マスコット＋ふきだし） */
+.top-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.top-mascot-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.top-mascot-image {
+    width: 180px;
+    height: auto;
+    border-radius: 16px;
+}
+
+/* ふきだし */
+.top-speech {
+    position: absolute;
+    top: -20px;
+    right: -40px;
+    min-width: 160px;
+    padding: 10px 14px;
+    background-color: #fff7dd;
+    border-radius: 18px;
+    border: 1px solid #fbbf24;
+    font-size: 13px;
+    color: #444;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* 右側（でっかいスタートボタン） */
+.top-right {
+    flex: 1;
+    text-align: center;
+}
+
+.start-button-wrap {
+    display: inline-flex;
+    text-decoration: none;
+}
+
+.start-button {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 20%, #fff5f5, #f97373, #b91c1c);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+}
+
+.start-button-label {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+/* ホバー時にちょっと浮く */
+.start-button-wrap:hover .start-button {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 26px rgba(0,0,0,0.28);
+}
+
+.start-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+/* スマホレイアウト：縦並びにする */
+@media (max-width: 768px) {
+    .top-main {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .top-mascot-image {
+        width: 150px;
+    }
+
+    .top-speech {
+        right: -10px;
+    }
+
+    .start-button {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* =========================================
+   暖簾アニメーション
+   sakeice.jp みたいな「白い暖簾が上にあがる」イメージ
+   ========================================= */
+
+.noren-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    pointer-events: none; /* クリックを下の要素に通す */
+}
+
+/* 実際の白い幕 */
+.noren-panel {
+    width: 100%;
+    height: 60%;              /* 画面上部6割くらいを覆う */
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(0);
+    animation: noren-slide-up 1.2s ease-in-out forwards;
+}
+
+/* 暖簾のロゴ（中央上部） */
+.noren-logo {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    color: var(--brand-main);
+}
+
+/* 暖簾が上にスッと上がるアニメーション */
+@keyframes noren-slide-up {
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+/* JSから付与して全体をフェードアウトさせる用 */
+.noren-overlay--hide {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+

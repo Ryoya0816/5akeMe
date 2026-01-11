@@ -1,61 +1,51 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 5akeMe
+診断データから“好み”を推定し、レコメンドにつなげるプロトタイプ。
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 概要
+5akeMe は、数問の診断回答から嗜好タイプを推定し、結果（primary / candidates / mood）を表示する Web アプリです。  
+将来的には結果から「おすすめのお酒・お店」へ誘導することで、レコメンド体験として完成させる想定です。
 
-## About Laravel
+## 想定ユースケース（企業向け）
+- 診断（アンケート）結果をもとに、商品/店舗/コンテンツをレコメンドしたい
+- キャンペーン LP の導線強化（診断 → 結果 → 回遊）
+- 小規模データから開始し、後に DB 連携・ABテスト・レコメンド精度改善へ拡張
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## デモ / スクリーンショット
+- Top：暖簾アニメーション + Welcome ボタン（調整中）
+- Result：タイプ（primary）+ 候補（candidates）+ mood
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> ※ここにGIFやスクショを貼ると、GitHub 上で一瞬で伝わります
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 主な機能
+- 診断セッション生成（固定2問 + カテゴリA/B/Cから各1問）
+- スコア計算（10種類の酒タイプに加点、q2のみ倍率適用）
+- 結果出力：primary / candidates / mood
+- UI：トップ演出（暖簾・Welcomeボタンなど）※調整中
+- Result → お店導線（ダミー導線 → 実装予定）
 
-## Learning Laravel
+## 技術スタック
+- Backend: Laravel
+- Frontend: Blade（主体） + JavaScript（演出/補助）
+- Styling: Tailwind CSS + `resources/css/app.css`（共通トークン管理）
+- Infra: Docker Compose
+- DB: MySQL（想定）
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## アーキテクチャ概要（診断ロジック）
+- `app/Services/DiagnoseService.php`
+  - `createSession`：固定2問（q1,q2）＋カテゴリA/B/Cから各1問を生成
+  - `score`：`config/diagnose.php` の types/labels/weights/scoring を参照して加点
+  - q2のみ `q2_multiplier` を適用
+  - q1回答(a〜e)から mood（lively/chill/silent/light/strong）を決定
+  - `candidate_width` 以内のタイプを候補化し降順ソート
+  - return：primary / candidates / mood
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## セットアップ（ローカル開発）
+### 前提
+- Docker / Docker Compose
+- Node.js（Viteビルドを使う場合）
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 起動（Backend）
+```bash
+docker compose up -d
+docker compose exec app php artisan optimize:clear
+docker compose exec app php artisan migrate

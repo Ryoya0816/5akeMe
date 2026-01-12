@@ -6,25 +6,43 @@
 <div class="diagnose-result-page">
 
     <style>
+        /* =========================================
+           結果ページ専用スタイル（最小変更で“共通カラー”に寄せる）
+           ※ app.css の :root（--bg-base など）を前提にしています
+           ========================================= */
+
         .diagnose-result-page {
             display: flex;
             justify-content: center;
             padding: 32px 8px 48px;
-            background: #fafafa;
+
+            /* 以前：background: #fafafa;
+               → 共通の和紙色に寄せる（統一） */
+            background: var(--bg-base, #fbf3e8);
         }
 
         .dr-page {
             width: 100%;
             max-width: 800px;
-            background: #fff;
+
+            /* 以前：background: #fff;
+               → 白を残しつつ、境界と影を“共通トーン”へ */
+            background: var(--card-bg, #ffffff);
+            border: 1px solid var(--line-soft, #f1dfd0);
+
             padding: 24px 16px 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border-radius: 16px;
+            box-shadow: var(--shadow, 0 4px 20px rgba(0,0,0,0.04));
         }
 
         .dr-title {
             text-align: center;
             font-size: 20px;
             margin-bottom: 16px;
+
+            /* タイトルもブランド寄せ */
+            color: var(--brand-main, #9c3f2e);
+            font-weight: 700;
         }
 
         /* 一番上の酒名（⭕️⭕️のイメージ） */
@@ -40,40 +58,55 @@
             justify-content: center;
             padding: 8px 24px;
             border-radius: 999px;
-            border: 2px solid #000;
+
+            /* 以前：border: 2px solid #000;
+               → ブランド色に寄せる */
+            border: 2px solid var(--brand-main, #9c3f2e);
+
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.08em;
+            color: var(--brand-main, #9c3f2e);
+            background: var(--bg-soft, #fff7ee);
         }
 
         .dr-step-label {
             text-align: center;
             font-size: 14px;
             margin-bottom: 4px;
+            color: var(--text-sub, #8c6d57);
         }
 
         .dr-arrow {
             text-align: center;
             font-size: 20px;
             margin-bottom: 16px;
+            color: var(--text-sub, #8c6d57);
         }
 
         .dr-hex-section {
             display: flex;
             justify-content: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
 
         .dr-hex-wrap {
             position: relative;
             width: 260px;
             height: 260px;
+
+            /* チャート周りの“台座”を追加して統一感UP（最小の見栄え改善） */
+            background: var(--bg-soft, #fff7ee);
+            border: 1px solid var(--line-soft, #f1dfd0);
+            border-radius: 18px;
+            box-shadow: 0 10px 18px rgba(0,0,0,0.05);
+            padding: 10px;
         }
 
-        /* 六角形は削除して、チャートだけ中央に表示 */
+        /* チャートだけ中央に表示 */
         #diagnose-chart {
             position: absolute;
-            inset: 0;
+            inset: 10px;
             margin: auto;
         }
 
@@ -85,17 +118,19 @@
 
         .dr-result-main .dr-main-text {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 8px;
+            color: var(--brand-main, #9c3f2e);
         }
 
         .dr-result-main .dr-sub-text {
             font-size: 15px;
+            color: var(--text-main, #3f3f3f);
         }
 
         .dr-mood-text {
             font-size: 13px;
-            color: #777;
+            color: var(--text-sub, #8c6d57);
             margin-bottom: 12px;
         }
 
@@ -116,7 +151,11 @@
             padding: 10px 20px;
             border-radius: 999px;
             border: none;
-            background: #222;
+
+            /* 以前：background: #222;
+               → ブランド赤茶 */
+            background: var(--brand-main, #9c3f2e);
+
             color: #fff;
             font-size: 15px;
             text-decoration: none;
@@ -125,31 +164,31 @@
         }
 
         .dr-btn:hover {
-            background: #000;
+            background: var(--brand-text, #8a3a28);
             box-shadow: 0 4px 12px rgba(0,0,0,0.18);
             transform: translateY(-1px);
         }
 
         .dr-btn-secondary {
-            background: #f5f5f5;
-            color: #222;
-            border: 1px solid #ddd;
+            background: var(--bg-soft, #fff7ee);
+            color: var(--brand-main, #9c3f2e);
+            border: 1px solid var(--line-soft, #f1dfd0);
         }
 
         .dr-btn-secondary:hover {
-            background: #eaeaea;
+            background: #f7eadf;
         }
 
         .dr-btn small {
             font-size: 12px;
-            margin-right: 4px;
-            opacity: 0.8;
+            margin-right: 6px;
+            opacity: 0.85;
         }
 
         .dr-note {
             margin-top: 20px;
             font-size: 12px;
-            color: #777;
+            color: var(--text-sub, #8c6d57);
             text-align: center;
         }
 
@@ -184,26 +223,22 @@
          *   - primary_label  (例: 日本酒・辛口)
          *   - mood           (lively/chill/silent/light/strong)
          *   - candidates     (type/score/label の配列)
-         *
-         * さらに、config/diagnose_results.php で
-         * タイプごとの詳細マスタを持っている想定：
-         *
-         * return [
-         *   'sake_dry' => [
-         *      'pairing_label'   => '日本酒・辛口 × 刺身',
-         *      'pairing_message' => 'キリッと辛口で刺身の旨みを引き立てるタイプです。',
-         *      'chart_labels'    => [...],
-         *      'chart_values'    => [...],
-         *   ],
-         *   ...
-         * ];
+         *   - top5           (type/score/label の配列)  ← ★追加：チャートはこっちを使う
          */
 
         // モデルでも配列でも data_get で安全に取れるようにしておく
         $primaryType  = data_get($result, 'primary_type');
         $primaryLabel = data_get($result, 'primary_label');
         $mood         = data_get($result, 'mood');
+
+        // ★候補（テキスト表示などに使うなら残す）
         $candidates   = data_get($result, 'candidates', []);
+
+        // ★チャート用：上位5（無ければ candidates から5件フォールバック）
+        $top5 = data_get($result, 'top5', []);
+        if (!is_array($top5) || empty($top5)) {
+            $top5 = is_array($candidates) ? array_slice($candidates, 0, 5) : [];
+        }
 
         // 診断結果マスタ（存在しなければ空配列）
         $master = config('diagnose_results', []);
@@ -229,27 +264,27 @@
         ];
         $moodText = $mood ? ($moodLabels[$mood] ?? null) : null;
 
+        // -----------------------------------------
         // レーダーチャート用データ
         // 1. マスタに chart_labels / chart_values があればそちら優先
-        // 2. なければ candidates の上位6件を使う
+        // 2. なければ top5 を使う（★仕様どおり）
+        // -----------------------------------------
         if (!empty($detail['chart_labels']) && !empty($detail['chart_values'])) {
             $chartLabels = $detail['chart_labels'];
             $chartValues = $detail['chart_values'];
         } else {
-            // candidates から上位6件を抽出
-            $top = is_array($candidates) ? array_slice($candidates, 0, 6) : [];
             $chartLabels = [];
             $chartValues = [];
 
-            foreach ($top as $row) {
+            foreach ($top5 as $row) {
                 $chartLabels[] = $row['label'] ?? ($row['type'] ?? 'タイプ');
                 $chartValues[] = isset($row['score']) ? round((float)$row['score'], 1) : 0;
             }
 
             // 万が一何もない場合のフォールバック
             if (empty($chartLabels)) {
-                $chartLabels = ['タイプA', 'タイプB', 'タイプC', 'タイプD', 'タイプE', 'タイプF'];
-                $chartValues = [3, 4, 2, 5, 3, 4];
+                $chartLabels = ['タイプA', 'タイプB', 'タイプC', 'タイプD', 'タイプE'];
+                $chartValues = [3, 4, 2, 5, 3];
             }
         }
     @endphp
@@ -303,7 +338,7 @@
         </div>
 
         <div class="dr-note">
-            ※ グラフは、あなたの回答から算出した「上位6種類のお酒タイプ」をチャートで表示しています。
+            ※ グラフは、あなたの回答から算出した「上位5種類のお酒タイプ」をチャートで表示しています。
         </div>
     </div>
 
@@ -324,15 +359,22 @@
                     datasets: [{
                         label: 'お酒タイプのバランス',
                         data: chartValues,
+
+                        /* 見た目も“世界観”に寄せる（色はCSS変数から取得） */
                         fill: true,
+                        borderWidth: 2,
+                        pointRadius: 3,
+
+                        /* Chart.js はCSS変数を直接は読めないのでJSで読む */
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-main').trim() || '#9c3f2e',
+                        backgroundColor: 'rgba(156, 63, 46, 0.12)',
+                        pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-main').trim() || '#9c3f2e',
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            display: false
-                        }
+                        legend: { display: false }
                     },
                     scales: {
                         r: {
@@ -343,6 +385,13 @@
                             },
                             grid: {
                                 circular: true
+                            },
+                            angleLines: {
+                                color: 'rgba(0,0,0,0.08)'
+                            },
+                            pointLabels: {
+                                font: { size: 12 },
+                                color: '#6b7280'
                             }
                         }
                     }

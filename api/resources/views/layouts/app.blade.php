@@ -1,56 +1,48 @@
+{{-- resources/views/layouts/app.blade.php --}}
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>@yield('title','5akeMe')</title>
-  {{-- 画面ごとのCSS/JSは @vite で差し込む --}}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>@yield('title', '5akeMe')</title>
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-
 <body>
-  <header class="app-header">
-    <a href="{{ route('top') }}" class="header-logo-link">
+
+  <header class="app-header" aria-label="5akeMe">
+    <div class="app-header-inner">
       <img
         src="{{ asset('images/5akeme-header.png') }}"
-        alt="5akeMe トップへ"
-        class="header-logo-image"
+        alt="5akeMe"
+        class="app-header-image"
       >
-    </a>
-
-    <h1 class="app-title">@yield('header','5akeMe')</h1>
+    </div>
   </header>
 
   <main class="wrap">
     @yield('content')
   </main>
 
-  {{-- ✔ フッターは body の “中” に置く --}}
   <footer class="app-footer">
     <div class="footer-inner">
+      <nav class="footer-left" aria-label="Footer navigation">
+        <a href="{{ route('top') }}" class="footer-link">TOP</a>
+        <a href="{{ route('diagnose') }}" class="footer-link">診断</a>
+      </nav>
 
-      {{-- 左：ナビ（プライバシーポリシーなど） --}}
-      <div class="footer-left">
-        <a href="/privacy" class="footer-link">プライバシーポリシー</a>
-      </div>
-
-      {{-- 中央：ブランドロゴやスローガン --}}
       <div class="footer-center">
-        <p class="footer-brand">Hello, SAGA World.</p>
-        <p class="footer-copy">© 5akeMe project</p>
+        <p class="footer-brand">5akeMe</p>
+        <p class="footer-copy">© {{ date('Y') }} 5akeMe</p>
       </div>
 
-      {{-- 右：SNSリンク --}}
       <div class="footer-right">
-        <a href="https://x.com/" target="_blank" class="sns-link">X</a>
-        <a href="https://instagram.com/" target="_blank" class="sns-link">Instagram</a>
-        <a href="https://note.com/hello_sagaworld" target="_blank" class="sns-link">note</a>
-        <a href="https://github.com/Ryoya0816" target="_blank" class="sns-link">GitHub</a>
+        <a href="#" class="sns-link" aria-label="X">X</a>
+        <a href="#" class="sns-link" aria-label="Instagram">IG</a>
       </div>
-
     </div>
   </footer>
 
+  @stack('scripts')
 </body>
 </html>

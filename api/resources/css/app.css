@@ -125,8 +125,8 @@ header.app-header .app-header-inner {
 }
 
 header.app-header .app-header-image {
-  height: 100%;
-  width: auto;
+  height: 80%;
+  width: 180%;
   max-width: none;
   object-fit: contain;
   display: block;

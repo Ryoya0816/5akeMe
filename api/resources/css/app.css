@@ -126,8 +126,8 @@ header.app-header .app-header-inner {
 /* ヘッダー画像のサイズ調整（Tailwindのbaseレイヤーを上書き） */
 header.app-header .app-header-inner img.app-header-image {
   height: 80% !important;
-  width: 25vw !important;
-  max-width: 300px !important;
+  width: 50vw !important;
+  max-width: 600px !important;
   min-width: auto !important;
   object-fit: contain !important;
   display: block !important;
@@ -137,8 +137,8 @@ header.app-header .app-header-inner img.app-header-image {
   header.app-header { height: 100px; }
   header.app-header .app-header-inner { padding-left: 16px; }
   header.app-header .app-header-inner img.app-header-image {
-    width: 40vw !important;
-    max-width: 200px !important;
+    width: 80vw !important;
+    max-width: 400px !important;
   }
 }
 

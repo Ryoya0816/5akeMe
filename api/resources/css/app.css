@@ -122,13 +122,15 @@ header.app-header .app-header-inner {
   align-items: center;
   justify-content: flex-start;
   padding-left: 50px;
+  overflow: visible;
 }
 
 header.app-header .app-header-image {
-  height: 80%;
-  width: 180%;
-  max-width: none;
-  object-fit: contain;
+  height: 80% !important;
+  width: 180% !important;
+  max-width: none !important;
+  min-width: 180% !important;
+  object-fit: fill;
   display: block;
 }
 

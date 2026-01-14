@@ -1,23 +1,106 @@
-# OS
-.DS_Store
+# =========================================================
+# 5akeMe / api (Laravel) - .gitignore
+# Purpose:
+# - Keep repository clean (no generated files, no secrets)
+# - Reproducible builds (commit source, not artifacts)
+# - Safer collaboration (avoid OS/editor noise)
+# =========================================================
 
-# Node
+
+# ---------------------------------------------------------
+# 1) Secrets / Environment
+# ---------------------------------------------------------
+# Never commit secrets. Keep example files only.
+.env
+.env.*
+!.env.example
+
+
+# ---------------------------------------------------------
+# 2) Laravel runtime & cache artifacts
+# ---------------------------------------------------------
+# These are generated at runtime / by artisan.
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+storage/*.key
+
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+!storage/logs/.gitignore
+!storage/framework/cache/.gitignore
+!storage/framework/sessions/.gitignore
+!storage/framework/views/.gitignore
+
+
+# ---------------------------------------------------------
+# 3) Dependencies
+# ---------------------------------------------------------
+# Install via composer / npm. Do not commit vendors.
+vendor/
 node_modules/
+
+
+# ---------------------------------------------------------
+# 4) Frontend build artifacts (Vite / Laravel Vite plugin)
+# ---------------------------------------------------------
+# Commit source (resources/), not compiled output.
+public/build/
+public/hot
+
+# Vite cache
+.vite/
+.vite-cache/
+
+
+# ---------------------------------------------------------
+# 5) Testing / static analysis cache
+# ---------------------------------------------------------
+.phpunit.result.cache
+.phpunit.cache/
+coverage/
+*.lcov
+.phpstan.cache
+
+
+# ---------------------------------------------------------
+# 6) Logs (generic)
+# ---------------------------------------------------------
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Laravel
-.env
-/storage/*.key
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/views/*
-/storage/logs/*
-/bootstrap/cache/*
-/vendor/
-/public/build/
-/public/hot
 
-# IDE
+# ---------------------------------------------------------
+# 7) OS / Editor noise
+# ---------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors
 .vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+
+# ---------------------------------------------------------
+# 8) Optional: local-only docker overrides
+# ---------------------------------------------------------
+# Keep repo stable across machines. If you use overrides locally,
+# do not commit them.
+docker-compose.override.yml
+docker-compose.*.override.yml

@@ -300,7 +300,20 @@ class DiagnoseService
         // スコア降順でソート（候補表示の順序を保証）
         usort($candidates, fn ($a, $b) => $b['score'] <=> $a['score']);
 
-        $primary = $candidates[0]['type'] ?? (array_key_first($sorted) ?: null);
+        // primary を決定（候補があれば候補の1位、なければ全タイプの1位）
+        if (!empty($candidates)) {
+            $primary = $candidates[0]['type'];
+        } elseif (!empty($sorted)) {
+            // 候補が空でも、スコアが存在する場合は1位を primary にする
+            $primary = array_key_first($sorted);
+        } else {
+            // すべてのタイプのスコアが0の場合、デフォルトタイプを設定
+            $primary = $types[0] ?? null;
+            Log::warning('[Diagnose] All scores are zero, using default type', [
+                'types' => $types,
+                'answers' => $answers,
+            ]);
+        }
 
         // ---------------------------
         // チャート用：上位5種類（候補幅とは別に、純粋なランキング上位）

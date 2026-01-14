@@ -8,8 +8,10 @@ services:
     volumes:
       - ./api:/var/www/html
     depends_on:
-      - db
-      - node
+      db:
+        condition: service_healthy
+      node:
+        condition: service_started
     networks:
       - appnet
 
@@ -55,6 +57,12 @@ services:
       - dbdata:/var/lib/mysql
     networks:
       - appnet
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   node:
     image: node:20-alpine

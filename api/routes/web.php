@@ -100,6 +100,35 @@ if (!app()->isProduction()) {
         PingJob::dispatch('hello-from-queue');
         return 'queued';
     });
+
+    Route::get('/debug/db-config', function () {
+        $dbConfig = config('database.connections.' . config('database.default'));
+        return response()->json([
+            'default_connection' => config('database.default'),
+            'host' => $dbConfig['host'] ?? 'not set',
+            'port' => $dbConfig['port'] ?? 'not set',
+            'database' => $dbConfig['database'] ?? 'not set',
+            'username' => $dbConfig['username'] ?? 'not set',
+            'env_db_host' => env('DB_HOST', 'not set'),
+            'env_db_connection' => env('DB_CONNECTION', 'not set'),
+        ]);
+    });
+
+    Route::get('/debug/db-test', function () {
+        try {
+            \DB::connection()->getPdo();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Database connection successful',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'host' => config('database.connections.' . config('database.default') . '.host'),
+            ], 500);
+        }
+    });
 }
 
 // 一番最初の入口（必ずWELCOME）

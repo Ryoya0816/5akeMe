@@ -14,11 +14,13 @@ class DiagnoseResult extends Model
         'primary_label',
         'mood',
         'candidates',
+        'top5',
         // 'raw_scores',
     ];
 
     protected $casts = [
         'candidates' => 'array',
+        'top5' => 'array',
         // 'raw_scores' => 'array',
     ];
 }

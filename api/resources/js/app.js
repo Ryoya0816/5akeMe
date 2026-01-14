@@ -18,22 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // ちょい溜め
+      // ちょい溜め（ボタンが少し沈む）
       enter.classList.add('is-disabled');
 
+      // 暖簾を左右に大きく開く（SAKEICE風の演出）
       setTimeout(() => {
-        norenClose.classList.add('is-active'); // 開く（左右へ）
-      }, 180);
+        norenClose.classList.add('is-active');
+      }, 200);
 
-      // 開き終わったら、奥に吸い込まれて消える
+      // 暖簾をくぐった後、奥に消える演出
       setTimeout(() => {
         norenClose.classList.add('is-vanish');
-      }, 900);
+      }, 1200);
 
-      // 遷移
+      // 遷移（暖簾をくぐった後）
       setTimeout(() => {
         window.location.href = href;
-      }, 900 + 450);
+      }, 1800);
     });
   }
 

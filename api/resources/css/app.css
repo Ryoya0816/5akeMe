@@ -125,13 +125,14 @@ header.app-header .app-header-inner {
   overflow: visible;
 }
 
-header.app-header .app-header-image {
+/* ヘッダー画像のサイズ調整（Tailwindのbaseレイヤーを上書き） */
+header.app-header .app-header-inner img.app-header-image {
   height: 80% !important;
   width: 180% !important;
   max-width: none !important;
   min-width: 180% !important;
-  object-fit: fill;
-  display: block;
+  object-fit: fill !important;
+  display: block !important;
 }
 
 @media (max-width: 640px) {

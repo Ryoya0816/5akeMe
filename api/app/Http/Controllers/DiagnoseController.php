@@ -94,59 +94,96 @@ class DiagnoseController extends Controller
      */
     public function score(Request $request, DiagnoseService $service)
     {
-        $data = $request->validate([
-            'answers' => 'required|array',
-            'seed'    => 'nullable|integer',
-        ]);
+        try {
+            $data = $request->validate([
+                'answers' => 'required|array',
+                'seed'    => 'nullable|integer',
+            ]);
 
-        $answers = $data['answers'];
-        $seed    = $data['seed'] ?? null;
+            $answers = $data['answers'];
+            $seed    = $data['seed'] ?? null;
 
-        // サービスで採点
-        // 戻り値想定:
-        // ['primary' => 'sake_dry', 'candidates' => [...], 'mood' => 'lively', 'scores' => [...]]
-        $scored = $service->score($answers, $seed);
+            // サービスで採点
+            // 戻り値想定:
+            // ['primary' => 'sake_dry', 'candidates' => [...], 'mood' => 'lively', 'scores' => [...]]
+            $scored = $service->score($answers, $seed);
 
-        if (empty($scored['primary'])) {
-            Log::warning('[Diagnose] primary type is null', [
-                'answers' => $answers,
-                'seed'    => $seed,
+            if (empty($scored['primary'])) {
+                Log::warning('[Diagnose] primary type is null', [
+                    'answers' => $answers,
+                    'seed'    => $seed,
+                    'scored'  => $scored,
+                ]);
+
+                return response()->json([
+                    'message' => '診断に失敗しました。',
+                ], 422);
+            }
+
+            // primary のラベルは candidates から拾う or config labels を再利用
+            $primaryLabel = $this->resolvePrimaryLabel(
+                $scored['primary'],
+                $scored['candidates'] ?? []
+            );
+
+            // result_id を生成（JS が結果画面への遷移に使うID）
+            $resultId = 'res_' . Str::random(16);
+
+            // DB 保存
+            try {
+                DiagnoseResult::create([
+                    'result_id'     => $resultId,
+                    'primary_type'  => $scored['primary'],
+                    'primary_label' => $primaryLabel,
+                    'mood'          => $scored['mood'] ?? null,
+                    'candidates'    => $scored['candidates'] ?? [],
+                    // 'raw_scores' => $scored['scores'] ?? null,
+                ]);
+            } catch (\Exception $e) {
+                Log::error('[Diagnose] Failed to save DiagnoseResult', [
+                    'error'   => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                    'result_id' => $resultId,
+                    'scored'  => $scored,
+                ]);
+
+                return response()->json([
+                    'message' => '診断結果の保存に失敗しました。',
+                ], 500);
+            }
+
+            // これまでの仕様通り result も一緒に返す
+            return response()->json([
+                'result_id' => $resultId,
+                'result'    => [
+                    'primary'       => $scored['primary'],
+                    'primary_label' => $primaryLabel,
+                    'candidates'    => $scored['candidates'] ?? [],
+                    'mood'          => $scored['mood'] ?? null,
+                ],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('[Diagnose] Validation error', [
+                'errors' => $e->errors(),
             ]);
 
             return response()->json([
-                'message' => '診断に失敗しました。',
+                'message' => 'リクエストが不正です。',
+                'errors'  => $e->errors(),
             ], 422);
+        } catch (\Exception $e) {
+            Log::error('[Diagnose] Score API error', [
+                'error'   => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'message' => '診断処理中にエラーが発生しました。',
+            ], 500);
         }
-
-        // primary のラベルは candidates から拾う or config labels を再利用
-        $primaryLabel = $this->resolvePrimaryLabel(
-            $scored['primary'],
-            $scored['candidates'] ?? []
-        );
-
-        // result_id を生成（JS が結果画面への遷移に使うID）
-        $resultId = 'res_' . Str::random(16);
-
-        // DB 保存
-        DiagnoseResult::create([
-            'result_id'     => $resultId,
-            'primary_type'  => $scored['primary'],
-            'primary_label' => $primaryLabel,
-            'mood'          => $scored['mood'] ?? null,
-            'candidates'    => $scored['candidates'] ?? [],
-            // 'raw_scores' => $scored['scores'] ?? null,
-        ]);
-
-        // これまでの仕様通り result も一緒に返す
-        return response()->json([
-            'result_id' => $resultId,
-            'result'    => [
-                'primary'       => $scored['primary'],
-                'primary_label' => $primaryLabel,
-                'candidates'    => $scored['candidates'] ?? [],
-                'mood'          => $scored['mood'] ?? null,
-            ],
-        ]);
     }
 
     /**

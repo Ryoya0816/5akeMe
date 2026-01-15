@@ -113,10 +113,12 @@ class DiagnoseController extends Controller
                     'answers' => $answers,
                     'seed'    => $seed,
                     'scored'  => $scored,
+                    'candidates_count' => count($scored['candidates'] ?? []),
+                    'scores_map' => $scored['scores_map'] ?? [],
                 ]);
 
                 return response()->json([
-                    'message' => '診断に失敗しました。',
+                    'message' => '診断に失敗しました。回答が正しく処理できませんでした。',
                 ], 422);
             }
 
@@ -126,10 +128,67 @@ class DiagnoseController extends Controller
                 $scored['candidates'] ?? []
             );
 
+            // primaryLabel が空の場合は primary_type をそのまま使用
+            if (empty($primaryLabel)) {
+                $primaryLabel = $scored['primary'];
+            }
+
             // result_id を生成（JS が結果画面への遷移に使うID）
             $resultId = 'res_' . Str::random(16);
 
             // DB 保存
+            try {
+                // データベース接続を確認（リトライ付き）
+                $maxRetries = 3;
+                $retryDelay = 1; // 秒
+                $connected = false;
+                $lastError = null;
+
+                for ($i = 0; $i < $maxRetries; $i++) {
+                    try {
+                        \DB::connection()->getPdo();
+                        $connected = true;
+                        break;
+                    } catch (\Exception $e) {
+                        $lastError = $e;
+                        if ($i < $maxRetries - 1) {
+                            sleep($retryDelay);
+                        }
+                    }
+                }
+
+                if (!$connected) {
+                    $dbConfig = config('database.connections.' . config('database.default'));
+                    Log::error('[Diagnose] Database connection failed after retries', [
+                        'error' => $lastError ? $lastError->getMessage() : 'Unknown error',
+                        'host'  => $dbConfig['host'] ?? 'not set',
+                        'port'  => $dbConfig['port'] ?? 'not set',
+                        'database' => $dbConfig['database'] ?? 'not set',
+                        'username' => $dbConfig['username'] ?? 'not set',
+                        'connection' => config('database.default'),
+                        'retries' => $maxRetries,
+                    ]);
+
+                    return response()->json([
+                        'message' => 'データベースに接続できませんでした。Dockerコンテナが起動しているか確認してください。',
+                        'error'   => app()->isProduction() ? null : ($lastError ? $lastError->getMessage() : 'Connection failed'),
+                        'hint'    => app()->isProduction() ? null : 'DB_HOST=' . ($dbConfig['host'] ?? 'not set') . ', Connection=' . config('database.default'),
+                    ], 500);
+                }
+            } catch (\Exception $dbCheck) {
+                $dbConfig = config('database.connections.' . config('database.default'));
+                Log::error('[Diagnose] Database connection check exception', [
+                    'error' => $dbCheck->getMessage(),
+                    'host'  => $dbConfig['host'] ?? 'not set',
+                    'database' => $dbConfig['database'] ?? 'not set',
+                ]);
+
+                return response()->json([
+                    'message' => 'データベース接続の確認中にエラーが発生しました。',
+                    'error'   => app()->isProduction() ? null : $dbCheck->getMessage(),
+                ], 500);
+            }
+
             try {
                 DiagnoseResult::create([
                     'result_id'     => $resultId,
@@ -137,18 +196,42 @@ class DiagnoseController extends Controller
                     'primary_label' => $primaryLabel,
                     'mood'          => $scored['mood'] ?? null,
                     'candidates'    => $scored['candidates'] ?? [],
+                    'top5'          => $scored['top5'] ?? [],
                     // 'raw_scores' => $scored['scores'] ?? null,
                 ]);
-            } catch (\Exception $e) {
-                Log::error('[Diagnose] Failed to save DiagnoseResult', [
-                    'error'   => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString(),
+            } catch (\Illuminate\Database\QueryException $e) {
+                Log::error('[Diagnose] Failed to save DiagnoseResult (QueryException)', [
+                    'error'     => $e->getMessage(),
+                    'sql'       => $e->getSql() ?? null,
+                    'bindings'  => $e->getBindings() ?? null,
                     'result_id' => $resultId,
-                    'scored'  => $scored,
+                    'scored'    => $scored,
+                    'primary'   => $scored['primary'] ?? null,
+                    'primary_label' => $primaryLabel ?? null,
+                    'db_config' => [
+                        'connection' => config('database.default'),
+                        'host'      => config('database.connections.' . config('database.default') . '.host'),
+                        'database'  => config('database.connections.' . config('database.default') . '.database'),
+                    ],
                 ]);
 
                 return response()->json([
                     'message' => '診断結果の保存に失敗しました。',
+                    'error'   => app()->isProduction() ? null : $e->getMessage(),
+                ], 500);
+            } catch (\Exception $e) {
+                Log::error('[Diagnose] Failed to save DiagnoseResult', [
+                    'error'     => $e->getMessage(),
+                    'trace'     => $e->getTraceAsString(),
+                    'result_id' => $resultId,
+                    'scored'    => $scored,
+                    'primary'   => $scored['primary'] ?? null,
+                    'primary_label' => $primaryLabel ?? null,
+                ]);
+
+                return response()->json([
+                    'message' => '診断結果の保存に失敗しました。',
+                    'error'   => app()->isProduction() ? null : $e->getMessage(),
                 ], 500);
             }
 

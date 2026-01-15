@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let answers   = {};
     let currentIndex = 0;
     let busy = false;
+    let sessionSeed = null;
 
     const scrollToBottom = () => {
         requestAnimationFrame(() => {
@@ -302,6 +303,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     addMessage('bot', 'ありがとう！結果を集計するね…');
 
+                    const payload = { answers: answers };
+                    if (sessionSeed !== null) {
+                        payload.seed = sessionSeed;
+                    }
+
                     const res = await fetch(scoreEndpoint, {
                         method: 'POST',
                         headers: {
@@ -309,13 +315,26 @@ document.addEventListener('DOMContentLoaded', function () {
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json',
                         },
-                        body: JSON.stringify({ answers: answers }),
+                        body: JSON.stringify(payload),
                     });
+
+                    if (!res.ok) {
+                        let errorData = null;
+                        try {
+                            errorData = await res.json();
+                        } catch (e) {
+                            // JSONパースに失敗した場合は無視
+                        }
+                        console.error('Score API error', res.status, errorData);
+                        addMessage('bot', 'ごめんね、診断に失敗しちゃった…時間をおいてやり直してみてね。');
+                        busy = false;
+                        return;
+                    }
 
                     const data = await res.json();
 
-                    if (!res.ok || !data.result_id) {
-                        console.error('Score API error', data);
+                    if (!data.result_id) {
+                        console.error('Score API error: result_id missing', data);
                         addMessage('bot', 'ごめんね、診断に失敗しちゃった…時間をおいてやり直してみてね。');
                         busy = false;
                         return;
@@ -323,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     window.location.href = '/diagnose/result/' + data.result_id;
                 } catch (e) {
-                    console.error(e);
+                    console.error('Score API error', e);
                     addMessage('bot', 'ネットワークエラーが起きたみたい…もう一度試してみてね。');
                     busy = false;
                 }
@@ -361,6 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
             questions    = data.questions;
             answers      = {};
             currentIndex = 0;
+            sessionSeed  = data.seed ?? null;
 
             setTimeout(function () {
                 showQuestion(questions[currentIndex]);

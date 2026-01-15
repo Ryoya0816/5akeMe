@@ -105,8 +105,10 @@
 
         /* チャートだけ中央に表示 */
         #diagnose-chart {
-            position: absolute;
-            inset: 10px;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 240px;
+            max-height: 240px;
             margin: auto;
         }
 
@@ -198,13 +200,15 @@
             }
 
             .dr-hex-wrap {
-                width: 220px;
-                height: 220px;
+                width: 396px;
+                height: 396px;
             }
 
             #diagnose-chart {
-                width: 100%;
-                height: 100%;
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 376px;
+                max-height: 376px;
             }
 
             .dr-btn {
@@ -349,9 +353,12 @@
         const chartLabels = @json($chartLabels);
         const chartValues = @json($chartValues);
 
+        console.log('Chart labels:', chartLabels);
+        console.log('Chart values:', chartValues);
+
         const ctx = document.getElementById('diagnose-chart');
 
-        if (ctx) {
+        if (ctx && chartLabels && chartLabels.length > 0 && chartValues && chartValues.length > 0) {
             new Chart(ctx, {
                 type: 'radar',
                 data: {
@@ -363,39 +370,68 @@
                         /* 見た目も“世界観”に寄せる（色はCSS変数から取得） */
                         fill: true,
                         borderWidth: 2,
-                        pointRadius: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
 
                         /* Chart.js はCSS変数を直接は読めないのでJSで読む */
                         borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-main').trim() || '#9c3f2e',
-                        backgroundColor: 'rgba(156, 63, 46, 0.12)',
+                        backgroundColor: 'rgba(156, 63, 46, 0.15)',
                         pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-main').trim() || '#9c3f2e',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#8a3a28',
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed.r.toFixed(1);
+                                }
+                            }
+                        }
                     },
                     scales: {
                         r: {
-                            suggestedMin: 0,
-                            suggestedMax: 5,
+                            beginAtZero: true,
+                            min: 0,
+                            max: Math.max(5, Math.max(...chartValues) + 1),
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                display: true,
+                                font: { size: 10 }
                             },
                             grid: {
-                                circular: true
+                                circular: true,
+                                color: 'rgba(0,0,0,0.1)'
                             },
                             angleLines: {
-                                color: 'rgba(0,0,0,0.08)'
+                                display: true,
+                                color: 'rgba(0,0,0,0.1)',
+                                lineWidth: 1
                             },
                             pointLabels: {
-                                font: { size: 12 },
-                                color: '#6b7280'
+                                font: { 
+                                    size: 11,
+                                    weight: 'bold'
+                                },
+                                color: '#6b7280',
+                                padding: 8
                             }
                         }
                     }
                 }
+            });
+        } else {
+            console.error('Chart initialization failed:', {
+                ctx: !!ctx,
+                labels: chartLabels,
+                values: chartValues
             });
         }
 

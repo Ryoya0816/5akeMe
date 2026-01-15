@@ -125,17 +125,27 @@ header.app-header .app-header-inner {
 
 /* ヘッダー画像のサイズ調整（Tailwindのbaseレイヤーを上書き） */
 header.app-header .app-header-inner img.app-header-image {
-  height: 80% !important;
-  width: 180% !important;
-  max-width: none !important;
-  min-width: 180% !important;
-  object-fit: fill !important;
+  height: 100% !important;
+  max-height: 140px !important;
+  width: auto !important;
+  max-width: 30vw !important;
+  min-width: 250px !important;
+  object-fit: contain !important;
   display: block !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 
 @media (max-width: 640px) {
   header.app-header { height: 100px; }
   header.app-header .app-header-inner { padding-left: 16px; }
+  header.app-header .app-header-inner img.app-header-image {
+    height: 100% !important;
+    max-height: 100px !important;
+    width: auto !important;
+    max-width: 45vw !important;
+    min-width: 180px !important;
+  }
 }
 
 /* ======================================================================

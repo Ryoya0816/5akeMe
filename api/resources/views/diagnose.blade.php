@@ -312,10 +312,32 @@ document.addEventListener('DOMContentLoaded', function () {
                         body: JSON.stringify({ answers: answers }),
                     });
 
+                    // レスポンスのステータスを確認
+                    if (!res.ok) {
+                        let errorData = null;
+                        try {
+                            errorData = await res.json();
+                        } catch (e) {
+                            // JSONパースに失敗した場合
+                            errorData = { message: `サーバーエラー (${res.status})` };
+                        }
+                        
+                        console.error('Score API error', {
+                            status: res.status,
+                            statusText: res.statusText,
+                            error: errorData
+                        });
+                        
+                        const errorMessage = errorData?.message || '診断処理中にエラーが発生しました';
+                        addMessage('bot', 'ごめんね、診断に失敗しちゃった…時間をおいてやり直してみてね。');
+                        busy = false;
+                        return;
+                    }
+
                     const data = await res.json();
 
-                    if (!res.ok || !data.result_id) {
-                        console.error('Score API error', data);
+                    if (!data.result_id) {
+                        console.error('Score API error: result_id missing', data);
                         addMessage('bot', 'ごめんね、診断に失敗しちゃった…時間をおいてやり直してみてね。');
                         busy = false;
                         return;
@@ -323,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     window.location.href = '/diagnose/result/' + data.result_id;
                 } catch (e) {
-                    console.error(e);
+                    console.error('Score API error', e);
                     addMessage('bot', 'ネットワークエラーが起きたみたい…もう一度試してみてね。');
                     busy = false;
                 }

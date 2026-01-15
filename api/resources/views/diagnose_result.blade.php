@@ -237,7 +237,19 @@
         // ★チャート用：上位5（無ければ candidates から5件フォールバック）
         $top5 = data_get($result, 'top5', []);
         if (!is_array($top5) || empty($top5)) {
-            $top5 = is_array($candidates) ? array_slice($candidates, 0, 5) : [];
+            // candidatesから上位5件を取得（既にスコア降順でソートされている想定）
+            if (is_array($candidates) && !empty($candidates)) {
+                // スコアでソート（念のため）
+                $sortedCandidates = $candidates;
+                usort($sortedCandidates, function($a, $b) {
+                    $scoreA = $a['score'] ?? 0;
+                    $scoreB = $b['score'] ?? 0;
+                    return $scoreB <=> $scoreA; // 降順
+                });
+                $top5 = array_slice($sortedCandidates, 0, 5);
+            } else {
+                $top5 = [];
+            }
         }
 
         // 診断結果マスタ（存在しなければ空配列）
@@ -276,15 +288,40 @@
             $chartLabels = [];
             $chartValues = [];
 
-            foreach ($top5 as $row) {
-                $chartLabels[] = $row['label'] ?? ($row['type'] ?? 'タイプ');
-                $chartValues[] = isset($row['score']) ? round((float)$row['score'], 1) : 0;
+            if (!empty($top5) && is_array($top5)) {
+                foreach ($top5 as $row) {
+                    if (is_array($row)) {
+                        $chartLabels[] = $row['label'] ?? ($row['type'] ?? 'タイプ');
+                        $chartValues[] = isset($row['score']) ? round((float)$row['score'], 1) : 0;
+                    }
+                }
             }
 
             // 万が一何もない場合のフォールバック
-            if (empty($chartLabels)) {
-                $chartLabels = ['タイプA', 'タイプB', 'タイプC', 'タイプD', 'タイプE'];
-                $chartValues = [3, 4, 2, 5, 3];
+            if (empty($chartLabels) || empty($chartValues)) {
+                // candidatesから再度試行
+                if (is_array($candidates) && !empty($candidates)) {
+                    $chartLabels = [];
+                    $chartValues = [];
+                    $sortedCandidates = $candidates;
+                    usort($sortedCandidates, function($a, $b) {
+                        $scoreA = $a['score'] ?? 0;
+                        $scoreB = $b['score'] ?? 0;
+                        return $scoreB <=> $scoreA;
+                    });
+                    foreach (array_slice($sortedCandidates, 0, 5) as $row) {
+                        if (is_array($row)) {
+                            $chartLabels[] = $row['label'] ?? ($row['type'] ?? 'タイプ');
+                            $chartValues[] = isset($row['score']) ? round((float)$row['score'], 1) : 0;
+                        }
+                    }
+                }
+                
+                // それでも空の場合はデフォルト値
+                if (empty($chartLabels)) {
+                    $chartLabels = ['タイプA', 'タイプB', 'タイプC', 'タイプD', 'タイプE'];
+                    $chartValues = [3, 4, 2, 5, 3];
+                }
             }
         }
     @endphp

@@ -33,7 +33,7 @@ services:
       dockerfile: ./docker/nginx/Dockerfile
     container_name: laravel-nginx
     ports:
-      - "8080:80"
+      - "8082:80"
     volumes:
       - ./api:/var/www/html
     depends_on:

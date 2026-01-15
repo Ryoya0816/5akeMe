@@ -6,6 +6,7 @@ use App\Models\DiagnoseResult;
 use App\Services\DiagnoseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class DiagnoseController extends Controller
@@ -126,30 +127,58 @@ class DiagnoseController extends Controller
                 $scored['candidates'] ?? []
             );
 
+            // primaryLabel が空の場合は primary_type をそのまま使用
+            if (empty($primaryLabel)) {
+                $primaryLabel = $scored['primary'];
+            }
+
             // result_id を生成（JS が結果画面への遷移に使うID）
             $resultId = 'res_' . Str::random(16);
 
             // DB 保存
             try {
-                DiagnoseResult::create([
+                // top5カラムが存在するか確認してから保存
+                $columns = Schema::getColumnListing('diagnose_results');
+                $hasTop5Column = in_array('top5', $columns);
+
+                $data = [
                     'result_id'     => $resultId,
                     'primary_type'  => $scored['primary'],
                     'primary_label' => $primaryLabel,
                     'mood'          => $scored['mood'] ?? null,
                     'candidates'    => $scored['candidates'] ?? [],
-                    'top5'          => $scored['top5'] ?? [],
-                    // 'raw_scores' => $scored['scores'] ?? null,
-                ]);
-            } catch (\Exception $e) {
-                Log::error('[Diagnose] Failed to save DiagnoseResult', [
-                    'error'   => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString(),
+                ];
+
+                // top5カラムが存在する場合のみ追加
+                if ($hasTop5Column) {
+                    $data['top5'] = $scored['top5'] ?? [];
+                }
+
+                DiagnoseResult::create($data);
+            } catch (\Illuminate\Database\QueryException $e) {
+                Log::error('[Diagnose] Failed to save DiagnoseResult (QueryException)', [
+                    'error'     => $e->getMessage(),
+                    'sql'       => $e->getSql() ?? null,
+                    'bindings'  => $e->getBindings() ?? null,
                     'result_id' => $resultId,
-                    'scored'  => $scored,
+                    'scored'    => $scored,
                 ]);
 
                 return response()->json([
                     'message' => '診断結果の保存に失敗しました。',
+                    'error'   => app()->isProduction() ? null : $e->getMessage(),
+                ], 500);
+            } catch (\Exception $e) {
+                Log::error('[Diagnose] Failed to save DiagnoseResult', [
+                    'error'     => $e->getMessage(),
+                    'trace'     => $e->getTraceAsString(),
+                    'result_id' => $resultId,
+                    'scored'    => $scored,
+                ]);
+
+                return response()->json([
+                    'message' => '診断結果の保存に失敗しました。',
+                    'error'   => app()->isProduction() ? null : $e->getMessage(),
                 ], 500);
             }
 
@@ -160,6 +189,7 @@ class DiagnoseController extends Controller
                     'primary'       => $scored['primary'],
                     'primary_label' => $primaryLabel,
                     'candidates'    => $scored['candidates'] ?? [],
+                    'top5'          => $scored['top5'] ?? [],
                     'mood'          => $scored['mood'] ?? null,
                 ],
             ]);

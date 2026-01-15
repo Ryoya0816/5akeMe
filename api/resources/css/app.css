@@ -76,6 +76,45 @@ body {
   pointer-events: none;
 }
 
+/* ======================================================================
+   Noren Overlay (トップページ暖簾アニメーション)
+   ====================================================================== */
+.noren-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-base, #fbf3e8);
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.noren-overlay--hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.noren-panel {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-base, #fbf3e8);
+}
+
+.noren-logo {
+  position: relative;
+  z-index: 1;
+  font-size: 48px;
+  font-weight: bold;
+  color: var(--brand-main, #9c3f2e);
+  animation: noren-logo-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes noren-logo-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
 /* Keep UI above canvas */
 .top-hero,
 footer,
@@ -119,23 +158,35 @@ header.app-header .app-header-inner {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding-left: 50px;
+  padding-left: 16px;
   overflow: visible;
 }
 
-/* ヘッダー画像のサイズ調整（Tailwindのbaseレイヤーを上書き） */
+/* ヘッダーリンク */
+header.app-header .app-header-inner .app-header-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  text-decoration: none;
+}
+
+/* ヘッダー画像のサイズ調整（左寄せ、画面の1/2幅） */
 header.app-header .app-header-inner img.app-header-image {
   height: 80% !important;
-  width: 180% !important;
-  max-width: none !important;
-  min-width: 180% !important;
-  object-fit: fill !important;
+  width: 50vw !important;
+  max-width: 600px !important;
+  min-width: 250px !important;
+  object-fit: contain !important;
   display: block !important;
 }
 
 @media (max-width: 640px) {
   header.app-header { height: 100px; }
-  header.app-header .app-header-inner { padding-left: 16px; }
+  header.app-header .app-header-inner { padding-left: 12px; }
+  header.app-header .app-header-inner img.app-header-image {
+    width: 50vw !important;
+    min-width: 200px !important;
+  }
 }
 
 /* ======================================================================
@@ -218,30 +269,30 @@ header.app-header .app-header-inner img.app-header-image {
 }
 
 .top-title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   color: var(--brand-main);
 }
 
 .top-lead {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-sub);
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .top-main {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 28px;
+  gap: 60px;
+  flex-wrap: wrap;
 }
 
 .top-left,
 .top-right {
   flex: none;
-  width: 100%;
   display: flex;
   justify-content: center;
 }
@@ -249,12 +300,12 @@ header.app-header .app-header-inner img.app-header-image {
 .top-mascot-wrap {
   position: relative;
   display: inline-block;
-  max-width: 220px;
+  max-width: 280px;
 }
 
 .top-mascot-image {
-  width: 200px;
-  max-width: 200px;
+  width: 240px;
+  max-width: 240px;
   height: auto;
   border-radius: 16px;
   object-fit: contain;
@@ -262,16 +313,17 @@ header.app-header .app-header-inner img.app-header-image {
 
 .top-speech {
   position: absolute;
-  top: -20px;
-  right: -40px;
+  top: -10px;
+  right: -60px;
   min-width: 160px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background-color: #fff3d6;
   border-radius: 18px;
   border: 1px solid #f2d9a0;
-  font-size: 13px;
+  font-size: 14px;
   color: #5b4635;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
 }
 
 .start-button-wrap {
@@ -280,8 +332,8 @@ header.app-header .app-header-inner img.app-header-image {
 }
 
 .start-button {
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 25%, #ffd3c8, #e97b6d 65%, #b04434 100%);
   box-shadow: 0 12px 24px rgba(185, 68, 52, 0.35);
@@ -294,8 +346,9 @@ header.app-header .app-header-inner img.app-header-image {
 .start-button-label {
   color: #ffffff;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.4;
+  text-align: center;
 }
 
 .start-button-wrap:hover .start-button {
@@ -309,25 +362,78 @@ header.app-header .app-header-inner img.app-header-image {
   color: #9ca3af;
 }
 
+/* タブレット以下 */
 @media (max-width: 768px) {
-  .top-mascot-image {
-    width: 160px;
-    max-width: 160px;
+  .top-hero {
+    margin: 30px auto 40px;
+    padding: 0 16px;
   }
-  .top-speech { right: -10px; }
+  .top-title {
+    font-size: 24px;
+  }
+  .top-lead {
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .top-main {
+    flex-direction: column;
+    gap: 32px;
+  }
+  .top-mascot-wrap {
+    max-width: 220px;
+  }
+  .top-mascot-image {
+    width: 180px;
+    max-width: 180px;
+  }
+  .top-speech {
+    right: -30px;
+    font-size: 13px;
+    padding: 10px 14px;
+  }
   .start-button {
     width: 180px;
     height: 180px;
   }
+  .start-button-label {
+    font-size: 16px;
+  }
 }
 
-/* Minimal top layout fixes (keep, but grouped) */
-.top-hero { padding-left: 0 !important; padding-right: 0 !important; }
-.top-main { width: 100% !important; }
-.top-left,
-.top-right { width: 100% !important; }
-.top-right { display: flex !important; justify-content: center !important; }
-.start-button-wrap { display: inline-flex; justify-content: center; }
+/* スマートフォン */
+@media (max-width: 480px) {
+  .top-hero {
+    margin: 20px auto 30px;
+  }
+  .top-title {
+    font-size: 20px;
+  }
+  .top-lead {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .top-mascot-wrap {
+    max-width: 180px;
+  }
+  .top-mascot-image {
+    width: 150px;
+    max-width: 150px;
+  }
+  .top-speech {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .start-button {
+    width: 160px;
+    height: 160px;
+  }
+  .start-button-label {
+    font-size: 15px;
+  }
+}
 
 /* ======================================================================
    Chat (existing)
@@ -502,28 +608,45 @@ header.app-header .app-header-inner img.app-header-image {
    ---------------------------------------------------------------------- */
 .welcome-kv {
   /* Adjustable knobs */
-  --kv-stage-max-w: 920px;           /* wide stage for larger noren */
-  --kv-stage-max-h: 520px;
+  --kv-stage-max-w: 800px;           /* stage width */
+  --kv-stage-max-h: 520px;           /* stage height */
   --kv-stage-gap: 0px;               /* no gap - noren panels touch */
-  --kv-header-h: 140px;              /* header height (PC) */
-  --kv-btn-size: 140px;              /* WELCOME button size */
+  --kv-btn-size: 150px;              /* WELCOME button size */
 
   position: relative;
-  height: calc(100svh - var(--kv-header-h));
+  min-height: 100svh;
   overflow: hidden;
   background: var(--bg-base);
 
   /* Center the stage */
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .welcome-kv {
-    --kv-header-h: 100px;   /* header height (SP) */
-    --kv-stage-gap: 0px;
-    --kv-btn-size: 120px;
+    --kv-stage-max-w: 90vw;
+    --kv-stage-max-h: 65vh;
+    --kv-btn-size: 130px;
+    padding: 16px;
   }
+}
+
+@media (max-width: 480px) {
+  .welcome-kv {
+    --kv-stage-max-w: 95vw;
+    --kv-stage-max-h: 60vh;
+    --kv-btn-size: 110px;
+    padding: 12px;
+  }
+}
+
+/* Welcome page: hide wrap padding */
+.wrap--welcome {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Background (washi-like) */
@@ -570,12 +693,13 @@ header.app-header .app-header-inner img.app-header-image {
   transform: translate(-50%, -50%);
   z-index: 2;
 
-  width: min(var(--kv-stage-max-w), 92vw);
-  height: min(var(--kv-stage-max-h), 72svh);
+  width: min(var(--kv-stage-max-w), 88vw);
+  height: min(var(--kv-stage-max-h), 65vh);
+  max-width: 100%;
 
   pointer-events: none;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
 }
 
@@ -702,25 +826,26 @@ header.app-header .app-header-inner img.app-header-image {
   pointer-events: auto;
   text-decoration: none;
 
-  width: clamp(160px, 18vw, 220px);
-  aspect-ratio: 1 / 1;
-  border-radius: 999px;
+  width: var(--kv-btn-size);
+  height: var(--kv-btn-size);
+  border-radius: 50%;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   /* Slightly translucent - SAKEICE風の白いボタン */
   background:
     radial-gradient(circle at 35% 30%,
-      rgba(255,255,255,.92),
-      rgba(255,255,255,.78) 55%,
-      rgba(255,255,255,.65) 100%);
+      rgba(255,255,255,.95),
+      rgba(255,255,255,.85) 55%,
+      rgba(255,255,255,.75) 100%);
   box-shadow:
-    0 18px 40px rgba(0,0,0,.12),
+    0 12px 30px rgba(0,0,0,.15),
     inset 0 1px 0 rgba(255,255,255,.80);
 
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 
   transition: transform 140ms ease-out, box-shadow 140ms ease-out, opacity 300ms ease-out;
 }

@@ -106,8 +106,11 @@
         /* チャートだけ中央に表示 */
         #diagnose-chart {
             position: absolute;
-            inset: 10px;
-            margin: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 115%;
+            height: 115%;
         }
 
         .dr-result-main {
@@ -203,8 +206,8 @@
             }
 
             #diagnose-chart {
-                width: 100%;
-                height: 100%;
+                width: 110%;
+                height: 110%;
             }
 
             .dr-btn {

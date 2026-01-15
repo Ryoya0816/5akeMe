@@ -263,11 +263,37 @@ class DiagnoseService
             // q2だけ倍率をかける
             $factor = ($qKey === 'q2') ? $multiplier : 1.0;
 
+            // この回答で加点されるタイプのリスト
+            $scoredTypes = [];
             foreach ($weights[$mapKey] as $type => $point) {
                 if (!array_key_exists($type, $scores)) {
                     continue;
                 }
                 $scores[$type] += (float) $point * $factor;
+                $scoredTypes[] = $type;
+            }
+
+            // 5種類未満の場合は、残りのタイプに小さな点数を追加
+            if (count($scoredTypes) < 5) {
+                $remainingTypes = array_diff($types, $scoredTypes);
+                $fillCount = 5 - count($scoredTypes);
+                $fillScore = 0.5; // 小さな点数
+
+                // 残りのタイプからランダムに選ぶ（ただし、優先順位を考慮）
+                $priorityTypes = ['sake_dry', 'sake_sweet', 'shochu_kome', 'wine_white'];
+                $priorityRemaining = array_intersect($priorityTypes, $remainingTypes);
+                $otherRemaining = array_diff($remainingTypes, $priorityTypes);
+                
+                // 優先タイプから先に選ぶ
+                $selectedTypes = array_slice($priorityRemaining, 0, $fillCount);
+                $remainingFillCount = $fillCount - count($selectedTypes);
+                if ($remainingFillCount > 0) {
+                    $selectedTypes = array_merge($selectedTypes, array_slice($otherRemaining, 0, $remainingFillCount));
+                }
+
+                foreach ($selectedTypes as $type) {
+                    $scores[$type] += $fillScore * $factor;
+                }
             }
         }
 
@@ -313,6 +339,30 @@ class DiagnoseService
                 'score' => round((float) $s, 2),
                 'label' => $labels[$type] ?? $type,
             ];
+        }
+
+        // top5が5種類未満の場合は、スコア0のタイプを優先順位で追加
+        if (count($top5) < 5) {
+            $top5Types = array_column($top5, 'type');
+            $remainingTypes = array_diff($types, $top5Types);
+            
+            // 優先順位: 日本酒（sake_dry, sake_sweet）、米焼酎（shochu_kome）、白ワイン（wine_white）
+            $priorityOrder = ['sake_dry', 'sake_sweet', 'shochu_kome', 'wine_white'];
+            
+            // 優先タイプから順に追加
+            $priorityRemaining = array_intersect($priorityOrder, $remainingTypes);
+            $otherRemaining = array_diff($remainingTypes, $priorityOrder);
+            
+            $fillTypes = array_merge($priorityRemaining, $otherRemaining);
+            $fillCount = 5 - count($top5);
+            
+            foreach (array_slice($fillTypes, 0, $fillCount) as $type) {
+                $top5[] = [
+                    'type'  => $type,
+                    'score' => 0.0,
+                    'label' => $labels[$type] ?? $type,
+                ];
+            }
         }
 
         return [

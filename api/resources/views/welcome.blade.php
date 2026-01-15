@@ -2,7 +2,10 @@
 @extends('layouts.app')
 
 @section('title', '5akeMe')
-@section('main_class', 'wrap wrap--welcome')
+@section('body_class', 'page-welcome')
+@section('main_class', 'wrap--welcome')
+@section('hide_header', true)
+@section('hide_footer', true)
 
 @section('content')
 <div

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\DiagnoseResult;
 use App\Services\DiagnoseService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class DiagnoseController extends Controller
@@ -137,24 +137,14 @@ class DiagnoseController extends Controller
 
             // DB 保存
             try {
-                // top5カラムが存在するか確認してから保存
-                $columns = Schema::getColumnListing('diagnose_results');
-                $hasTop5Column = in_array('top5', $columns);
-
-                $data = [
+                $result = DiagnoseResult::create([
                     'result_id'     => $resultId,
                     'primary_type'  => $scored['primary'],
                     'primary_label' => $primaryLabel,
                     'mood'          => $scored['mood'] ?? null,
                     'candidates'    => $scored['candidates'] ?? [],
-                ];
-
-                // top5カラムが存在する場合のみ追加
-                if ($hasTop5Column) {
-                    $data['top5'] = $scored['top5'] ?? [];
-                }
-
-                DiagnoseResult::create($data);
+                    'top5'          => $scored['top5'] ?? [],
+                ]);
             } catch (\Illuminate\Database\QueryException $e) {
                 Log::error('[Diagnose] Failed to save DiagnoseResult (QueryException)', [
                     'error'     => $e->getMessage(),

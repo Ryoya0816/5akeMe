@@ -8,22 +8,27 @@
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="@yield('body_class')">
 
+  @unless(View::hasSection('hide_header'))
   <header class="app-header" aria-label="5akeMe">
     <div class="app-header-inner">
-      <img
-        src="{{ asset('images/5akeme-header.png') }}"
-        alt="5akeMe"
-        class="app-header-image"
-      >
+      <a href="{{ route('top') }}" class="app-header-link">
+        <img
+          src="{{ asset('images/5akeme-header.png') }}"
+          alt="5akeMe"
+          class="app-header-image"
+        >
+      </a>
     </div>
   </header>
+  @endunless
 
-  <main class="wrap">
+  <main class="wrap @yield('main_class')">
     @yield('content')
   </main>
 
+  @unless(View::hasSection('hide_footer'))
   <footer class="app-footer">
     <div class="footer-inner">
       <nav class="footer-left" aria-label="Footer navigation">
@@ -42,6 +47,7 @@
       </div>
     </div>
   </footer>
+  @endunless
 
   @stack('scripts')
 </body>

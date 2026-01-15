@@ -137,6 +137,7 @@ class DiagnoseController extends Controller
                     'primary_label' => $primaryLabel,
                     'mood'          => $scored['mood'] ?? null,
                     'candidates'    => $scored['candidates'] ?? [],
+                    'top5'          => $scored['top5'] ?? [],
                     // 'raw_scores' => $scored['scores'] ?? null,
                 ]);
             } catch (\Exception $e) {

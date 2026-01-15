@@ -92,8 +92,8 @@
 
         .dr-hex-wrap {
             position: relative;
-            width: 260px;
-            height: 260px;
+            width: 468px;
+            height: 468px;
 
             /* チャート周りの“台座”を追加して統一感UP（最小の見栄え改善） */
             background: var(--bg-soft, #fff7ee);
@@ -198,8 +198,8 @@
             }
 
             .dr-hex-wrap {
-                width: 220px;
-                height: 220px;
+                width: 396px;
+                height: 396px;
             }
 
             #diagnose-chart {

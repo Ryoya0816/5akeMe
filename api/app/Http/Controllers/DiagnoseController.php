@@ -6,6 +6,7 @@ use App\Models\DiagnoseResult;
 use App\Services\DiagnoseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -97,17 +98,32 @@ class DiagnoseController extends Controller
     {
         try {
             $data = $request->validate([
-                'answers' => 'required|array',
-                'seed'    => 'nullable|integer',
+                'answers'   => 'required|array|min:1|max:10',
+                'answers.*' => 'required|string|max:50',
+                'seed'      => 'nullable|integer|min:0|max:999999999',
             ]);
 
             $answers = $data['answers'];
             $seed    = $data['seed'] ?? null;
 
-            // サービスで採点
-            // 戻り値想定:
-            // ['primary' => 'sake_dry', 'candidates' => [...], 'mood' => 'lively', 'scores' => [...]]
-            $scored = $service->score($answers, $seed);
+            // 追加のセキュリティチェック: 不正なキーを除外
+            $allowedKeys = ['q1', 'q2', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10',
+                           'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10',
+                           'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'];
+            $answers = array_filter(
+                $answers,
+                fn($key) => in_array($key, $allowedKeys, true),
+                ARRAY_FILTER_USE_KEY
+            );
+
+            // Python AIサービスでスコア計算
+            $scored = $this->callPythonScoreApi($answers, $seed);
+            
+            // Python APIがエラーの場合はPHPにフォールバック
+            if ($scored === null) {
+                Log::warning('[Diagnose] Python API failed, falling back to PHP');
+                $scored = $service->score($answers, $seed);
+            }
 
             if (empty($scored['primary'])) {
                 Log::warning('[Diagnose] primary type is null', [
@@ -138,12 +154,13 @@ class DiagnoseController extends Controller
             // DB 保存
             try {
                 $result = DiagnoseResult::create([
-                    'result_id'     => $resultId,
-                    'primary_type'  => $scored['primary'],
-                    'primary_label' => $primaryLabel,
-                    'mood'          => $scored['mood'] ?? null,
-                    'candidates'    => $scored['candidates'] ?? [],
-                    'top5'          => $scored['top5'] ?? [],
+                    'result_id'       => $resultId,
+                    'primary_type'    => $scored['primary'],
+                    'primary_label'   => $primaryLabel,
+                    'mood'            => $scored['mood'] ?? null,
+                    'candidates'      => $scored['candidates'] ?? [],
+                    'top5'            => $scored['top5'] ?? [],
+                    'answers_snapshot' => $answers,  // 学習用に回答パターンを保存
                 ]);
             } catch (\Illuminate\Database\QueryException $e) {
                 Log::error('[Diagnose] Failed to save DiagnoseResult (QueryException)', [
@@ -215,9 +232,80 @@ class DiagnoseController extends Controller
     {
         $result = DiagnoseResult::where('result_id', $resultId)->firstOrFail();
 
+        // おすすめ店舗を取得（お酒タイプ + 雰囲気でマッチング）
+        $stores = $this->getRecommendedStores($result);
+
         return view('diagnose_result', [
             'result' => $result,
+            'stores' => $stores,
         ]);
+    }
+
+    /**
+     * 診断結果に基づいておすすめ店舗を取得
+     */
+    private function getRecommendedStores(DiagnoseResult $result): \Illuminate\Support\Collection
+    {
+        $primaryType = $result->primary_type;
+        $mood = $result->mood;
+
+        // 店舗モデルをインポート
+        $storeQuery = \App\Models\Store::active();
+
+        // 雰囲気でフィルタリング（moodがあれば）
+        if ($mood) {
+            $storeQuery->where(function ($q) use ($mood) {
+                $q->where('mood', $mood)
+                  ->orWhere('mood', 'both');
+            });
+        }
+
+        // お酒タイプでフィルタリング
+        if ($primaryType) {
+            $storeQuery->where(function ($q) use ($primaryType) {
+                $q->whereJsonContains('sake_types', $primaryType);
+            });
+        }
+
+        // 最大3件取得（ランダム順）
+        $stores = $storeQuery->inRandomOrder()->limit(3)->get();
+
+        // 3件に満たない場合は、条件を緩和して追加取得
+        if ($stores->count() < 3) {
+            $existingIds = $stores->pluck('id')->toArray();
+            $remaining = 3 - $stores->count();
+
+            // 雰囲気だけでマッチング
+            $additionalStores = \App\Models\Store::active()
+                ->whereNotIn('id', $existingIds)
+                ->where(function ($q) use ($mood) {
+                    if ($mood) {
+                        $q->where('mood', $mood)
+                          ->orWhere('mood', 'both');
+                    }
+                })
+                ->inRandomOrder()
+                ->limit($remaining)
+                ->get();
+
+            $stores = $stores->merge($additionalStores);
+        }
+
+        // それでも足りなければ、アクティブな店舗からランダム取得
+        if ($stores->count() < 3) {
+            $existingIds = $stores->pluck('id')->toArray();
+            $remaining = 3 - $stores->count();
+
+            $additionalStores = \App\Models\Store::active()
+                ->whereNotIn('id', $existingIds)
+                ->inRandomOrder()
+                ->limit($remaining)
+                ->get();
+
+            $stores = $stores->merge($additionalStores);
+        }
+
+        return $stores;
     }
 
     /**
@@ -235,5 +323,57 @@ class DiagnoseController extends Controller
         $labels = config('diagnose.labels', []);
 
         return (string) ($labels[$primary] ?? $primary);
+    }
+
+    /**
+     * Python AIサービスのスコア計算APIを呼び出す
+     * 
+     * @param array $answers 回答データ
+     * @param int|null $seed シード値
+     * @return array|null スコア結果、失敗時はnull
+     */
+    private function callPythonScoreApi(array $answers, ?int $seed = null): ?array
+    {
+        try {
+            // Docker内部ネットワークでPythonコンテナに接続
+            $pythonApiUrl = env('PYTHON_API_URL', 'http://python:8000');
+            
+            $response = Http::timeout(10)
+                ->post("{$pythonApiUrl}/score", [
+                    'answers' => $answers,
+                    'seed'    => $seed,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                Log::info('[Diagnose] Python API success', [
+                    'primary' => $data['primary'] ?? null,
+                    'mood'    => $data['mood'] ?? null,
+                ]);
+
+                return [
+                    'primary'    => $data['primary'] ?? null,
+                    'candidates' => $data['candidates'] ?? [],
+                    'top5'       => $data['top5'] ?? [],
+                    'mood'       => $data['mood'] ?? null,
+                    'scores_map' => $data['scores'] ?? [],
+                ];
+            }
+
+            Log::warning('[Diagnose] Python API returned error', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+
+            return null;
+
+        } catch (\Exception $e) {
+            Log::error('[Diagnose] Python API connection failed', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 }

@@ -1,7 +1,10 @@
 {{-- resources/views/welcome.blade.php --}}
 @extends('layouts.app')
 
-@section('title', '5akeMe')
+@section('title', '5akeMe - あなたにぴったりのお酒診断')
+@section('description', '5akeMe（サケミー）は、5つの質問に答えるだけであなたにぴったりのお酒を診断するサービスです。日本酒、焼酎、ワイン、ビールなど、あなたの好みに合った一杯を見つけよう。')
+@section('og_title', '5akeMe - あなたにぴったりのお酒診断')
+@section('og_description', '5つの質問に答えるだけで、あなたにぴったりのお酒が見つかる！')
 @section('body_class', 'page-welcome')
 @section('main_class', 'wrap--welcome')
 @section('hide_header', true)
@@ -29,7 +32,7 @@
         <img src="{{ asset('images/left_noren.png') }}" alt="" class="noren__img">
       </div>
       <div class="noren__panel noren__right">
-        <img src="{{ asset('images/right_noren.png') }}" alt="" class="noren__img">
+        <img src="{{ asset('images/right_noren.png') }}" alt="暖簾（右）" class="noren__img" loading="eager">
       </div>
     </div>
   </div>

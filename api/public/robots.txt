@@ -1,2 +1,10 @@
+# 5akeMe robots.txt
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: https://5akeme.com/sitemap.xml
+
+# Disallow admin/private areas
+Disallow: /age-denied
+Disallow: /contact/thanks

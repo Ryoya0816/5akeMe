@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('title', 'お酒診断 - 5akeMe')
+@section('description', 'チャット形式で5つの質問に答えるだけ。あなたの好みに合ったお酒のタイプを診断します。')
+@section('og_title', 'お酒診断 - 5akeMe')
+@section('og_description', 'チャット形式で5つの質問に答えるだけ！あなたにぴったりのお酒を見つけよう。')
+
 @section('content')
 <div class="container py-4">
     <div class="row justify-content-center">

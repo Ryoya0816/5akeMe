@@ -59,6 +59,39 @@ Route::get('/diagnose/result/{id}', [DiagnoseController::class, 'showResult'])
 
 /*
 |--------------------------------------------------------------------------
+| Legal（法的ページ）
+|--------------------------------------------------------------------------
+*/
+Route::view('/terms', 'terms')->name('terms');
+Route::view('/privacy', 'privacy')->name('privacy');
+
+
+/*
+|--------------------------------------------------------------------------
+| About / Contact（その他ページ）
+|--------------------------------------------------------------------------
+*/
+Route::view('/about', 'about')->name('about');
+Route::view('/contact', 'contact')->name('contact');
+Route::view('/contact/thanks', 'contact_thanks')->name('contact.thanks');
+
+
+/*
+|--------------------------------------------------------------------------
+| Store（店舗）
+|--------------------------------------------------------------------------
+*/
+Route::get('/store/{id}', function ($id) {
+    $store = \App\Models\Store::findOrFail($id);
+    return view('store_detail', ['store' => $store]);
+})->name('store.detail');
+
+Route::post('/store/{id}/report', [\App\Http\Controllers\StoreReportController::class, 'store'])
+    ->name('store.report');
+
+
+/*
+|--------------------------------------------------------------------------
 | Health Check / Ops（運用・監視）
 |--------------------------------------------------------------------------
 */

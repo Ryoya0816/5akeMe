@@ -68,8 +68,28 @@ services:
     networks:
       - appnet
 
+  # Python AI サービス（スコア計算・学習）
+  python:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    container_name: sake-python
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./python:/app
+      - python_data:/app/data
+    environment:
+      - DATABASE_URL=mysql+pymysql://laravel:laravel@db:3306/laravel
+    depends_on:
+      - db
+    networks:
+      - appnet
+
 volumes:
   dbdata:
+  python_data:
 
 networks:
   appnet:

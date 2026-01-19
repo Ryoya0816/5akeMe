@@ -1,7 +1,10 @@
 {{-- resources/views/top.blade.php --}}
 @extends('layouts.app')
 
-@section('title', '5akeMe トップ')
+@section('title', '5akeMe - あなたにぴったりのお酒診断')
+@section('description', '5つの質問に答えるだけで、あなたにぴったりのお酒が見つかる！日本酒、焼酎、ワイン、ビールなど、好みに合った一杯を診断します。')
+@section('og_title', '5akeMe - あなたにぴったりのお酒診断')
+@section('og_description', '5つの質問に答えるだけで、あなたにぴったりのお酒が見つかる！')
 
 @section('content')
 
@@ -23,8 +26,9 @@
         <div class="top-mascot-wrap">
           <img
             src="{{ asset('images/mascot.png') }}"
-            alt="5akeMe マスコット"
+            alt="5akeMe マスコット - お酒診断のキャラクター"
             class="top-mascot-image"
+            loading="lazy"
           >
           <div class="top-speech">
             今日の一杯、<br>いっしょに探そ？

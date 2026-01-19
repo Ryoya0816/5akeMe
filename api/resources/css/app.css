@@ -1,55 +1,58 @@
 
 /* ======================================================================
-   Tailwind entry (Vite)
+   Tailwind CSS エントリーポイント (Vite経由)
+   - Tailwindの基本スタイルを読み込む
    ====================================================================== */
 @import 'tailwindcss';
 
-/* Tell Tailwind where to scan */
+/* Tailwindがスキャンするファイルパスを指定 */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-/* Theme overrides */
+/* Tailwindテーマのカスタマイズ（フォントファミリー） */
 @theme {
   --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 /* ======================================================================
-   Global tokens (single source of truth)
-   - keep :root only once
+   CSS変数（デザイントークン）
+   - アプリ全体で使う色やサイズを一元管理
+   - 変更時はここだけ修正すればOK
    ====================================================================== */
 :root {
-  /* Brand */
-  --brand-main: #9c3f2e;
-  --brand-text: #8a3a28;
+  /* ブランドカラー（5akeMeの赤茶色系） */
+  --brand-main: #9c3f2e;   /* メインのブランドカラー */
+  --brand-text: #8a3a28;   /* テキスト用のブランドカラー（少し暗め） */
 
-  /* Background */
-  --bg-base:   #fbf3e8;
-  --bg-soft:   #fff7ee;
-  --bg-footer: #faece0;
+  /* 背景色 */
+  --bg-base:   #fbf3e8;    /* ページ全体の背景（和紙風のクリーム色） */
+  --bg-soft:   #fff7ee;    /* カード内やセクションの背景（明るめ） */
+  --bg-footer: #faece0;    /* フッターの背景 */
 
-  /* Lines */
-  --line-soft: #f1dfd0;
+  /* 線・ボーダー */
+  --line-soft: #f1dfd0;    /* 区切り線やカードの枠線（優しい色） */
 
-  /* Text */
-  --text-main: #3f3f3f;
-  --text-sub:  #8c6d57;
+  /* テキスト色 */
+  --text-main: #3f3f3f;    /* 本文テキスト（グレー） */
+  --text-sub:  #8c6d57;    /* 補助テキスト（薄い茶色） */
 
-  /* Chat */
-  --chat-bot-bg: #e0f5e9;
-  --chat-bot-tx: #2d4b39;
-  --chat-me-bg:  #34c759;
-  --chat-me-tx:  #ffffff;
+  /* チャット画面の色（診断画面で使用） */
+  --chat-bot-bg: #e0f5e9;  /* ボットの吹き出し背景（緑系） */
+  --chat-bot-tx: #2d4b39;  /* ボットの吹き出しテキスト */
+  --chat-me-bg:  #34c759;  /* ユーザーの吹き出し背景（緑） */
+  --chat-me-tx:  #ffffff;  /* ユーザーの吹き出しテキスト（白） */
 
-  /* Card */
-  --card-bg: #ffffff;
-  --shadow:  0 10px 20px rgba(0, 0, 0, 0.06);
+  /* カード */
+  --card-bg: #ffffff;                           /* カードの背景（白） */
+  --shadow:  0 10px 20px rgba(0, 0, 0, 0.06);   /* カードの影 */
 }
 
 /* ======================================================================
-   Base
+   ベーススタイル
+   - html/bodyの基本設定
    ====================================================================== */
 html,
 body { height: 100%; }
@@ -59,30 +62,297 @@ body {
   color: var(--text-main);
 }
 
-/* Main wrapper: layouts/app.blade.php <main class="wrap"> */
+/* メインコンテンツのラッパー（layouts/app.blade.phpで使用） */
 .wrap {
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 960px;      /* 最大幅 */
+  margin: 0 auto;        /* 中央寄せ */
   padding: 28px 20px 64px;
 }
 
 /* ======================================================================
-   Background canvas (top-bg.js)
+   共通UIコンポーネント
+   - 複数ページで使い回すスタイル
+   - クラス名を統一してメンテナンス性向上
    ====================================================================== */
-.top-bg-stage {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+
+/* ----------------------------------------------------------------------
+   ページコンテナ（各ページの最大幅と余白を統一）
+   ---------------------------------------------------------------------- */
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.page-container--narrow {
+  max-width: 600px;
+}
+
+.page-container--wide {
+  max-width: 960px;
+}
+
+@media (max-width: 640px) {
+  .page-container {
+    padding: 24px 16px;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   ページヘッダー（タイトル、アイコン、サブタイトル）
+   ---------------------------------------------------------------------- */
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--brand-main, #9c3f2e);
+  margin: 0 0 8px 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-sub, #8c6d57);
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    margin-bottom: 32px;
+  }
+
+  .page-icon {
+    font-size: 40px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   カード（白背景のコンテンツブロック）
+   ---------------------------------------------------------------------- */
+.card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--line-soft, #f1dfd0);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow, 0 10px 20px rgba(0, 0, 0, 0.06));
+}
+
+.card--soft {
+  background: var(--bg-soft, #fff7ee);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 24px 20px;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   ボタン（ピル型が基本）
+   ---------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+/* プライマリボタン（メインアクション） */
+.btn-primary {
+  background: var(--brand-main, #9c3f2e);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
+}
+
+.btn-primary:hover {
+  background: var(--brand-text, #8a3a28);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(156, 63, 46, 0.4);
+}
+
+/* セカンダリボタン（サブアクション） */
+.btn-secondary {
+  background: var(--bg-soft, #fff7ee);
+  color: var(--brand-main, #9c3f2e);
+  border: 1px solid var(--line-soft, #f1dfd0);
+}
+
+.btn-secondary:hover {
+  background: var(--brand-main, #9c3f2e);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* アウトラインボタン（目立たせたくない時） */
+.btn-outline {
+  background: transparent;
+  color: var(--text-sub, #8c6d57);
+  border: 1px solid var(--line-soft, #f1dfd0);
+}
+
+.btn-outline:hover {
+  background: var(--bg-soft, #fff7ee);
+  color: var(--brand-main, #9c3f2e);
+  transform: translateY(-1px);
+}
+
+/* 危険なアクション用（赤系） */
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+}
+
+/* ボタンサイズ */
+.btn-sm {
+  padding: 10px 20px;
+  font-size: 13px;
+}
+
+.btn-lg {
+  padding: 18px 36px;
+  font-size: 17px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* 無効状態 */
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ----------------------------------------------------------------------
+   セクションタイトル（カード内の見出し）
+   ---------------------------------------------------------------------- */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-main, #9c3f2e);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 18px;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   テキストスタイル
+   ---------------------------------------------------------------------- */
+.text-brand {
+  color: var(--brand-main, #9c3f2e);
+}
+
+.text-sub {
+  color: var(--text-sub, #8c6d57);
+}
+
+.text-sm {
+  font-size: 13px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ----------------------------------------------------------------------
+   戻るリンク（ページ下部に配置）
+   ---------------------------------------------------------------------- */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 12px 24px;
+  background: var(--bg-soft, #fff7ee);
+  border: 1px solid var(--line-soft, #f1dfd0);
+  border-radius: 999px;
+  color: var(--brand-main, #9c3f2e);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease-out;
+}
+
+.back-link:hover {
+  background: var(--brand-main, #9c3f2e);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* ----------------------------------------------------------------------
+   注意書き・補足テキスト
+   ---------------------------------------------------------------------- */
+.note {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--bg-soft, #fff7ee);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text-sub, #8c6d57);
+  line-height: 1.6;
+  text-align: center;
 }
 
 /* ======================================================================
-   Noren Overlay (トップページ暖簾アニメーション)
+   背景キャンバス（top-bg.jsで制御）
+   - トップページの背景アニメーション用
+   ====================================================================== */
+.top-bg-stage {
+  position: fixed;
+  inset: 0;              /* 画面全体に広がる */
+  z-index: 0;            /* 最背面 */
+  pointer-events: none;  /* クリックを通過させる */
+}
+
+/* ======================================================================
+   暖簾オーバーレイ（ローディング演出）
+   - ページ読み込み時の暖簾アニメーション
    ====================================================================== */
 .noren-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 9999;         /* 最前面 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,6 +360,7 @@ body {
   transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
+/* 非表示時（フェードアウト後） */
 .noren-overlay--hide {
   opacity: 0;
   visibility: hidden;
@@ -101,6 +372,7 @@ body {
   background: var(--bg-base, #fbf3e8);
 }
 
+/* ロゴのパルスアニメーション */
 .noren-logo {
   position: relative;
   z-index: 1;
@@ -115,7 +387,7 @@ body {
   50% { opacity: 1; transform: scale(1.05); }
 }
 
-/* Keep UI above canvas */
+/* UIを背景より前面に配置 */
 .top-hero,
 footer,
 header {
@@ -124,8 +396,11 @@ header {
 }
 
 /* ======================================================================
-   Simple UI helpers
+   UIヘルパークラス
+   - よく使うスタイルをまとめたユーティリティ
    ====================================================================== */
+
+/* カードスタイル（白背景＋枠＋影） */
 .ui-card {
   background: var(--card-bg);
   border: 1px solid var(--line-soft);
@@ -134,15 +409,18 @@ header {
   padding: 16px;
 }
 
+/* タイトルスタイル（ブランドカラー＋太字） */
 .ui-title {
   color: var(--brand-main);
   font-weight: 700;
 }
 
+/* 補助テキストスタイル */
 .ui-sub { color: var(--text-sub); }
 
 /* ======================================================================
-   Header (keep existing behavior)
+   ヘッダー
+   - ロゴ画像とナビゲーション
    ====================================================================== */
 header.app-header {
   height: 140px;
@@ -150,6 +428,7 @@ header.app-header {
   background-color: var(--bg-base);
 }
 
+/* ヘッダー内部のレイアウト（左寄せ） */
 header.app-header .app-header-inner {
   max-width: 1200px;
   height: 100%;
@@ -162,7 +441,7 @@ header.app-header .app-header-inner {
   overflow: visible;
 }
 
-/* ヘッダーリンク */
+/* ロゴへのリンク */
 header.app-header .app-header-inner .app-header-link {
   display: flex;
   align-items: center;
@@ -170,96 +449,297 @@ header.app-header .app-header-inner .app-header-link {
   text-decoration: none;
 }
 
-/* ヘッダー画像のサイズ調整（左寄せ、画面の1/2幅） */
+/* ヘッダーロゴ画像（左寄せ、画面幅の65%） */
 header.app-header .app-header-inner img.app-header-image {
   height: 80% !important;
-  width: 50vw !important;
-  max-width: 600px !important;
-  min-width: 250px !important;
+  width: 65vw !important;
+  max-width: 750px !important;
+  min-width: 280px !important;
   object-fit: contain !important;
   display: block !important;
 }
 
+/* スマホ時のヘッダー調整 */
 @media (max-width: 640px) {
   header.app-header { height: 100px; }
   header.app-header .app-header-inner { padding-left: 12px; }
   header.app-header .app-header-inner img.app-header-image {
-    width: 50vw !important;
-    min-width: 200px !important;
+    width: 70vw !important;
+    min-width: 220px !important;
   }
 }
 
 /* ======================================================================
-   Footer
+   フッター
+   - ブランドロゴ、ナビリンク、SNSアイコン
    ====================================================================== */
 .app-footer {
-  margin-top: 56px;
-  padding: 20px 0;
-  border-top: 1px solid var(--line-soft);
-  background-color: var(--bg-footer);
-  font-size: 13px;
-  color: #6b7280;
+  margin-top: 64px;
+  padding: 32px 0 24px;
+  border-top: 2px solid var(--line-soft, #f1dfd0);
+  background: linear-gradient(to bottom, var(--bg-footer, #faece0), var(--bg-base, #fbf3e8));
+  position: relative;
 }
 
+/* フッター上部の装飾ライン（グラデーション） */
+.app-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--line-soft, #f1dfd0), transparent);
+}
+
+/* フッター内部の3カラムレイアウト */
 .footer-inner {
   max-width: 960px;
   margin: 0 auto;
   padding: 0 20px;
+  position: relative;
 
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;  /* 左:ブランド、中央:ナビ、右:SNS */
   align-items: center;
-  gap: 24px;
+  gap: 32px;
 }
 
-.footer-left,
-.footer-center,
-.footer-right {
+/* 左側：ブランドロゴ＋コピーライト */
+.footer-brand-section {
   display: flex;
-  align-items: center;
-}
-
-.footer-left { gap: 8px; }
-
-.footer-center {
   flex-direction: column;
-  text-align: center;
+  gap: 4px;
 }
 
-.footer-right { gap: 12px; }
-
-.footer-link,
-.sns-link {
-  color: var(--brand-main);
+.footer-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
+  transition: transform 0.2s ease-out;
 }
 
-.footer-link:hover,
-.sns-link:hover { color: var(--brand-text); }
+.footer-brand-link:hover {
+  transform: translateX(2px);  /* ホバーで少し右に動く */
+}
 
-.footer-brand {
-  font-weight: bold;
-  margin: 0;
-  color: var(--brand-main);
+.footer-brand-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.footer-brand-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-main, #9c3f2e);
+  letter-spacing: 0.05em;
 }
 
 .footer-copy {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: 11px;
+  color: var(--text-sub, #8c6d57);
+  margin: 0;
+  opacity: 0.8;
 }
 
-@media (max-width: 640px) {
+/* 中央：ナビゲーションリンク */
+.footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-self: center;
+}
+
+.footer-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-main, #3f3f3f);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease-out;
+  background: transparent;
+}
+
+/* ホバー時：背景色＋上に浮く */
+.footer-nav-link:hover {
+  background: var(--bg-soft, #fff7ee);
+  color: var(--brand-main, #9c3f2e);
+  transform: translateY(-2px);
+}
+
+.footer-nav-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* 右側：SNSアイコン */
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: end;
+}
+
+/* SNSアイコンボタン（円形） */
+.footer-social-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-soft, #fff7ee);
+  border: 1px solid var(--line-soft, #f1dfd0);
+  text-decoration: none;
+  color: var(--brand-main, #9c3f2e);
+  font-size: 18px;
+  transition: all 0.2s ease-out;
+}
+
+/* ホバー時：色反転＋浮く＋影 */
+.footer-social-link:hover {
+  background: var(--brand-main, #9c3f2e);
+  color: #ffffff;
+  border-color: var(--brand-main, #9c3f2e);
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 12px rgba(156, 63, 46, 0.25);
+}
+
+/* SNSアイコンのSVGサイズ */
+.footer-social-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Instagramホバー時：グラデーション背景 */
+.footer-social-instagram:hover {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  border-color: #dc2743;
+}
+
+/* NOTEホバー時：緑背景 */
+.footer-social-note:hover {
+  background: #41c9b4;
+  border-color: #41c9b4;
+}
+
+/* トップへ戻るボタン（スクロール時に表示） */
+.footer-scroll-top {
+  position: absolute;
+  right: 20px;
+  bottom: -60px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--brand-main, #9c3f2e);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
+  transition: all 0.3s ease-out;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 100;
+}
+
+/* スクロールで表示 */
+.footer-scroll-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.footer-scroll-top:hover {
+  background: var(--brand-text, #8a3a28);
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 6px 16px rgba(156, 63, 46, 0.4);
+}
+
+.footer-scroll-top:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.footer-scroll-icon {
+  line-height: 1;
+}
+
+/* タブレット時：1カラムに変更 */
+@media (max-width: 768px) {
   .footer-inner {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .footer-brand-section {
     align-items: center;
   }
-  .footer-left,
-  .footer-right { justify-content: center; }
+
+  .footer-nav {
+    justify-self: center;
+  }
+
+  .footer-social {
+    justify-self: center;
+  }
+
+  .footer-scroll-top {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: -50px;
+  }
+
+  .footer-scroll-top.visible {
+    transform: translateX(50%);
+  }
+
+  .footer-scroll-top:hover {
+    transform: translateX(50%) translateY(-4px) scale(1.1);
+  }
+}
+
+/* スマホ時：さらにコンパクトに */
+@media (max-width: 640px) {
+  .app-footer {
+    padding: 24px 0 20px;
+  }
+
+  .footer-inner {
+    gap: 20px;
+  }
+
+  .footer-nav {
+    gap: 12px;
+  }
+
+  .footer-nav-link {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .footer-nav-icon {
+    font-size: 18px;
+  }
+
+  .footer-social-link {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
 }
 
 /* ======================================================================
-   Top page (existing)
+   トップページ（診断開始画面）
+   - マスコット、スタートボタン、吹き出し
    ====================================================================== */
 .top-hero {
   max-width: 960px;
@@ -281,6 +761,7 @@ header.app-header .app-header-inner img.app-header-image {
   margin-bottom: 40px;
 }
 
+/* メインコンテンツ：左にマスコット、右にボタン */
 .top-main {
   display: flex;
   flex-direction: row;
@@ -297,6 +778,7 @@ header.app-header .app-header-inner img.app-header-image {
   justify-content: center;
 }
 
+/* マスコット画像のラッパー */
 .top-mascot-wrap {
   position: relative;
   display: inline-block;
@@ -311,6 +793,7 @@ header.app-header .app-header-inner img.app-header-image {
   object-fit: contain;
 }
 
+/* 吹き出し（マスコットの横に表示） */
 .top-speech {
   position: absolute;
   top: -10px;
@@ -331,6 +814,7 @@ header.app-header .app-header-inner img.app-header-image {
   text-decoration: none;
 }
 
+/* 診断スタートボタン（大きな円形） */
 .start-button {
   width: 220px;
   height: 220px;
@@ -351,6 +835,7 @@ header.app-header .app-header-inner img.app-header-image {
   text-align: center;
 }
 
+/* ホバー時：浮く＋拡大 */
 .start-button-wrap:hover .start-button {
   transform: translateY(-4px) scale(1.03);
   box-shadow: 0 16px 26px rgba(185, 68, 52, 0.45);
@@ -362,7 +847,7 @@ header.app-header .app-header-inner img.app-header-image {
   color: #9ca3af;
 }
 
-/* タブレット以下 */
+/* タブレット時 */
 @media (max-width: 768px) {
   .top-hero {
     margin: 30px auto 40px;
@@ -400,7 +885,7 @@ header.app-header .app-header-inner img.app-header-image {
   }
 }
 
-/* スマートフォン */
+/* スマホ時 */
 @media (max-width: 480px) {
   .top-hero {
     margin: 20px auto 30px;
@@ -419,6 +904,7 @@ header.app-header .app-header-inner img.app-header-image {
     width: 150px;
     max-width: 150px;
   }
+  /* 吹き出しをマスコットの下に移動 */
   .top-speech {
     position: relative;
     top: auto;
@@ -436,7 +922,8 @@ header.app-header .app-header-inner img.app-header-image {
 }
 
 /* ======================================================================
-   Chat (existing)
+   チャット画面（診断中の会話UI）
+   - ボットとユーザーの吹き出し、選択肢ボタン
    ====================================================================== */
 #chat {
   background-color: var(--bg-soft);
@@ -444,15 +931,17 @@ header.app-header .app-header-inner img.app-header-image {
   font-size: 14px;
 }
 
+/* メッセージ行（アバター＋吹き出し） */
 #chat .row {
   display: flex;
   align-items: flex-end;
   margin-bottom: 12px;
 }
 
-#chat .row.bot { justify-content: flex-start; }
-#chat .row.me  { justify-content: flex-end; }
+#chat .row.bot { justify-content: flex-start; }  /* ボットは左寄せ */
+#chat .row.me  { justify-content: flex-end; }    /* ユーザーは右寄せ */
 
+/* アバター画像 */
 #chat .avatar {
   width: 40px;
   height: 40px;
@@ -477,6 +966,7 @@ header.app-header .app-header-inner img.app-header-image {
 #chat .bot-avatar { margin-right: 8px; }
 #chat .me-avatar  { margin-left: 8px; }
 
+/* 吹き出し */
 #chat .bubble {
   display: inline-block;
   padding: 8px 12px;
@@ -487,12 +977,13 @@ header.app-header .app-header-inner img.app-header-image {
   color: var(--chat-bot-tx);
 }
 
+/* ユーザーの吹き出し（緑背景） */
 #chat .row.me .bubble {
   background-color: var(--chat-me-bg);
   color: var(--chat-me-tx);
 }
 
-/* dm-msg overrides */
+/* dm-msg（diagnose-chat.jsで使用）のスタイル上書き */
 .dm-msg-row.bot .dm-msg-bubble,
 .dm-msg-bubble.dm-question-bubble {
   background-color: var(--chat-bot-bg) !important;
@@ -520,6 +1011,7 @@ header.app-header .app-header-inner img.app-header-image {
   object-fit: contain;
 }
 
+/* タイムスタンプ */
 #chat .time {
   font-size: 11px;
   color: #9ca3af;
@@ -528,6 +1020,7 @@ header.app-header .app-header-inner img.app-header-image {
 
 #chat .time .read { margin-left: 4px; }
 
+/* 選択肢ボタン群 */
 #chat .choices {
   margin-top: 8px;
   display: flex;
@@ -549,6 +1042,7 @@ header.app-header .app-header-inner img.app-header-image {
   cursor: default;
 }
 
+/* タイピングインジケーター（...） */
 #chat .typing {
   display: inline-flex;
   gap: 4px;
@@ -575,50 +1069,27 @@ header.app-header .app-header-inner img.app-header-image {
 }
 
 /* ======================================================================
-   WELCOME KV (Noren + Welcome button)
-   ----------------------------------------------------------------------
-   Goal:
-   - "Stage" area (your red area) is centered in the viewport.
-   - Two noren images are placed inside the stage with a small center gap.
-   - The white circle button sits in the middle and is slightly translucent.
-   ----------------------------------------------------------------------
-   Assets (public):
-   - /public/images/left_noren.png
-   - /public/images/right_noren.png
-
-   Markup (welcome.blade.php):
-   <div class="welcome-kv" id="welcomeKv">
-     <div class="welcome-kv__bg"></div>
-     <div class="welcome-stage"></div>
-
-     <div class="noren noren--close is-ready" id="norenClose">
-       <div class="noren__inner">
-         <div class="noren__panel noren__left"></div>
-         <div class="noren__panel noren__right"></div>
-       </div>
-     </div>
-
-     <a class="welcome-enter js-enter" ...>WELCOME</a>
-   </div>
+   WELCOME画面（暖簾アニメーション）
+   - 入店時の演出：暖簾が開いてWELCOMEボタンが現れる
    ====================================================================== */
 
-
 /* ----------------------------------------------------------------------
-   WELCOME KV base layout
+   ベースレイアウト
+   - 画面全体を使い、暖簾とボタンを中央配置
    ---------------------------------------------------------------------- */
 .welcome-kv {
-  /* Adjustable knobs */
-  --kv-stage-max-w: 800px;           /* stage width */
-  --kv-stage-max-h: 520px;           /* stage height */
-  --kv-stage-gap: 0px;               /* no gap - noren panels touch */
-  --kv-btn-size: 150px;              /* WELCOME button size */
+  /* カスタマイズ用の変数 */
+  --kv-stage-max-w: 800px;   /* ステージの最大幅 */
+  --kv-stage-max-h: 520px;   /* ステージの最大高さ */
+  --kv-stage-gap: 0px;       /* 暖簾の隙間（なし） */
+  --kv-btn-size: 150px;      /* WELCOMEボタンのサイズ */
 
   position: relative;
-  min-height: 100svh;
+  min-height: 100svh;        /* 画面全体の高さ */
   overflow: hidden;
   background: var(--bg-base);
 
-  /* Center the stage */
+  /* 中央配置 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -643,13 +1114,13 @@ header.app-header .app-header-inner img.app-header-image {
   }
 }
 
-/* Welcome page: hide wrap padding */
+/* WELCOME画面ではwrapのpaddingを無効化 */
 .wrap--welcome {
   padding: 0 !important;
   margin: 0 !important;
 }
 
-/* Background (washi-like) */
+/* 背景（和紙風グラデーション） */
 .welcome-kv__bg {
   position: absolute;
   inset: 0;
@@ -662,7 +1133,7 @@ header.app-header .app-header-inner img.app-header-image {
 
 
 /* ----------------------------------------------------------------------
-   Stage (where the noren panels sit)
+   ステージ（暖簾を配置するエリア）
    ---------------------------------------------------------------------- */
 .welcome-stage {
   position: absolute;
@@ -673,18 +1144,12 @@ header.app-header .app-header-inner img.app-header-image {
 
   width: min(var(--kv-stage-max-w), 92vw);
   height: min(var(--kv-stage-max-h), 72svh);
-
-  /* DEBUG ONLY (optional)
-  background: rgba(255, 0, 0, 0.10);
-  border: 2px solid rgba(255, 0, 0, 0.35);
-  */
 }
 
 
 /* ----------------------------------------------------------------------
-   Noren wrapper
-   - Two panels side by side with a gap in the center
-   - The WELCOME button will sit in the gap, overlapping the panels
+   暖簾コンテナ
+   - 左右2枚のパネルを横並びに配置
    ---------------------------------------------------------------------- */
 .welcome-kv .noren {
   position: absolute;
@@ -697,41 +1162,42 @@ header.app-header .app-header-inner img.app-header-image {
   height: min(var(--kv-stage-max-h), 65vh);
   max-width: 100%;
 
-  pointer-events: none;
+  pointer-events: none;  /* クリックを通過 */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .welcome-kv .noren__inner {
-  width: auto;              /* shrink to fit content */
+  width: auto;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Each panel - contains the noren image */
+/* 暖簾パネル（左右それぞれ） */
 .welcome-kv .noren__panel {
-  flex: none;               /* don't expand, keep image size */
+  flex: none;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  /* elegant shadow */
+  /* エレガントな影 */
   filter: drop-shadow(0 18px 30px rgba(0,0,0,.14));
 
   will-change: transform, filter, opacity;
   transform: translateZ(0);
 
+  /* 開閉アニメーション */
   transition:
     transform 900ms cubic-bezier(.2,.8,.2,1),
     filter 900ms cubic-bezier(.2,.8,.2,1),
     opacity 900ms cubic-bezier(.2,.8,.2,1);
 }
 
-/* Noren image inside the panel */
+/* 暖簾画像 */
 .welcome-kv .noren__img {
   height: 100%;
   width: auto;
@@ -741,17 +1207,15 @@ header.app-header .app-header-inner img.app-header-image {
 }
 
 
-
 /* ----------------------------------------------------------------------
-   Initial state (closed but slightly open at center)
-   - SAKEICE風：中央に少し隙間がある状態
+   初期状態（閉じているが中央に少し隙間）
    ---------------------------------------------------------------------- */
 .welcome-kv .noren--close.is-ready .noren__panel.noren__left  { transform: translateX(-2%); }
 .welcome-kv .noren--close.is-ready .noren__panel.noren__right { transform: translateX( 2%); }
 
 
 /* ----------------------------------------------------------------------
-   Idle motion (A): gentle sway
+   アイドルモーション（ゆらゆら揺れる）
    ---------------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
   .welcome-kv .noren--close:not(.is-active) .noren__panel {
@@ -766,9 +1230,8 @@ header.app-header .app-header-inner img.app-header-image {
 
 
 /* ----------------------------------------------------------------------
-   Click phase: "暖簾をくぐる演出"
-   - 左右に大きく開いて、奥に進むような演出
-   - When JS adds .is-active to #norenClose
+   クリック時：暖簾をくぐる演出
+   - 左右に大きく開く
    ---------------------------------------------------------------------- */
 .welcome-kv .noren--close.is-active .noren__panel {
   animation: none;
@@ -777,14 +1240,14 @@ header.app-header .app-header-inner img.app-header-image {
 }
 
 .welcome-kv .noren--close.is-active .noren__panel.noren__left {
-  transform: translateX(-50%) translateZ(0);
+  transform: translateX(-50%) translateZ(0);  /* 左に大きく移動 */
   transition:
     transform 1000ms cubic-bezier(.25,.46,.45,.94),
     filter 1000ms cubic-bezier(.25,.46,.45,.94);
 }
 
 .welcome-kv .noren--close.is-active .noren__panel.noren__right {
-  transform: translateX(50%) translateZ(0);
+  transform: translateX(50%) translateZ(0);   /* 右に大きく移動 */
   transition:
     transform 1000ms cubic-bezier(.25,.46,.45,.94),
     filter 1000ms cubic-bezier(.25,.46,.45,.94);
@@ -798,7 +1261,7 @@ header.app-header .app-header-inner img.app-header-image {
     opacity 1000ms cubic-bezier(.25,.46,.45,.94);
 }
 
-/* 暖簾をくぐった後、奥に消える演出 */
+/* 暖簾をくぐった後、奥に消える */
 .welcome-kv .noren--close.is-vanish .noren__inner {
   opacity: 0;
   transform: translateZ(0) scale(0.85) translateY(10%);
@@ -813,8 +1276,7 @@ header.app-header .app-header-inner img.app-header-image {
 
 
 /* ----------------------------------------------------------------------
-   Welcome button (center, slightly translucent)
-   - Must be clickable => pointer-events ON, higher z-index.
+   WELCOMEボタン（中央の半透明円形ボタン）
    ---------------------------------------------------------------------- */
 .welcome-kv .welcome-enter {
   position: absolute;
@@ -823,7 +1285,7 @@ header.app-header .app-header-inner img.app-header-image {
   transform: translate(-50%, -50%);
   z-index: 3;
 
-  pointer-events: auto;
+  pointer-events: auto;  /* クリック可能 */
   text-decoration: none;
 
   width: var(--kv-btn-size);
@@ -834,7 +1296,7 @@ header.app-header .app-header-inner img.app-header-image {
   align-items: center;
   justify-content: center;
 
-  /* Slightly translucent - SAKEICE風の白いボタン */
+  /* 半透明の白背景 */
   background:
     radial-gradient(circle at 35% 30%,
       rgba(255,255,255,.95),
@@ -844,13 +1306,14 @@ header.app-header .app-header-inner img.app-header-image {
     0 12px 30px rgba(0,0,0,.15),
     inset 0 1px 0 rgba(255,255,255,.80);
 
+  /* ガラス風エフェクト */
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 
   transition: transform 140ms ease-out, box-shadow 140ms ease-out, opacity 300ms ease-out;
 }
 
-/* ボタンが暖簾の後ろに消える演出 */
+/* ボタン無効時（暖簾の後ろに消える） */
 .welcome-kv .welcome-enter.is-disabled {
   opacity: 0.6;
   transform: translate(-50%, -50%) scale(0.95);
@@ -866,6 +1329,7 @@ header.app-header .app-header-inner img.app-header-image {
   opacity: 0.95;
 }
 
+/* ホバー時：浮く＋影が強くなる */
 .welcome-kv .welcome-enter:hover {
   transform: translate(-50%, -50%) translateY(-2px) scale(1.01);
   box-shadow:
@@ -875,7 +1339,7 @@ header.app-header .app-header-inner img.app-header-image {
 
 
 /* ----------------------------------------------------------------------
-   Reduced motion safety
+   アニメーション軽減モード対応
    ---------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .welcome-kv .noren__panel { transition: none; animation: none; }

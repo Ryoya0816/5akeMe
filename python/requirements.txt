@@ -1,0 +1,16 @@
+# FastAPI フレームワーク
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# データベース接続
+sqlalchemy==2.0.25
+pymysql==1.1.0
+
+# 機械学習・データ分析
+numpy==1.26.3
+scikit-learn==1.4.0
+pandas==2.1.4
+
+# ユーティリティ
+pydantic==2.5.3
+python-dotenv==1.0.0

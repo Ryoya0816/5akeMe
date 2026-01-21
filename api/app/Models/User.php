@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,6 +23,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'provider',
+        'provider_id',
+        'avatar',
+        'email_verified_at',
     ];
 
     /**
@@ -44,5 +50,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * ユーザーの診断履歴
+     */
+    public function diagnoseResults(): BelongsToMany
+    {
+        return $this->belongsToMany(DiagnoseResult::class, 'user_diagnose_results')
+            ->withTimestamps();
+    }
+
+    /**
+     * ユーザーの訪問済み店舗
+     */
+    public function visitedStores(): BelongsToMany
+    {
+        return $this->belongsToMany(Store::class, 'user_visited_stores')
+            ->withPivot(['memo', 'visited_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * SNSログインかどうか
+     */
+    public function isSocialLogin(): bool
+    {
+        return !is_null($this->provider);
+    }
+
+    /**
+     * プロバイダーの表示名
+     */
+    public function getProviderLabelAttribute(): string
+    {
+        return match($this->provider) {
+            'google' => 'Google',
+            'line' => 'LINE',
+            'twitter' => 'X (Twitter)',
+            default => 'メール',
+        };
     }
 }

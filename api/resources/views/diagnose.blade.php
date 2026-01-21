@@ -6,12 +6,12 @@
 @section('og_description', 'チャット形式で5つの質問に答えるだけ！あなたにぴったりのお酒を見つけよう。')
 
 @section('content')
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+<div class="dm-page-wrap">
 
             {{-- ★ この画面専用の簡易スタイル --}}
             <style>
+                .dm-page-wrap { max-width: 42rem; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
+                .dm-page-note { display: block; margin-top: 0.5rem; color: #6b7280; font-size: 12px; }
                 .dm-chat-card {
                     border-radius: 24px;
                     border: 1px solid #e5e7eb;
@@ -21,6 +21,9 @@
                 }
 
                 .dm-chat-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
                     padding: 16px 20px 8px;
                     background: #ffffff;
                     border-bottom: 1px solid #e5e7eb;
@@ -44,6 +47,8 @@
                 }
 
                 .dm-chat-footer {
+                    display: flex;
+                    justify-content: flex-end;
                     padding: 8px 16px 16px;
                     background: #f5f7fb;
                 }
@@ -159,7 +164,7 @@
                  data-bot-icon="{{ asset('images/bot.png') }}"
                  data-user-icon="{{ asset('images/user.png') }}">
 
-                <div class="dm-chat-header d-flex align-items-center justify-content-between">
+                <div class="dm-chat-header">
                     <div>
                         <div class="dm-chat-header-title">5akeMe お酒チャット診断</div>
                         <div class="dm-chat-header-sub">
@@ -176,21 +181,19 @@
                     {{-- JS が選択肢ボタンをここに並べる --}}
                 </div>
 
-                <div class="dm-chat-footer d-flex justify-content-end">
+                <div class="dm-chat-footer">
                     <button type="button"
-                            class="btn btn-outline-secondary btn-sm dm-restart-btn"
+                            class="dm-restart-btn"
                             onclick="window.location.reload()">
                         はじめからやり直す
                     </button>
                 </div>
             </div>
 
-            <small class="text-muted d-block mt-2">
+            <small class="dm-page-note">
                 ※ 質問に答えると、あなたに合いそうなお酒を 5 問で診断します。
             </small>
 
-        </div>
-    </div>
 </div>
 
 {{-- ★ ここからこの画面専用の JS を直接書く --}}

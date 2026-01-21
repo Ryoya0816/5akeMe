@@ -104,7 +104,7 @@ return [
         'one_phrase' => '今日はちょっと、冒険してみる？',
     ],
 
-    'red_wine' => [
+    'wine_red' => [
         'label' => '赤ワイン',
         'catch_copy' => '深みと余韻で語る、落ち着いた知性。',
         'personality' => [
@@ -121,7 +121,7 @@ return [
         'one_phrase' => 'ゆっくり満たされる夜も、悪くない。',
     ],
 
-    'white_wine' => [
+    'wine_white' => [
         'label' => '白ワイン',
         'catch_copy' => '軽やかな酸味と透明感。気分を上げる一杯。',
         'personality' => [

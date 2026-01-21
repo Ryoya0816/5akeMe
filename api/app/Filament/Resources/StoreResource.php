@@ -140,17 +140,27 @@ class StoreResource extends Resource
                     ->placeholder('すべて')
                     ->trueLabel('公開中')
                     ->falseLabel('非公開'),
+                Tables\Filters\TrashedFilter::make()
+                    ->label('削除済み'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->label('編集'),
                 Tables\Actions\DeleteAction::make()
                     ->label('削除'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('復元'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->label('完全削除'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('一括削除'),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('一括復元'),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('一括完全削除'),
                 ]),
             ])
             ->defaultSort('updated_at', 'desc');
@@ -170,5 +180,16 @@ class StoreResource extends Resource
             'create' => Pages\CreateStore::route('/create'),
             'edit' => Pages\EditStore::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * 論理削除されたレコードも含めて取得できるようにする
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

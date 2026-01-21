@@ -232,6 +232,15 @@ class DiagnoseController extends Controller
     {
         $result = DiagnoseResult::where('result_id', $resultId)->firstOrFail();
 
+        // ログインユーザーなら診断結果を紐付け
+        if (auth()->check()) {
+            $user = auth()->user();
+            // 既に紐付けられていなければ追加
+            if (!$user->diagnoseResults()->where('diagnose_result_id', $result->id)->exists()) {
+                $user->diagnoseResults()->attach($result->id);
+            }
+        }
+
         // おすすめ店舗を取得（お酒タイプ + 雰囲気でマッチング）
         $stores = $this->getRecommendedStores($result);
 

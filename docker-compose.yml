@@ -9,7 +9,6 @@ services:
       - ./api:/var/www/html
     depends_on:
       - db
-      - node
     networks:
       - appnet
 
@@ -60,7 +59,7 @@ services:
     image: node:20-alpine
     container_name: laravel-node
     working_dir: /var/www/html
-    command: sh -c "npm ci && npm run dev -- --host --port 5174"
+    command: sh -c "npm ci && (npm run build 2>&1 || true) && npm run dev -- --host --port 5174"
     ports:
       - "5174:5174"
     volumes:

@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DiagnoseFeedbackResource extends Resource
 {
@@ -118,14 +120,27 @@ class DiagnoseFeedbackResource extends Resource
                         'light' => 'サクッと',
                         'strong' => 'ガッツリ',
                     ]),
+
+                Tables\Filters\TrashedFilter::make()
+                    ->label('削除済み'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->label('削除'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('復元'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->label('完全削除'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('一括削除'),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('一括復元'),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('一括完全削除'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -151,5 +166,16 @@ class DiagnoseFeedbackResource extends Resource
     {
         $count = static::getModel()::count();
         return $count > 0 ? (string) $count : null;
+    }
+
+    /**
+     * 論理削除されたレコードも含めて取得できるようにする
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

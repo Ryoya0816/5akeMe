@@ -4,6 +4,52 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  {{-- ★ 重要：レイアウト用CSSを最優先で読み込む（@vite の成否に依存しない） --}}
+  <style>
+    :root {
+      --brand-main: #9c3f2e;
+      --brand-text: #8a3a28;
+      --bg-base: #fbf3e8;
+      --bg-soft: #fff7ee;
+      --line-soft: #f1dfd0;
+      --text-main: #3f3f3f;
+      --text-sub: #8c6d57;
+    }
+    html, body { height: 100%; margin: 0; background: var(--bg-base); color: var(--text-main); font-family: system-ui, sans-serif; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 64px; box-sizing: border-box; }
+    .app-header { height: 140px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); box-sizing: border-box; }
+    .app-header .app-header-link { display: flex; align-items: center; height: 100%; }
+    .app-header .app-header-image { height: 80%; width: auto; max-width: min(750px, 65vw); min-width: 280px; object-fit: contain; }
+    .app-header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 100%; width: 100%; box-sizing: border-box; }
+    .app-header-user { display: flex; align-items: center; }
+    .app-header-user-link { display: flex; align-items: center; }
+    .app-header-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line-soft); }
+    .app-header-avatar-placeholder { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-soft); border: 2px solid var(--line-soft); font-size: 18px; }
+    .app-header-login { padding: 8px 16px; background: var(--brand-main); color: #fff; border-radius: 999px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .app-header-login:hover { opacity: 0.9; transform: translateY(-1px); }
+    .app-footer { margin-top: 64px; padding: 32px 0 24px; border-top: 2px solid var(--line-soft); background: linear-gradient(to bottom, #faece0, var(--bg-base)); position: relative; }
+    .footer-inner { max-width: 960px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 32px; }
+    .footer-brand-section { display: flex; flex-direction: column; gap: 4px; }
+    .footer-brand-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--brand-main); font-weight: 700; font-size: 20px; }
+    .footer-brand-icon { font-size: 24px; }
+    .footer-copy { font-size: 11px; color: var(--text-sub); margin: 0; }
+    .footer-nav { display: flex; align-items: center; gap: 16px; justify-self: center; flex-wrap: wrap; }
+    .footer-nav-link { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; border-radius: 12px; text-decoration: none; color: var(--text-main); font-size: 13px; }
+    .footer-nav-link:hover { background: var(--bg-soft); color: var(--brand-main); }
+    .footer-nav-icon { font-size: 20px; }
+    .footer-social { display: flex; gap: 12px; justify-self: end; }
+    .footer-social-link { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-soft); border: 1px solid var(--line-soft); color: var(--brand-main); }
+    .footer-social-link:hover { background: var(--brand-main); color: #fff; border-color: var(--brand-main); }
+    .footer-social-svg { width: 20px; height: 20px; }
+    .footer-scroll-top { position: absolute; right: 20px; bottom: -60px; width: 48px; height: 48px; border-radius: 50%; background: var(--brand-main); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .footer-scroll-top.visible { opacity: 1; visibility: visible; }
+    .footer-scroll-top:hover { background: var(--brand-text); transform: translateY(-4px); }
+    @media (max-width: 768px) { .footer-inner { grid-template-columns: 1fr; text-align: center; } .footer-brand-section, .footer-nav, .footer-social { justify-self: center; } }
+    @media (max-width: 640px) { .app-header { height: 100px; } .app-header .app-header-image { min-width: 220px; } .footer-inner { gap: 20px; } .footer-nav { gap: 12px; } .footer-nav-link { padding: 6px 12px; font-size: 12px; } }
+  </style>
+
   <title>@yield('title', '5akeMe - あなたにぴったりのお酒診断')</title>
 
   {{-- SEO メタタグ --}}
@@ -50,6 +96,20 @@
           class="app-header-image"
         >
       </a>
+      {{-- ユーザーメニュー --}}
+      <div class="app-header-user">
+        @auth
+          <a href="{{ route('mypage') }}" class="app-header-user-link" title="マイページ">
+            @if(auth()->user()->avatar)
+              <img src="{{ auth()->user()->avatar }}" alt="" class="app-header-avatar">
+            @else
+              <span class="app-header-avatar-placeholder">👤</span>
+            @endif
+          </a>
+        @else
+          <a href="{{ route('login') }}" class="app-header-login">ログイン</a>
+        @endauth
+      </div>
     </div>
   </header>
   @endunless

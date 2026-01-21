@@ -1,6 +1,28 @@
+@php
+    // 先に必要な変数を定義
+    $primaryType  = data_get($result, 'primary_type');
+    $primaryLabel = data_get($result, 'primary_label');
+    $master = config('diagnose_results', []);
+    $detail = $primaryType && isset($master[$primaryType]) ? $master[$primaryType] : [];
+    $pairingLabel = $detail['pairing_label'] ?? $detail['name'] ?? $primaryLabel ?? '○○ × ○○';
+    
+    // ペアリング情報
+    $snacks = $detail['snacks'] ?? [];
+    $catchCopy = $detail['catch_copy'] ?? '';
+    $onePhrase = $detail['one_phrase'] ?? '';
+    
+    $shareUrl = url('/diagnose/result/' . ($result->result_id ?? ''));
+    $shareTitle = '【5akeMe診断結果】私にぴったりのお酒は「' . $pairingLabel . '」でした！';
+    $shareDescription = '5つの質問に答えるだけで、あなたにぴったりのお酒が見つかる！あなたも診断してみよう🍶';
+@endphp
+
 @extends('layouts.app')
 
-@section('title', '診断結果')
+@section('title', '診断結果 - ' . $pairingLabel)
+
+@section('og_type', 'article')
+@section('og_title', $shareTitle)
+@section('og_description', $shareDescription)
 
 @section('content')
 <div class="diagnose-result-page">
@@ -583,6 +605,237 @@
                 font-size: 32px;
             }
         }
+
+        /* =========================================
+           SNSシェアセクション
+           ========================================= */
+        .dr-share-section {
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, #fff7ee 0%, #fef3e2 100%);
+            border: 2px dashed var(--brand-main, #9c3f2e);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .dr-share-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--brand-main, #9c3f2e);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dr-share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .dr-share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.2s ease-out;
+            min-width: 120px;
+        }
+
+        .dr-share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .dr-share-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Twitter/X */
+        .dr-share-btn-twitter {
+            background: #000000;
+        }
+
+        .dr-share-btn-twitter:hover {
+            background: #333333;
+        }
+
+        /* LINE */
+        .dr-share-btn-line {
+            background: #06C755;
+        }
+
+        .dr-share-btn-line:hover {
+            background: #05b04c;
+        }
+
+        /* Facebook */
+        .dr-share-btn-facebook {
+            background: #1877F2;
+        }
+
+        .dr-share-btn-facebook:hover {
+            background: #166fe5;
+        }
+
+        /* コピーボタン */
+        .dr-share-btn-copy {
+            background: var(--brand-main, #9c3f2e);
+        }
+
+        .dr-share-btn-copy:hover {
+            background: var(--brand-text, #8a3a28);
+        }
+
+        .dr-share-btn-copy.copied {
+            background: #10b981;
+        }
+
+        .dr-share-note {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-sub, #8c6d57);
+        }
+
+        @media (max-width: 600px) {
+            .dr-share-section {
+                padding: 20px 16px;
+            }
+
+            .dr-share-buttons {
+                gap: 10px;
+            }
+
+            .dr-share-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+                min-width: 100px;
+            }
+
+            .dr-share-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        /* =========================================
+           食事ペアリングセクション
+           ========================================= */
+        .dr-pairing-section {
+            margin-top: 32px;
+            padding: 28px 24px;
+            background: linear-gradient(135deg, #fef9f3 0%, #fff7ee 100%);
+            border: 2px solid var(--brand-main, #9c3f2e);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .dr-pairing-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--brand-main, #9c3f2e);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dr-pairing-icon {
+            font-size: 24px;
+        }
+
+        .dr-pairing-subtitle {
+            font-size: 14px;
+            color: var(--text-sub, #8c6d57);
+            margin-bottom: 20px;
+        }
+
+        .dr-pairing-catch {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main, #3f3f3f);
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: var(--card-bg, #ffffff);
+            border-radius: 12px;
+            border-left: 4px solid var(--brand-main, #9c3f2e);
+        }
+
+        .dr-pairing-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .dr-pairing-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: var(--card-bg, #ffffff);
+            border: 1px solid var(--line-soft, #f1dfd0);
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main, #3f3f3f);
+            transition: all 0.2s ease-out;
+        }
+
+        .dr-pairing-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: var(--brand-main, #9c3f2e);
+        }
+
+        .dr-pairing-item-icon {
+            font-size: 18px;
+        }
+
+        .dr-pairing-phrase {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--text-sub, #8c6d57);
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--line-soft, #f1dfd0);
+        }
+
+        @media (max-width: 600px) {
+            .dr-pairing-section {
+                padding: 20px 16px;
+            }
+
+            .dr-pairing-title {
+                font-size: 16px;
+            }
+
+            .dr-pairing-catch {
+                font-size: 14px;
+            }
+
+            .dr-pairing-list {
+                gap: 8px;
+            }
+
+            .dr-pairing-item {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
     </style>
 
     @php
@@ -725,6 +978,38 @@
             </div>
         </section>
 
+        {{-- 食事ペアリングセクション --}}
+        @if(!empty($snacks))
+        <section class="dr-pairing-section">
+            <h2 class="dr-pairing-title">
+                <span class="dr-pairing-icon">🍽️</span>
+                相性バツグンのおつまみ
+            </h2>
+            <p class="dr-pairing-subtitle">{{ $pairingLabel }}と一緒に楽しみたい料理</p>
+
+            @if($catchCopy)
+            <div class="dr-pairing-catch">
+                「{{ $catchCopy }}」
+            </div>
+            @endif
+
+            <div class="dr-pairing-list">
+                @foreach($snacks as $snack)
+                <div class="dr-pairing-item">
+                    <span class="dr-pairing-item-icon">🥢</span>
+                    <span>{{ $snack }}</span>
+                </div>
+                @endforeach
+            </div>
+
+            @if($onePhrase)
+            <p class="dr-pairing-phrase">
+                {{ $onePhrase }}
+            </p>
+            @endif
+        </section>
+        @endif
+
         <div class="dr-actions">
             <button type="button" class="dr-btn" id="btn-show-stores">
                 <small>②</small>
@@ -740,6 +1025,68 @@
         <div class="dr-note">
             ※ グラフは、あなたの回答から算出した「上位5種類のお酒タイプ」をチャートで表示しています。
         </div>
+
+        {{-- SNSシェアセクション --}}
+        <section class="dr-share-section">
+            <h2 class="dr-share-title">
+                <span>📢</span>
+                診断結果をシェアしよう！
+            </h2>
+            <div class="dr-share-buttons">
+                {{-- Twitter/X --}}
+                <a 
+                    href="https://twitter.com/intent/tweet?text={{ urlencode($shareTitle . "\n\n" . $shareDescription) }}&url={{ urlencode($shareUrl) }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="dr-share-btn dr-share-btn-twitter"
+                >
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span>X</span>
+                </a>
+
+                {{-- LINE --}}
+                <a 
+                    href="https://social-plugins.line.me/lineit/share?url={{ urlencode($shareUrl) }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="dr-share-btn dr-share-btn-line"
+                >
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                    </svg>
+                    <span>LINE</span>
+                </a>
+
+                {{-- Facebook --}}
+                <a 
+                    href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="dr-share-btn dr-share-btn-facebook"
+                >
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    <span>Facebook</span>
+                </a>
+
+                {{-- URLコピー --}}
+                <button 
+                    type="button"
+                    class="dr-share-btn dr-share-btn-copy"
+                    id="copy-url-btn"
+                    data-url="{{ $shareUrl }}"
+                >
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    <span id="copy-btn-text">URLをコピー</span>
+                </button>
+            </div>
+            <p class="dr-share-note">友達にもおすすめのお酒を見つけてもらおう！</p>
+        </section>
 
         {{-- おすすめ店舗セクション --}}
         <section class="dr-stores-section" id="stores-section">
@@ -1059,6 +1406,55 @@
                     alert('通信エラーが発生しました');
                     this.disabled = false;
                     this.textContent = '送信する 📨';
+                }
+            });
+        }
+
+        // =========================================
+        // URLコピー機能
+        // =========================================
+        const copyUrlBtn = document.getElementById('copy-url-btn');
+        const copyBtnText = document.getElementById('copy-btn-text');
+
+        if (copyUrlBtn) {
+            copyUrlBtn.addEventListener('click', async function() {
+                const url = this.dataset.url;
+                
+                try {
+                    await navigator.clipboard.writeText(url);
+                    
+                    // ボタンの表示を変更
+                    copyUrlBtn.classList.add('copied');
+                    copyBtnText.textContent = 'コピーしました！';
+                    
+                    // 2秒後に元に戻す
+                    setTimeout(() => {
+                        copyUrlBtn.classList.remove('copied');
+                        copyBtnText.textContent = 'URLをコピー';
+                    }, 2000);
+                } catch (err) {
+                    // フォールバック（古いブラウザ用）
+                    const textarea = document.createElement('textarea');
+                    textarea.value = url;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    
+                    try {
+                        document.execCommand('copy');
+                        copyUrlBtn.classList.add('copied');
+                        copyBtnText.textContent = 'コピーしました！';
+                        
+                        setTimeout(() => {
+                            copyUrlBtn.classList.remove('copied');
+                            copyBtnText.textContent = 'URLをコピー';
+                        }, 2000);
+                    } catch (e) {
+                        alert('コピーに失敗しました。URLを手動でコピーしてください。');
+                    }
+                    
+                    document.body.removeChild(textarea);
                 }
             });
         }

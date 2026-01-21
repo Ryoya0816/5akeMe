@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StoreReportResource extends Resource
 {
@@ -124,6 +126,9 @@ class StoreReportResource extends Resource
                 Tables\Filters\SelectFilter::make('store_id')
                     ->label('店舗')
                     ->relationship('store', 'name'),
+
+                Tables\Filters\TrashedFilter::make()
+                    ->label('削除済み'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -132,10 +137,21 @@ class StoreReportResource extends Resource
                     ->icon('heroicon-o-building-storefront')
                     ->url(fn (StoreReport $record): string => route('store.detail', $record->store_id))
                     ->openUrlInNewTab(),
+                Tables\Actions\DeleteAction::make()
+                    ->label('削除'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('復元'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->label('完全削除'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('一括削除'),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('一括復元'),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('一括完全削除'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -168,5 +184,16 @@ class StoreReportResource extends Resource
     public static function getNavigationBadgeColor(): ?string
     {
         return 'warning';
+    }
+
+    /**
+     * 論理削除されたレコードも含めて取得できるようにする
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

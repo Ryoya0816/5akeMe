@@ -177,6 +177,40 @@
             transform: translateY(-2px);
         }
 
+        .store-btn-add {
+            width: 100%;
+            background: var(--brand-main, #9c3f2e);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
+        }
+
+        .store-btn-add:hover {
+            background: var(--brand-text, #8a3a28);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 63, 46, 0.4);
+        }
+
+        .store-btn-add-login {
+            background: var(--bg-soft, #fff7ee);
+            color: var(--brand-main, #9c3f2e);
+            border: 1px dashed var(--brand-main, #9c3f2e);
+        }
+
+        .store-btn-add-login:hover {
+            background: var(--brand-main, #9c3f2e);
+            color: #ffffff;
+            border-style: solid;
+        }
+
+        .store-btn-visited {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            cursor: default;
+        }
+
         .store-note {
             margin-top: 24px;
             font-size: 12px;
@@ -295,6 +329,30 @@
         @endif
 
         <div class="store-actions">
+            {{-- 行ったお店に追加ボタン --}}
+            @auth
+                @php
+                    $isVisited = auth()->user()->visitedStores()->where('store_id', $store->id)->exists();
+                @endphp
+                @if($isVisited)
+                    <div class="store-btn store-btn-visited">
+                        ✅ 行ったお店に登録済み
+                    </div>
+                @else
+                    <form action="{{ route('mypage.stores.add', $store->id) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="visited_at" value="{{ date('Y-m-d') }}">
+                        <button type="submit" class="store-btn store-btn-add">
+                            ➕ 行ったお店に追加
+                        </button>
+                    </form>
+                @endif
+            @else
+                <a href="{{ route('login') }}" class="store-btn store-btn-add-login">
+                    🔐 ログインして行ったお店に追加
+                </a>
+            @endauth
+
             @if($store->address)
                 <a 
                     href="https://www.google.com/maps/search/?api=1&query={{ urlencode($store->address) }}" 

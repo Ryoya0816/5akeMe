@@ -158,7 +158,41 @@
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第3条（禁止事項）</h2>
+            <h2 class="legal-section-title">第3条（アカウント登録）</h2>
+            <div class="legal-text">
+                <p>本サービスの一部機能は、アカウント登録を行うことでご利用いただけます。</p>
+                <ul class="legal-list">
+                    <li>登録時には正確な情報を提供してください</li>
+                    <li>メールアドレスは有効なものを登録してください</li>
+                    <li>パスワードは安全なものを設定し、第三者に漏洩しないよう管理してください</li>
+                    <li>1人につき1つのアカウントのみ作成できます</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="legal-section">
+            <h2 class="legal-section-title">第4条（アカウントの管理）</h2>
+            <div class="legal-text">
+                <p>ユーザーは、自己の責任においてアカウント情報を管理するものとします。</p>
+                <ul class="legal-list">
+                    <li>アカウント情報を第三者に利用させ、または貸与、譲渡、売買等をしてはなりません</li>
+                    <li>アカウントの不正利用があった場合、当方は一切の責任を負いません</li>
+                    <li>パスワードを忘れた場合は、パスワードリセット機能をご利用ください</li>
+                </ul>
+                <p>アカウントの不正利用が疑われる場合は、速やかにお問い合わせください。</p>
+            </div>
+        </section>
+
+        <section class="legal-section">
+            <h2 class="legal-section-title">第5条（退会）</h2>
+            <div class="legal-text">
+                <p>ユーザーは、いつでもアカウント設定画面からアカウントを削除し、退会することができます。</p>
+                <p>退会した場合、アカウントに紐づく診断履歴等のデータは削除されます。削除されたデータは復元できませんのでご注意ください。</p>
+            </div>
+        </section>
+
+        <section class="legal-section">
+            <h2 class="legal-section-title">第6条（禁止事項）</h2>
             <div class="legal-text">
                 <p>ユーザーは、本サービスの利用にあたり、以下の行為をしてはなりません。</p>
                 <ul class="legal-list">
@@ -176,7 +210,7 @@
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第4条（本サービスの提供の停止等）</h2>
+            <h2 class="legal-section-title">第7条（本サービスの提供の停止等）</h2>
             <div class="legal-text">
                 <p>当方は、以下のいずれかの事由があると判断した場合、ユーザーに事前に通知することなく本サービスの全部または一部の提供を停止または中断することができるものとします。</p>
                 <ul class="legal-list">
@@ -190,7 +224,7 @@
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第5条（免責事項）</h2>
+            <h2 class="legal-section-title">第8条（免責事項）</h2>
             <div class="legal-text">
                 <p>当方は、本サービスに事実上または法律上の瑕疵（安全性、信頼性、正確性、完全性、有効性、特定の目的への適合性、セキュリティなどに関する欠陥、エラーやバグ、権利侵害などを含みます）がないことを明示的にも黙示的にも保証しておりません。</p>
                 <p>本サービスで提供される診断結果は、エンターテインメント目的であり、お酒の選択を強制するものではありません。実際のお酒の選択は、ご自身の判断と責任において行ってください。</p>
@@ -199,22 +233,22 @@
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第6条（サービス内容の変更等）</h2>
+            <h2 class="legal-section-title">第9条（サービス内容の変更等）</h2>
             <div class="legal-text">
                 <p>当方は、ユーザーに通知することなく、本サービスの内容を変更しまたは本サービスの提供を中止することができるものとし、これによってユーザーに生じた損害について一切の責任を負いません。</p>
             </div>
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第7条（利用規約の変更）</h2>
+            <h2 class="legal-section-title">第10条（利用規約の変更）</h2>
             <div class="legal-text">
                 <p>当方は、必要と判断した場合には、ユーザーに通知することなくいつでも本規約を変更することができるものとします。</p>
-                <p>変更後の利用規約は、当方ウェブサイトに掲示した時点から効力を生じるものとします。</p>
+                <p>変更後の利用規約は、当方ウェブサイトに掲示した時点から効力を生じるものとします。重要な変更がある場合は、登録いただいたメールアドレスへの通知または本サービス上でお知らせいたします。</p>
             </div>
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第8条（準拠法・裁判管轄）</h2>
+            <h2 class="legal-section-title">第11条（準拠法・裁判管轄）</h2>
             <div class="legal-text">
                 <p>本規約の解釈にあたっては、日本法を準拠法とします。</p>
                 <p>本サービスに関して紛争が生じた場合には、当方の本店所在地を管轄する裁判所を専属的合意管轄とします。</p>
@@ -222,12 +256,12 @@
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">第9条（お問い合わせ）</h2>
+            <h2 class="legal-section-title">第12条（お問い合わせ）</h2>
             <div class="legal-text">
                 <p>本規約に関するお問い合わせは、以下の窓口までお願いいたします。</p>
                 <p>サービス名: 5akeMe<br>
                 運営: 5akeMe運営チーム<br>
-                メール: contact@5akeme.com</p>
+                メール: hello.sagaworld816@gmail.com</p>
             </div>
         </section>
     </div>

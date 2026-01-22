@@ -154,12 +154,12 @@
             <div class="legal-text">
                 <p>当方は、本サービスの提供にあたり、以下の情報を収集することがあります。</p>
                 <ul class="legal-list">
+                    <li><strong>アカウント情報:</strong> 会員登録時にご提供いただくメールアドレス、パスワード（暗号化して保存）、ニックネーム</li>
                     <li><strong>年齢確認情報:</strong> 20歳以上であることの確認結果（Cookie情報）</li>
                     <li><strong>診断結果:</strong> お酒診断で回答いただいた内容および診断結果</li>
                     <li><strong>利用情報:</strong> アクセス日時、利用したページ、ブラウザの種類、IPアドレスなど</li>
-                    <li><strong>Cookie情報:</strong> 年齢確認状態の保持、サービス改善のための情報</li>
+                    <li><strong>Cookie情報:</strong> 年齢確認状態の保持、ログイン状態の維持、サービス改善のための情報</li>
                 </ul>
-                <p>なお、本サービスでは、氏名、住所、電話番号、メールアドレスなどの個人を直接特定できる情報は収集しておりません。</p>
             </div>
         </section>
 
@@ -169,8 +169,10 @@
                 <p>収集した情報は、以下の目的で利用いたします。</p>
                 <ul class="legal-list">
                     <li>本サービスの提供および運営</li>
+                    <li>アカウントの作成・認証・管理</li>
                     <li>年齢確認の実施および確認状態の保持</li>
-                    <li>診断結果の表示および保存</li>
+                    <li>診断結果の表示、保存およびアカウントとの紐付け</li>
+                    <li>サービスに関する重要なお知らせの送信</li>
                     <li>サービスの改善および新機能の開発</li>
                     <li>利用状況の分析</li>
                     <li>不正利用の防止</li>
@@ -208,33 +210,52 @@
             <h2 class="legal-section-title">6. 情報の保護</h2>
             <div class="legal-text">
                 <p>当方は、収集した情報の紛失、破壊、改ざん、漏洩等を防止するため、適切なセキュリティ対策を講じています。</p>
+                <ul class="legal-list">
+                    <li>パスワードは業界標準の暗号化方式（bcrypt）を用いてハッシュ化し保存します</li>
+                    <li>通信はSSL/TLSにより暗号化されます</li>
+                    <li>定期的なセキュリティ監査を実施します</li>
+                </ul>
                 <p>ただし、インターネット上のデータ送信は完全に安全であることを保証することはできません。</p>
             </div>
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">7. お子様のプライバシー</h2>
+            <h2 class="legal-section-title">7. ユーザーの権利</h2>
+            <div class="legal-text">
+                <p>ユーザーは、ご自身の個人情報について、以下の権利を有します。</p>
+                <ul class="legal-list">
+                    <li><strong>アクセス権:</strong> ご自身のアカウント情報を確認・閲覧する権利</li>
+                    <li><strong>訂正権:</strong> 不正確な情報を訂正する権利</li>
+                    <li><strong>削除権:</strong> アカウントおよび関連データの削除を請求する権利</li>
+                    <li><strong>データポータビリティ:</strong> ご自身の診断履歴データを取得する権利</li>
+                </ul>
+                <p>これらの権利の行使をご希望の場合は、アカウント設定ページから行うか、お問い合わせ窓口までご連絡ください。</p>
+            </div>
+        </section>
+
+        <section class="legal-section">
+            <h2 class="legal-section-title">8. お子様のプライバシー</h2>
             <div class="legal-text">
                 <p>本サービスは20歳以上の方を対象としており、20歳未満の方からの情報を意図的に収集することはありません。</p>
-                <p>20歳未満の方が本サービスを利用していることが判明した場合、当方は該当する情報を速やかに削除いたします。</p>
+                <p>20歳未満の方が本サービスを利用していることが判明した場合、当方は該当する情報（アカウントを含む）を速やかに削除いたします。</p>
             </div>
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">8. プライバシーポリシーの変更</h2>
+            <h2 class="legal-section-title">9. プライバシーポリシーの変更</h2>
             <div class="legal-text">
                 <p>当方は、必要に応じて本プライバシーポリシーを変更することがあります。</p>
-                <p>変更後のプライバシーポリシーは、本ページに掲載した時点から効力を生じるものとします。重要な変更がある場合は、本サービス上でお知らせいたします。</p>
+                <p>変更後のプライバシーポリシーは、本ページに掲載した時点から効力を生じるものとします。重要な変更がある場合は、登録いただいたメールアドレスへの通知または本サービス上でお知らせいたします。</p>
             </div>
         </section>
 
         <section class="legal-section">
-            <h2 class="legal-section-title">9. お問い合わせ</h2>
+            <h2 class="legal-section-title">10. お問い合わせ</h2>
             <div class="legal-text">
                 <p>本プライバシーポリシーに関するお問い合わせは、以下の窓口までお願いいたします。</p>
                 <p>サービス名: 5akeMe<br>
                 運営: 5akeMe運営チーム<br>
-                メール: privacy@5akeme.com</p>
+                メール: hello.sagaworld816@gmail.com</p>
             </div>
         </section>
     </div>

@@ -19,14 +19,19 @@
 /* 共通レイアウト（Vite が効かないときも layout の inline で要所はカバー） */
 html, body { height: 100%; background-color: var(--bg-base); color: var(--text-main); }
 .wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 64px; }
+.wrap--welcome { padding: 0; max-width: none; margin: 0; }
 
 /* ヘッダー */
-.app-header { height: 140px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); }
+.app-header { height: 160px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); }
 .app-header .app-header-link { display: flex; align-items: center; height: 100%; }
-.app-header .app-header-image { height: 80%; width: 65vw; max-width: 750px; min-width: 280px; object-fit: contain; }
+.app-header .app-header-image { height: 90%; width: 70vw; max-width: 850px; min-width: 320px; object-fit: contain; }
+.app-header-avatar, .app-header-avatar-placeholder { width: 48px; height: 48px; }
+.app-header-avatar-placeholder { font-size: 24px; }
 @media (max-width: 640px) {
-  .app-header { height: 100px; }
-  .app-header .app-header-image { width: 70vw; min-width: 220px; }
+  .app-header { height: 120px; }
+  .app-header .app-header-image { width: 70vw; min-width: 260px; }
+  .app-header-avatar, .app-header-avatar-placeholder { width: 42px; height: 42px; }
+  .app-header-avatar-placeholder { font-size: 20px; }
 }
 
 /* フッター */
@@ -55,4 +60,359 @@ html, body { height: 100%; background-color: var(--bg-base); color: var(--text-m
   .footer-inner { gap: 20px; }
   .footer-nav { gap: 12px; }
   .footer-nav-link { padding: 6px 12px; font-size: 12px; }
+}
+
+/* =========================================
+   WELCOME（入口）：左右の暖簾 ＋ 中央TOPボタン
+   ========================================= */
+.welcome-kv {
+  --kv-stage-max-w: 920px;
+  --kv-stage-max-h: 520px;
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--bg-base);
+  display: grid;
+  place-items: center;
+}
+
+.welcome-kv__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,.72), rgba(255,255,255,0) 58%),
+    linear-gradient(#fbf3e8, #f7e9dc);
+}
+
+.welcome-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: min(var(--kv-stage-max-w), 92vw);
+  height: min(var(--kv-stage-max-h), 72svh);
+}
+
+.welcome-kv .noren {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: min(var(--kv-stage-max-w), 92vw);
+  height: min(var(--kv-stage-max-h), 72svh);
+  pointer-events: none;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.welcome-kv .noren__inner {
+  width: auto;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 140px; /* 左右の暖簾のあいだに十分なすき間（中央ボタン用） */
+}
+
+.welcome-kv .noren__panel {
+  flex: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 18px 30px rgba(0,0,0,.14));
+  will-change: transform, filter, opacity;
+  transform: translateZ(0);
+  transition: transform 900ms cubic-bezier(.2,.8,.2,1), filter 900ms cubic-bezier(.2,.8,.2,1), opacity 900ms cubic-bezier(.2,.8,.2,1);
+}
+
+.welcome-kv .noren__img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 左右の暖簾：中央のすき間は .noren__inner の gap で確保 */
+.welcome-kv .noren--close.is-ready .noren__panel.noren__left { transform: translateZ(0); }
+.welcome-kv .noren--close.is-ready .noren__panel.noren__right { transform: translateZ(0); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .welcome-kv .noren--close:not(.is-active) .noren__panel {
+    animation: noren-sway 6.5s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes noren-sway {
+  0% { transform: translateZ(0) rotate(-.35deg); }
+  100% { transform: translateZ(0) rotate(.35deg); }
+}
+
+.welcome-kv .noren--close.is-active .noren__panel {
+  animation: none;
+  transition-delay: 0ms;
+  filter: drop-shadow(0 30px 60px rgba(0,0,0,.22));
+}
+
+.welcome-kv .noren--close.is-active .noren__panel.noren__left {
+  transform: translateX(-50%) translateZ(0);
+  transition: transform 1000ms cubic-bezier(.25,.46,.45,.94), filter 1000ms cubic-bezier(.25,.46,.45,.94);
+}
+
+.welcome-kv .noren--close.is-active .noren__panel.noren__right {
+  transform: translateX(50%) translateZ(0);
+  transition: transform 1000ms cubic-bezier(.25,.46,.45,.94), filter 1000ms cubic-bezier(.25,.46,.45,.94);
+}
+
+.welcome-kv .noren--close.is-vanish .noren__inner {
+  opacity: 0;
+  transform: translateZ(0) scale(0.85) translateY(10%);
+  transition: transform 600ms cubic-bezier(.55,.06,.68,.19), opacity 600ms cubic-bezier(.55,.06,.68,.19);
+}
+
+.welcome-kv .welcome-enter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: auto;
+  text-decoration: none;
+  width: clamp(160px, 18vw, 220px);
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.92), rgba(255,255,255,.78) 55%, rgba(255,255,255,.65) 100%);
+  box-shadow: 0 18px 40px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.80);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  transition: transform 140ms ease-out, box-shadow 140ms ease-out, opacity 300ms ease-out;
+}
+
+.welcome-kv .welcome-enter.is-disabled {
+  opacity: 0.6;
+  transform: translate(-50%, -50%) scale(0.95);
+  pointer-events: none;
+  transition: transform 200ms ease-out, opacity 200ms ease-out;
+}
+
+.welcome-kv .welcome-enter__text {
+  letter-spacing: .12em;
+  font-weight: 700;
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--brand-main);
+  opacity: 0.95;
+  text-transform: uppercase;
+}
+
+.welcome-kv .welcome-enter:hover {
+  transform: translate(-50%, -50%) translateY(-2px) scale(1.01);
+  box-shadow: 0 22px 46px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+@media (max-width: 640px) {
+  .welcome-kv .noren__inner { gap: 80px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-kv .noren__panel { transition: none; animation: none; }
+  .welcome-kv .noren--close.is-active .noren__inner { transition: none; opacity: 0; }
+}
+
+/* =========================================
+   TOPページ：背景ステージ・ヒーロー・マスコット・季節バナー
+   ========================================= */
+
+/* 背景キャンバス用（top-bg.js が canvas を差し込む） */
+.top-bg-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 背景の下に沈めず UI を前面に */
+.app-header,
+.app-footer,
+.top-hero,
+.season-banner {
+  position: relative;
+  z-index: 1;
+}
+
+/* 季節バナー */
+.season-banner {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+}
+
+.season-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.season-banner-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.season-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.season-banner-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--brand-main);
+}
+
+.season-banner-message {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.season-banner-recommend {
+  font-size: 12px;
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .season-banner-inner { flex-direction: column; align-items: flex-start; }
+}
+
+/* ヒーロー・マスコット・スタートボタン */
+.top-hero {
+  max-width: 960px;
+  margin: 40px auto 60px;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.top-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--brand-main);
+}
+
+.top-lead {
+  font-size: 14px;
+  color: var(--text-sub);
+  margin-bottom: 32px;
+}
+
+.top-main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.top-left,
+.top-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.top-mascot-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 220px;
+}
+
+/* マスコット画像：アスペクト比を保持して変形を防ぐ */
+.top-mascot-image {
+  width: 200px;
+  max-width: 200px;
+  height: auto;
+  border-radius: 16px;
+  object-fit: contain;
+  display: block;
+}
+
+.top-speech {
+  position: absolute;
+  top: -20px;
+  right: -40px;
+  min-width: 160px;
+  padding: 10px 14px;
+  background-color: #fff7dd;
+  border-radius: 18px;
+  border: 1px solid #fbbf24;
+  font-size: 13px;
+  color: #444;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.start-button-wrap {
+  display: inline-flex;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.start-button {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #ffd3c8, #e97b6d 65%, #b04434 100%);
+  box-shadow: 0 12px 24px rgba(185, 68, 52, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+}
+
+.start-button-label {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.start-button-wrap:hover .start-button {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 16px 26px rgba(185, 68, 52, 0.45);
+}
+
+@media (max-width: 768px) {
+  .top-main {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .top-left,
+  .top-right { flex: none; width: 100%; }
+  .top-mascot-image {
+    width: 160px;
+    max-width: 160px;
+  }
+  .top-speech { right: -10px; }
+  .start-button {
+    width: 180px;
+    height: 180px;
+  }
 }

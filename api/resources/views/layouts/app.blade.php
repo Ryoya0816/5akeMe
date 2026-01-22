@@ -19,14 +19,14 @@
     }
     html, body { height: 100%; margin: 0; background: var(--bg-base); color: var(--text-main); font-family: system-ui, sans-serif; }
     .wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 64px; box-sizing: border-box; }
-    .app-header { height: 140px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); box-sizing: border-box; }
+    .app-header { height: 160px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); box-sizing: border-box; }
     .app-header .app-header-link { display: flex; align-items: center; height: 100%; }
-    .app-header .app-header-image { height: 80%; width: auto; max-width: min(750px, 65vw); min-width: 280px; object-fit: contain; }
-    .app-header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 100%; width: 100%; box-sizing: border-box; }
+    .app-header .app-header-image { height: 90%; width: auto; max-width: min(850px, 70vw); min-width: 320px; object-fit: contain; }
+    .app-header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 0; height: 100%; width: 100%; box-sizing: border-box; }
     .app-header-user { display: flex; align-items: center; }
     .app-header-user-link { display: flex; align-items: center; }
-    .app-header-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line-soft); }
-    .app-header-avatar-placeholder { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-soft); border: 2px solid var(--line-soft); font-size: 18px; }
+    .app-header-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line-soft); }
+    .app-header-avatar-placeholder { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-soft); border: 2px solid var(--line-soft); font-size: 24px; }
     .app-header-login { padding: 8px 16px; background: var(--brand-main); color: #fff; border-radius: 999px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
     .app-header-login:hover { opacity: 0.9; transform: translateY(-1px); }
     .app-footer { margin-top: 64px; padding: 32px 0 24px; border-top: 2px solid var(--line-soft); background: linear-gradient(to bottom, #faece0, var(--bg-base)); position: relative; }
@@ -47,7 +47,7 @@
     .footer-scroll-top.visible { opacity: 1; visibility: visible; }
     .footer-scroll-top:hover { background: var(--brand-text); transform: translateY(-4px); }
     @media (max-width: 768px) { .footer-inner { grid-template-columns: 1fr; text-align: center; } .footer-brand-section, .footer-nav, .footer-social { justify-self: center; } }
-    @media (max-width: 640px) { .app-header { height: 100px; } .app-header .app-header-image { min-width: 220px; } .footer-inner { gap: 20px; } .footer-nav { gap: 12px; } .footer-nav-link { padding: 6px 12px; font-size: 12px; } }
+    @media (max-width: 640px) { .app-header { height: 120px; } .app-header .app-header-image { min-width: 260px; } .app-header-avatar, .app-header-avatar-placeholder { width: 42px; height: 42px; } .app-header-avatar-placeholder { font-size: 20px; } .footer-inner { gap: 20px; } .footer-nav { gap: 12px; } .footer-nav-link { padding: 6px 12px; font-size: 12px; } }
   </style>
 
   <title>@yield('title', '5akeMe - あなたにぴったりのお酒診断')</title>

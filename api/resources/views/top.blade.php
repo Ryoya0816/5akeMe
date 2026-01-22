@@ -1,10 +1,7 @@
 {{-- resources/views/top.blade.php --}}
 @extends('layouts.app')
 
-@section('title', '5akeMe - あなたにぴったりのお酒診断')
-@section('description', '5つの質問に答えるだけで、あなたにぴったりのお酒が見つかる！日本酒、焼酎、ワイン、ビールなど、好みに合った一杯を診断します。')
-@section('og_title', '5akeMe - あなたにぴったりのお酒診断')
-@section('og_description', '5つの質問に答えるだけで、あなたにぴったりのお酒が見つかる！')
+@section('title', '5akeMe トップ')
 
 @php
     // 季節とイベントの判定
@@ -92,15 +89,42 @@
 @endphp
 
 @section('content')
+<style>
+  /* TOP ページ専用スタイル */
+  .top-bg-stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .season-banner { margin: 0 0 24px; padding: 12px 16px; background: #fff7ee; border: 1px solid #f1dfd0; border-radius: 12px; position: relative; z-index: 1; }
+  .season-banner-inner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 960px; margin: 0 auto; }
+  .season-banner-icon { font-size: 24px; flex-shrink: 0; }
+  .season-banner-content { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .season-banner-title { font-weight: 700; font-size: 14px; color: #9c3f2e; }
+  .season-banner-message { font-size: 12px; color: #8c6d57; }
+  .season-banner-recommend { font-size: 12px; color: #8c6d57; flex-shrink: 0; }
+  .top-hero { max-width: 960px; margin: 40px auto 60px; padding: 0 20px; text-align: center; position: relative; z-index: 1; }
+  .top-title { font-size: 24px; font-weight: bold; margin-bottom: 8px; color: #9c3f2e; }
+  .top-lead { font-size: 14px; color: #8c6d57; margin-bottom: 32px; }
+  .top-main { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 48px; width: 100%; max-width: 720px; margin: 0 auto; }
+  .top-left, .top-right { flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center; }
+  .top-mascot-wrap { position: relative; display: inline-block; max-width: 220px; }
+  .top-mascot-image { width: 200px; max-width: 200px; height: auto; border-radius: 16px; object-fit: contain; display: block; }
+  .top-speech { position: absolute; top: -20px; right: -40px; min-width: 160px; padding: 10px 14px; background-color: #fff7dd; border-radius: 18px; border: 1px solid #fbbf24; font-size: 13px; color: #444; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+  .start-button-wrap { display: inline-flex; text-decoration: none; justify-content: center; }
+  .start-button { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #ffd3c8, #e97b6d 65%, #b04434 100%); box-shadow: 0 12px 24px rgba(185,68,52,0.35); display: flex; align-items: center; justify-content: center; transition: transform 0.12s ease-out, box-shadow 0.12s ease-out; }
+  .start-button-label { color: #fff; font-weight: bold; font-size: 18px; line-height: 1.4; }
+  .start-button-wrap:hover .start-button { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 26px rgba(185,68,52,0.45); }
+  @media (max-width: 768px) {
+    .top-main { flex-direction: column; gap: 24px; }
+    .top-left, .top-right { flex: none; width: 100%; }
+    .top-mascot-image { width: 160px; max-width: 160px; }
+    .top-speech { right: -10px; }
+    .start-button { width: 180px; height: 180px; }
+  }
+  @media (max-width: 640px) {
+    .season-banner-inner { flex-direction: column; align-items: flex-start; }
+  }
+</style>
 
   {{-- 背景演出用ステージ --}}
   <div id="top-bg-stage" class="top-bg-stage" aria-hidden="true"></div>
-
-  {{-- 暖簾アニメーション --}}
-  <div id="noren-overlay" class="noren-overlay">
-    <div class="noren-panel"></div>
-    <div class="noren-logo">5akeMe</div>
-  </div>
 
   {{-- 季節バナー --}}
   @if($event)
@@ -125,9 +149,8 @@
         <div class="top-mascot-wrap">
           <img
             src="{{ asset('images/mascot.png') }}"
-            alt="5akeMe マスコット - お酒診断のキャラクター"
+            alt="5akeMe マスコット"
             class="top-mascot-image"
-            loading="lazy"
           >
           <div class="top-speech">
             今日の一杯、<br>いっしょに探そ？
@@ -146,19 +169,3 @@
   </section>
 
 @endsection
-
-@push('scripts')
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const overlay = document.getElementById('noren-overlay');
-      if (!overlay) return;
-
-      setTimeout(function () {
-        overlay.classList.add('noren-overlay--hide');
-        setTimeout(function () {
-          overlay.remove();
-        }, 600);
-      }, 1200);
-    });
-  </script>
-@endpush

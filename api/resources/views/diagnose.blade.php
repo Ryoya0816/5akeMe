@@ -6,6 +6,20 @@
 @section('og_description', 'チャット形式で5つの質問に答えるだけ！あなたにぴったりのお酒を見つけよう。')
 
 @section('content')
+{{-- ローディングオーバーレイ（広告表示用） --}}
+<div class="dm-loading-overlay" id="dm-loading-overlay">
+    <div class="dm-loading-icon">🍶</div>
+    <div class="dm-loading-text">あなたにぴったりのお酒を<br>探しています...</div>
+    <div class="dm-loading-ad">
+        <div class="dm-loading-ad-title">- ADVERTISEMENT -</div>
+        <div class="dm-loading-ad-box">
+            📢 広告募集中！<br>
+            <small>ここにあなたの広告を掲載しませんか？</small>
+        </div>
+        <div class="dm-loading-ad-contact">お問い合わせ: hello.sagaworld816@gmail.com</div>
+    </div>
+</div>
+
 <div class="dm-page-wrap">
 
             {{-- ★ この画面専用の簡易スタイル --}}
@@ -154,6 +168,65 @@
                     .dm-msg-bubble {
                         max-width: 78%;
                     }
+                }
+
+                /* ローディングオーバーレイ（広告表示用） */
+                .dm-loading-overlay {
+                    display: none;
+                    position: fixed;
+                    inset: 0;
+                    z-index: 9999;
+                    background: linear-gradient(135deg, #fbf3e8 0%, #f7e9dc 100%);
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 24px;
+                    padding: 20px;
+                }
+                .dm-loading-overlay.is-visible {
+                    display: flex;
+                }
+                .dm-loading-text {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #9c3f2e;
+                    text-align: center;
+                }
+                .dm-loading-icon {
+                    font-size: 48px;
+                    animation: dm-bounce 1s ease-in-out infinite;
+                }
+                @keyframes dm-bounce {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-10px); }
+                }
+                .dm-loading-ad {
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: #fff;
+                    border: 2px dashed #d1d5db;
+                    border-radius: 12px;
+                    text-align: center;
+                    max-width: 400px;
+                    width: 100%;
+                }
+                .dm-loading-ad-title {
+                    font-size: 14px;
+                    color: #9ca3af;
+                    margin-bottom: 12px;
+                }
+                .dm-loading-ad-box {
+                    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+                    border-radius: 8px;
+                    padding: 40px 20px;
+                    color: #6b7280;
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+                .dm-loading-ad-contact {
+                    margin-top: 12px;
+                    font-size: 12px;
+                    color: #9ca3af;
                 }
             </style>
 
@@ -351,7 +424,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         return;
                     }
 
-                    window.location.href = '/diagnose/result/' + data.result_id;
+                    // ローディング画面を表示（広告表示）
+                    const loadingOverlay = document.getElementById('dm-loading-overlay');
+                    if (loadingOverlay) {
+                        loadingOverlay.classList.add('is-visible');
+                    }
+
+                    // 4秒後に結果ページへ遷移
+                    setTimeout(function() {
+                        window.location.href = '/diagnose/result/' + data.result_id;
+                    }, 4000);
+
                 } catch (e) {
                     console.error('Score API error', e);
                     addMessage('bot', 'ネットワークエラーが起きたみたい…もう一度試してみてね。');

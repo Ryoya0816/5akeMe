@@ -21,4 +21,23 @@ assets-dev:
 npm:
 	$(COMPOSE) run --rm node npm $(ARGS)
 
-.PHONY: assets assets-build assets-dev npm
+# ---------------------------------------------------------------------------
+# データベースドキュメント生成（tbls）
+# ---------------------------------------------------------------------------
+
+# tblsバイナリのパス（プロジェクト内のbin/tblsを使用）
+TBLS = ./bin/tbls
+
+# tblsでテーブル定義書とER図を生成
+docs:
+	@echo "Generating database documentation..."
+	@mkdir -p docs/schema
+	$(TBLS) doc --config tbls.yml
+
+# tblsでテーブル定義書のみ生成（ER図も含まれます）
+docs-doc:
+	@echo "Generating table documentation..."
+	@mkdir -p docs/schema
+	$(TBLS) doc --config tbls.yml
+
+.PHONY: assets assets-build assets-dev npm docs docs-doc

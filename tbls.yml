@@ -1,0 +1,32 @@
+# tbls configuration file
+# Database connection settings
+dsn: mysql://laravel:laravel@127.0.0.1:3306/laravel
+
+# Document output settings
+# Output directory for documentation
+docPath: ./docs/schema
+
+# ER diagram settings
+er:
+  # Output format: svg, png, jpg, pdf
+  format: svg
+  # Output path
+  path: ./docs/schema/er.svg
+  # Distance between tables
+  distance: 1
+  # Font for labels
+  font: "Arial"
+  # Title
+  title: "ER Diagram"
+
+# Table filtering (optional)
+# 特定のテーブルのみを含める場合
+# include:
+#   - "users"
+#   - "posts"
+# 特定のテーブルを除外する場合（Laravelのシステムテーブルなど）
+# exclude:
+#   - "migrations"
+#   - "password_resets"
+#   - "failed_jobs"
+#   - "sessions"

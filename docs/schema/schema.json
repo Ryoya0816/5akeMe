@@ -1,0 +1,1324 @@
+{
+  "name": "laravel",
+  "tables": [
+    {
+      "name": "cache",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "key",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "value",
+          "type": "mediumtext",
+          "nullable": false
+        },
+        {
+          "name": "expiration",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (key) USING BTREE",
+          "table": "cache",
+          "columns": [
+            "key"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (key)",
+          "table": "cache",
+          "columns": [
+            "key"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `cache` (\n  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,\n  `expiration` int NOT NULL,\n  PRIMARY KEY (`key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "cache_locks",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "key",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "owner",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "expiration",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (key) USING BTREE",
+          "table": "cache_locks",
+          "columns": [
+            "key"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (key)",
+          "table": "cache_locks",
+          "columns": [
+            "key"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `cache_locks` (\n  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `expiration` int NOT NULL,\n  PRIMARY KEY (`key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "diagnose_feedbacks",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "diagnose_result_id",
+          "type": "bigint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "rating",
+          "type": "tinyint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "comment",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "answers_snapshot",
+          "type": "json",
+          "nullable": true
+        },
+        {
+          "name": "result_type",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "mood",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "diagnose_feedbacks_diagnose_result_id_foreign",
+          "def": "KEY diagnose_feedbacks_diagnose_result_id_foreign (diagnose_result_id) USING BTREE",
+          "table": "diagnose_feedbacks",
+          "columns": [
+            "diagnose_result_id"
+          ]
+        },
+        {
+          "name": "diagnose_feedbacks_mood_index",
+          "def": "KEY diagnose_feedbacks_mood_index (mood) USING BTREE",
+          "table": "diagnose_feedbacks",
+          "columns": [
+            "mood"
+          ]
+        },
+        {
+          "name": "diagnose_feedbacks_rating_index",
+          "def": "KEY diagnose_feedbacks_rating_index (rating) USING BTREE",
+          "table": "diagnose_feedbacks",
+          "columns": [
+            "rating"
+          ]
+        },
+        {
+          "name": "diagnose_feedbacks_result_type_index",
+          "def": "KEY diagnose_feedbacks_result_type_index (result_type) USING BTREE",
+          "table": "diagnose_feedbacks",
+          "columns": [
+            "result_type"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "diagnose_feedbacks",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "diagnose_feedbacks_diagnose_result_id_foreign",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (diagnose_result_id) REFERENCES diagnose_results (id)",
+          "table": "diagnose_feedbacks",
+          "referenced_table": "diagnose_results",
+          "columns": [
+            "diagnose_result_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "diagnose_feedbacks",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `diagnose_feedbacks` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `diagnose_result_id` bigint unsigned NOT NULL,\n  `rating` tinyint unsigned NOT NULL,\n  `comment` text COLLATE utf8mb4_unicode_ci,\n  `answers_snapshot` json DEFAULT NULL,\n  `result_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `mood` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `diagnose_feedbacks_diagnose_result_id_foreign` (`diagnose_result_id`),\n  KEY `diagnose_feedbacks_rating_index` (`rating`),\n  KEY `diagnose_feedbacks_result_type_index` (`result_type`),\n  KEY `diagnose_feedbacks_mood_index` (`mood`),\n  CONSTRAINT `diagnose_feedbacks_diagnose_result_id_foreign` FOREIGN KEY (`diagnose_result_id`) REFERENCES `diagnose_results` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "diagnose_results",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "result_id",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "primary_type",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "primary_label",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "mood",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "candidates",
+          "type": "json",
+          "nullable": false
+        },
+        {
+          "name": "top5",
+          "type": "json",
+          "nullable": true
+        },
+        {
+          "name": "answers_snapshot",
+          "type": "json",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "diagnose_results",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "diagnose_results_result_id_unique",
+          "def": "UNIQUE KEY diagnose_results_result_id_unique (result_id) USING BTREE",
+          "table": "diagnose_results",
+          "columns": [
+            "result_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "diagnose_results_result_id_unique",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY diagnose_results_result_id_unique (result_id)",
+          "table": "diagnose_results",
+          "columns": [
+            "result_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "diagnose_results",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `diagnose_results` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `result_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `primary_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `primary_label` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `mood` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `candidates` json NOT NULL,\n  `top5` json DEFAULT NULL,\n  `answers_snapshot` json DEFAULT NULL,\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `diagnose_results_result_id_unique` (`result_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "failed_jobs",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "uuid",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "connection",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "queue",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "payload",
+          "type": "longtext",
+          "nullable": false
+        },
+        {
+          "name": "exception",
+          "type": "longtext",
+          "nullable": false
+        },
+        {
+          "name": "failed_at",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "extra_def": "DEFAULT_GENERATED"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "failed_jobs",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "failed_jobs_uuid_unique",
+          "def": "UNIQUE KEY failed_jobs_uuid_unique (uuid) USING BTREE",
+          "table": "failed_jobs",
+          "columns": [
+            "uuid"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "failed_jobs_uuid_unique",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY failed_jobs_uuid_unique (uuid)",
+          "table": "failed_jobs",
+          "columns": [
+            "uuid"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "failed_jobs",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `failed_jobs` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,\n  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,\n  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,\n  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,\n  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "job_batches",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "total_jobs",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "pending_jobs",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "failed_jobs",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "failed_job_ids",
+          "type": "longtext",
+          "nullable": false
+        },
+        {
+          "name": "options",
+          "type": "mediumtext",
+          "nullable": true
+        },
+        {
+          "name": "cancelled_at",
+          "type": "int",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "finished_at",
+          "type": "int",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "job_batches",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "job_batches",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `job_batches` (\n  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `total_jobs` int NOT NULL,\n  `pending_jobs` int NOT NULL,\n  `failed_jobs` int NOT NULL,\n  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,\n  `options` mediumtext COLLATE utf8mb4_unicode_ci,\n  `cancelled_at` int DEFAULT NULL,\n  `created_at` int NOT NULL,\n  `finished_at` int DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "jobs",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "queue",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "payload",
+          "type": "longtext",
+          "nullable": false
+        },
+        {
+          "name": "attempts",
+          "type": "tinyint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "reserved_at",
+          "type": "int unsigned",
+          "nullable": true
+        },
+        {
+          "name": "available_at",
+          "type": "int unsigned",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "int unsigned",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "jobs_queue_index",
+          "def": "KEY jobs_queue_index (queue) USING BTREE",
+          "table": "jobs",
+          "columns": [
+            "queue"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "jobs",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "jobs",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `jobs` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,\n  `attempts` tinyint unsigned NOT NULL,\n  `reserved_at` int unsigned DEFAULT NULL,\n  `available_at` int unsigned NOT NULL,\n  `created_at` int unsigned NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `jobs_queue_index` (`queue`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "migrations",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "migration",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "batch",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "migrations",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "migrations",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `migrations` (\n  `id` int unsigned NOT NULL AUTO_INCREMENT,\n  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `batch` int NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "password_reset_tokens",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "email",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "token",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (email) USING BTREE",
+          "table": "password_reset_tokens",
+          "columns": [
+            "email"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (email)",
+          "table": "password_reset_tokens",
+          "columns": [
+            "email"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `password_reset_tokens` (\n  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `created_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`email`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "sessions",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "bigint unsigned",
+          "nullable": true
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar(45)",
+          "nullable": true
+        },
+        {
+          "name": "user_agent",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "payload",
+          "type": "longtext",
+          "nullable": false
+        },
+        {
+          "name": "last_activity",
+          "type": "int",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "sessions_last_activity_index",
+          "def": "KEY sessions_last_activity_index (last_activity) USING BTREE",
+          "table": "sessions",
+          "columns": [
+            "last_activity"
+          ]
+        },
+        {
+          "name": "sessions_user_id_index",
+          "def": "KEY sessions_user_id_index (user_id) USING BTREE",
+          "table": "sessions",
+          "columns": [
+            "user_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "sessions",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "sessions",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `sessions` (\n  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `user_id` bigint unsigned DEFAULT NULL,\n  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `user_agent` text COLLATE utf8mb4_unicode_ci,\n  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,\n  `last_activity` int NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `sessions_user_id_index` (`user_id`),\n  KEY `sessions_last_activity_index` (`last_activity`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "store_reports",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "store_id",
+          "type": "bigint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "update_types",
+          "type": "json",
+          "nullable": true
+        },
+        {
+          "name": "detail",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "enum('pending','reviewed','resolved','dismissed')",
+          "nullable": false,
+          "default": "pending"
+        },
+        {
+          "name": "admin_note",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "store_reports_store_id_foreign",
+          "def": "KEY store_reports_store_id_foreign (store_id) USING BTREE",
+          "table": "store_reports",
+          "columns": [
+            "store_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "store_reports",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "store_reports",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "store_reports_store_id_foreign",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (store_id) REFERENCES stores (id)",
+          "table": "store_reports",
+          "referenced_table": "stores",
+          "columns": [
+            "store_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `store_reports` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `store_id` bigint unsigned NOT NULL,\n  `update_types` json DEFAULT NULL,\n  `detail` text COLLATE utf8mb4_unicode_ci NOT NULL,\n  `status` enum('pending','reviewed','resolved','dismissed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',\n  `admin_note` text COLLATE utf8mb4_unicode_ci,\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `store_reports_store_id_foreign` (`store_id`),\n  CONSTRAINT `store_reports_store_id_foreign` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "stores",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "name",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "address",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "phone",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "business_hours",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "closed_days",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "sake_types",
+          "type": "json",
+          "nullable": true
+        },
+        {
+          "name": "mood",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "website_url",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "nullable": false,
+          "default": "1"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "stores",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "stores",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `stores` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `business_hours` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `closed_days` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `sake_types` json DEFAULT NULL,\n  `mood` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `website_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `is_active` tinyint(1) NOT NULL DEFAULT '1',\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  `deleted_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "user_diagnose_results",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "user_id",
+          "type": "bigint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "diagnose_result_id",
+          "type": "bigint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "user_diagnose_results_diagnose_result_id_foreign",
+          "def": "KEY user_diagnose_results_diagnose_result_id_foreign (diagnose_result_id) USING BTREE",
+          "table": "user_diagnose_results",
+          "columns": [
+            "diagnose_result_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "user_diagnose_results",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_diagnose_results_user_id_diagnose_result_id_unique",
+          "def": "UNIQUE KEY user_diagnose_results_user_id_diagnose_result_id_unique (user_id, diagnose_result_id) USING BTREE",
+          "table": "user_diagnose_results",
+          "columns": [
+            "user_id",
+            "diagnose_result_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "user_diagnose_results",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_diagnose_results_diagnose_result_id_foreign",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (diagnose_result_id) REFERENCES diagnose_results (id)",
+          "table": "user_diagnose_results",
+          "referenced_table": "diagnose_results",
+          "columns": [
+            "diagnose_result_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_diagnose_results_user_id_diagnose_result_id_unique",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY user_diagnose_results_user_id_diagnose_result_id_unique (user_id, diagnose_result_id)",
+          "table": "user_diagnose_results",
+          "columns": [
+            "user_id",
+            "diagnose_result_id"
+          ]
+        },
+        {
+          "name": "user_diagnose_results_user_id_foreign",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users (id)",
+          "table": "user_diagnose_results",
+          "referenced_table": "users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `user_diagnose_results` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `user_id` bigint unsigned NOT NULL,\n  `diagnose_result_id` bigint unsigned NOT NULL,\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `user_diagnose_results_user_id_diagnose_result_id_unique` (`user_id`,`diagnose_result_id`),\n  KEY `user_diagnose_results_diagnose_result_id_foreign` (`diagnose_result_id`),\n  CONSTRAINT `user_diagnose_results_diagnose_result_id_foreign` FOREIGN KEY (`diagnose_result_id`) REFERENCES `diagnose_results` (`id`) ON DELETE CASCADE,\n  CONSTRAINT `user_diagnose_results_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "user_visited_stores",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "user_id",
+          "type": "bigint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "store_id",
+          "type": "bigint unsigned",
+          "nullable": false
+        },
+        {
+          "name": "memo",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "visited_at",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "user_visited_stores_store_id_foreign",
+          "def": "KEY user_visited_stores_store_id_foreign (store_id) USING BTREE",
+          "table": "user_visited_stores",
+          "columns": [
+            "store_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "user_visited_stores",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_visited_stores_user_id_store_id_unique",
+          "def": "UNIQUE KEY user_visited_stores_user_id_store_id_unique (user_id, store_id) USING BTREE",
+          "table": "user_visited_stores",
+          "columns": [
+            "user_id",
+            "store_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "user_visited_stores",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_visited_stores_store_id_foreign",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (store_id) REFERENCES stores (id)",
+          "table": "user_visited_stores",
+          "referenced_table": "stores",
+          "columns": [
+            "store_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_visited_stores_user_id_foreign",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users (id)",
+          "table": "user_visited_stores",
+          "referenced_table": "users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_visited_stores_user_id_store_id_unique",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY user_visited_stores_user_id_store_id_unique (user_id, store_id)",
+          "table": "user_visited_stores",
+          "columns": [
+            "user_id",
+            "store_id"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `user_visited_stores` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `user_id` bigint unsigned NOT NULL,\n  `store_id` bigint unsigned NOT NULL,\n  `memo` text COLLATE utf8mb4_unicode_ci,\n  `visited_at` date DEFAULT NULL,\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `user_visited_stores_user_id_store_id_unique` (`user_id`,`store_id`),\n  KEY `user_visited_stores_store_id_foreign` (`store_id`),\n  CONSTRAINT `user_visited_stores_store_id_foreign` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE CASCADE,\n  CONSTRAINT `user_visited_stores_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    },
+    {
+      "name": "users",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint unsigned",
+          "nullable": false,
+          "extra_def": "auto_increment"
+        },
+        {
+          "name": "name",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "email",
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        {
+          "name": "email_verified_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "password",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "provider",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "provider_id",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "avatar",
+          "type": "varchar(255)",
+          "nullable": true
+        },
+        {
+          "name": "remember_token",
+          "type": "varchar(100)",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "users_provider_provider_id_index",
+          "def": "KEY users_provider_provider_id_index (provider, provider_id) USING BTREE",
+          "table": "users",
+          "columns": [
+            "provider",
+            "provider_id"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "def": "PRIMARY KEY (id) USING BTREE",
+          "table": "users",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "users_email_unique",
+          "def": "UNIQUE KEY users_email_unique (email) USING BTREE",
+          "table": "users",
+          "columns": [
+            "email"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "PRIMARY",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "users",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "users_email_unique",
+          "type": "UNIQUE",
+          "def": "UNIQUE KEY users_email_unique (email)",
+          "table": "users",
+          "columns": [
+            "email"
+          ]
+        }
+      ],
+      "def": "CREATE TABLE `users` (\n  `id` bigint unsigned NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `email_verified_at` timestamp NULL DEFAULT NULL,\n  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `provider` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `provider_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `created_at` timestamp NULL DEFAULT NULL,\n  `updated_at` timestamp NULL DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `users_email_unique` (`email`),\n  KEY `users_provider_provider_id_index` (`provider`,`provider_id`)\n) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    }
+  ],
+  "relations": [
+    {
+      "table": "diagnose_feedbacks",
+      "columns": [
+        "diagnose_result_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "diagnose_results",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (diagnose_result_id) REFERENCES diagnose_results (id)"
+    },
+    {
+      "table": "store_reports",
+      "columns": [
+        "store_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "stores",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (store_id) REFERENCES stores (id)"
+    },
+    {
+      "table": "user_diagnose_results",
+      "columns": [
+        "diagnose_result_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "diagnose_results",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (diagnose_result_id) REFERENCES diagnose_results (id)"
+    },
+    {
+      "table": "user_diagnose_results",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "users",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users (id)"
+    },
+    {
+      "table": "user_visited_stores",
+      "columns": [
+        "store_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "stores",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (store_id) REFERENCES stores (id)"
+    },
+    {
+      "table": "user_visited_stores",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "users",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users (id)"
+    }
+  ],
+  "driver": {
+    "name": "mysql",
+    "database_version": "8.0.43",
+    "meta": {
+      "dict": {
+        "Functions": "Stored procedures and functions"
+      }
+    }
+  }
+}

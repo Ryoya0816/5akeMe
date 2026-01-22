@@ -56,7 +56,7 @@ Route::get('/top', [TopController::class, 'show'])
 */
 Route::view('/diagnose', 'diagnose')->name('diagnose');
 
-Route::get('/diagnose/result/{id}', [DiagnoseController::class, 'showResult'])
+Route::get('/diagnose/result/{resultId}', [DiagnoseController::class, 'showResult'])
     ->name('diagnose.result');
 
 

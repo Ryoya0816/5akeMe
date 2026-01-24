@@ -208,7 +208,7 @@
         <div class="mypage-header">
             <div class="mypage-avatar">
                 @if($user->avatar)
-                    <img src="{{ $user->avatar }}" alt="{{ $user->name }}">
+                    <img src="{{ strpos($user->avatar, 'http') === 0 ? $user->avatar : asset($user->avatar) }}" alt="{{ $user->name }}">
                 @else
                     🍶
                 @endif
@@ -252,6 +252,14 @@
                 <div class="mypage-menu-text">
                     <div class="mypage-menu-title">好み傾向</div>
                     <div class="mypage-menu-desc">あなたの好みを分析</div>
+                </div>
+                <span class="mypage-menu-arrow">›</span>
+            </a>
+            <a href="{{ route('profile.edit') }}" class="mypage-menu-item">
+                <span class="mypage-menu-icon">⚙️</span>
+                <div class="mypage-menu-text">
+                    <div class="mypage-menu-title">プロフィール編集</div>
+                    <div class="mypage-menu-desc">名前やアイコンを変更</div>
                 </div>
                 <span class="mypage-menu-arrow">›</span>
             </a>

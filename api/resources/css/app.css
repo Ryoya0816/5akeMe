@@ -178,42 +178,41 @@ html, body { height: 100%; background-color: var(--bg-base); color: var(--text-m
 .welcome-kv .welcome-enter {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
+  bottom: 15%;
+  transform: translate(-50%, 20%);
+  z-index: 10;
   pointer-events: auto;
   text-decoration: none;
-  width: clamp(160px, 18vw, 220px);
-  aspect-ratio: 1 / 1;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.92), rgba(255,255,255,.78) 55%, rgba(255,255,255,.65) 100%);
-  box-shadow: 0 18px 40px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.80);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  transition: transform 140ms ease-out, box-shadow 140ms ease-out, opacity 300ms ease-out;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.75), rgba(255,255,255,.65) 40%, rgba(245,240,235,.55) 100%);
+  box-shadow: 0 8px 25px rgba(0,0,0,.08), 0 3px 8px rgba(0,0,0,.04);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  cursor: pointer;
 }
 
 .welcome-kv .welcome-enter.is-disabled {
-  opacity: 0.6;
-  transform: translate(-50%, -50%) scale(0.95);
+  opacity: 0.4;
+  transform: translate(-50%, 20%) scale(0.95);
   pointer-events: none;
-  transition: transform 200ms ease-out, opacity 200ms ease-out;
 }
 
 .welcome-kv .welcome-enter__text {
   letter-spacing: .12em;
-  font-weight: 700;
-  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 600;
+  font-size: 14px;
   color: var(--brand-main);
-  opacity: 0.95;
+  opacity: 0.85;
   text-transform: uppercase;
 }
 
 .welcome-kv .welcome-enter:hover {
-  transform: translate(-50%, -50%) translateY(-2px) scale(1.01);
-  box-shadow: 0 22px 46px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.75);
+  transform: translate(-50%, 20%) translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 35px rgba(0,0,0,.12), 0 5px 12px rgba(0,0,0,.06);
 }
 
 @media (max-width: 640px) {

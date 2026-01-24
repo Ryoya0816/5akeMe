@@ -12,72 +12,292 @@
 
 @section('content')
 <style>
-  /* Welcome 専用スタイル */
-  .wrap.wrap--welcome { padding: 0 !important; max-width: none !important; margin: 0 !important; }
-  .welcome-kv { position: relative; height: 100svh; overflow: hidden; background: #fbf3e8; display: grid; place-items: center; }
-  .welcome-kv__bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 18%, rgba(255,255,255,.72), rgba(255,255,255,0) 58%), linear-gradient(#fbf3e8, #f7e9dc); }
-  .welcome-stage { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; }
-  .noren { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; height: min(520px, 72svh); pointer-events: none; }
-  .noren__inner { height: 100%; display: flex !important; flex-direction: row !important; justify-content: center; align-items: center; gap: 140px !important; transition: transform 600ms ease, opacity 600ms ease; }
-  .noren__panel { flex: none; height: 100%; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 18px 30px rgba(0,0,0,.14)); transition: transform 1000ms cubic-bezier(.25,.46,.45,.94), filter 1000ms ease; }
-  .noren__img { height: 100%; width: auto; object-fit: contain; display: block; }
+  /* Welcome 専用スタイル - SAKEICEライクなデザイン */
+  :root {
+    --noren-bg: #f5e6d3;
+    --noren-line: #9c3f2e;
+    --brand-main: #9c3f2e;
+    --footer-color: #9c3f2e;
+    --page-bg: #fbf3e8;
+  }
   
-  /* 暖簾をくぐる演出：クリック時に左右に開く */
-  .noren--close.is-active .noren__panel { filter: drop-shadow(0 30px 60px rgba(0,0,0,.22)); }
-  .noren--close.is-active .noren__panel.noren__left { transform: translateX(-80%) !important; }
-  .noren--close.is-active .noren__panel.noren__right { transform: translateX(80%) !important; }
+  .wrap.wrap--welcome { 
+    padding: 0 !important; 
+    max-width: none !important; 
+    margin: 0 !important; 
+  }
   
-  /* 暖簾をくぐった後、奥に消える */
-  .noren--close.is-vanish .noren__inner { opacity: 0; transform: scale(0.85) translateY(10%); }
+  .welcome-kv {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--page-bg);
+  }
   
-  /* WELCOME ボタン */
-  .welcome-enter { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3; pointer-events: auto; text-decoration: none; width: clamp(160px, 18vw, 220px); aspect-ratio: 1 / 1; border-radius: 999px; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.92), rgba(255,255,255,.78) 55%, rgba(255,255,255,.65) 100%); box-shadow: 0 18px 40px rgba(0,0,0,.12); transition: transform 140ms ease-out, box-shadow 140ms ease-out, opacity 300ms ease-out; cursor: pointer; }
-  .welcome-enter:hover { transform: translate(-50%, -50%) translateY(-2px) scale(1.02); box-shadow: 0 22px 46px rgba(0,0,0,.16); }
-  .welcome-enter.is-disabled { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); pointer-events: none; }
-  .welcome-enter__text { letter-spacing: .12em; font-weight: 700; font-size: clamp(16px, 2vw, 20px); color: #9c3f2e; text-transform: uppercase; }
+  /* 暖簾コンテナ（画面全体を覆う） */
+  .noren {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 15%; /* 下部の帯分を空ける */
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+  }
   
-  @media (max-width: 640px) { .noren__inner { gap: 80px !important; } }
+  /* 左の暖簾 */
+  .noren__left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: var(--noren-bg);
+    clip-path: polygon(0 0, 100% 0, 60% 100%, 0 100%);
+    transition: transform 800ms cubic-bezier(.4, 0, .2, 1), opacity 600ms ease;
+  }
+  
+  /* 左暖簾の縦ライン */
+  .noren__left::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 35%;
+    width: 3px;
+    height: 100%;
+    background: var(--noren-line);
+  }
+  
+  /* 右の暖簾 */
+  .noren__right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: var(--noren-bg);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 40% 100%);
+    transition: transform 800ms cubic-bezier(.4, 0, .2, 1), opacity 600ms ease;
+  }
+  
+  /* 右暖簾の縦ライン */
+  .noren__right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 35%;
+    width: 3px;
+    height: 100%;
+    background: var(--noren-line);
+  }
+  
+  /* 暖簾が開くアニメーション */
+  .noren.is-active .noren__left {
+    transform: translateX(-30%);
+  }
+  .noren.is-active .noren__right {
+    transform: translateX(30%);
+  }
+  
+  /* 暖簾が消えるアニメーション */
+  .noren.is-vanish .noren__left,
+  .noren.is-vanish .noren__right {
+    opacity: 0;
+  }
+  
+  /* 中央コンテンツエリア */
+  .welcome-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+  }
+  
+  /* ロゴエリア */
+  .welcome-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* メインロゴテキスト */
+  .welcome-logo__main {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: clamp(40px, 8vw, 72px);
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    color: var(--brand-main);
+  }
+  
+  /* サブテキスト */
+  .welcome-logo__sub {
+    font-size: clamp(12px, 2vw, 16px);
+    letter-spacing: 0.6em;
+    color: var(--brand-main);
+    margin-top: 8px;
+  }
+  
+  /* WELCOMEボタン */
+  .welcome-enter {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    z-index: 10;
+    pointer-events: auto;
+    text-decoration: none;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 40% 35%, 
+      rgba(255,255,255,.75), 
+      rgba(255,255,255,.65) 40%,
+      rgba(245,240,235,.55) 100%);
+    box-shadow: 
+      0 8px 25px rgba(0,0,0,.08),
+      0 3px 8px rgba(0,0,0,.04);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    cursor: pointer;
+  }
+  
+  .welcome-enter:hover {
+    transform: translate(-50%, 50%) translateY(-3px) scale(1.03);
+    background: radial-gradient(circle at 40% 35%, 
+      rgba(255,255,255,.85), 
+      rgba(255,255,255,.75) 40%,
+      rgba(245,240,235,.65) 100%);
+    box-shadow: 
+      0 12px 35px rgba(0,0,0,.12),
+      0 5px 12px rgba(0,0,0,.06);
+  }
+  
+  .welcome-enter.is-disabled {
+    opacity: 0.4;
+    transform: translate(-50%, 50%) scale(0.95);
+    pointer-events: none;
+  }
+  
+  .welcome-enter__text {
+    letter-spacing: .12em;
+    font-weight: 600;
+    font-size: clamp(8px, 1.1vw, 11px);
+    color: var(--brand-main);
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  
+  /* 下部の帯 */
+  .welcome-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 15%;
+    background: var(--footer-color);
+    z-index: 2;
+  }
+  
+  /* 帯の上部にグラデーション */
+  .welcome-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255,255,255,.2);
+  }
+  
+  /* レスポンシブ */
+  @media (max-width: 768px) {
+    .noren__left::after {
+      right: 30%;
+    }
+    .noren__right::after {
+      left: 30%;
+    }
+    .welcome-enter {
+      bottom: 15%;
+      width: 90px;
+      height: 90px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .noren__left {
+      clip-path: polygon(0 0, 100% 0, 55% 100%, 0 100%);
+    }
+    .noren__right {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 45% 100%);
+    }
+    .noren__left::after {
+      right: 25%;
+      width: 2px;
+    }
+    .noren__right::after {
+      left: 25%;
+      width: 2px;
+    }
+    .welcome-footer {
+      height: 12%;
+    }
+    .welcome-enter {
+      bottom: 12%;
+      width: 80px;
+      height: 80px;
+    }
+  }
 </style>
-<div
-  class="welcome-kv"
-  id="welcomeKv"
-  style="
-    --noren-left: url('{{ asset('images/left_noren.png') }}');
-    --noren-right: url('{{ asset('images/right_noren.png') }}');
-  ">
 
-  {{-- 背景（和紙っぽい） --}}
-  <div class="welcome-kv__bg" aria-hidden="true"></div>
-
-  {{-- 舞台（viewport基準で中央固定） --}}
-  <div class="welcome-stage" aria-hidden="true"></div>
-
-  {{-- 暖簾（主役：最初から表示） --}}
-  <div class="noren noren--close is-ready" id="norenClose" aria-hidden="true">
-    <div class="noren__inner">
-      <div class="noren__panel noren__left">
-        <img src="{{ asset('images/left_noren.png') }}" alt="" class="noren__img">
-      </div>
-      <div class="noren__panel noren__right">
-        <img src="{{ asset('images/right_noren.png') }}" alt="暖簾（右）" class="noren__img" loading="eager">
-      </div>
+<div class="welcome-kv" id="welcomeKv">
+  
+  {{-- 暖簾（左右でV字型） --}}
+  <div class="noren" id="noren">
+    <div class="noren__left"></div>
+    <div class="noren__right"></div>
+  </div>
+  
+  {{-- 中央コンテンツ --}}
+  <div class="welcome-content">
+    <div class="welcome-logo">
+      {{-- メインロゴ --}}
+      <span class="welcome-logo__main">5akeMe</span>
+      
+      {{-- サブテキスト --}}
+      <span class="welcome-logo__sub">お 酒 診 断</span>
     </div>
   </div>
-
-  {{-- WELCOMEボタン（クリックで：ちょい溜め → 暖簾をくぐる → 遷移） --}}
+  
+  {{-- WELCOMEボタン --}}
   <a href="{{ route('age.check') }}" class="welcome-enter js-enter" aria-label="Enter">
     <span class="welcome-enter__text">WELCOME</span>
   </a>
-
+  
+  {{-- 下部の帯 --}}
+  <div class="welcome-footer"></div>
+  
 </div>
 
 <script>
   // 暖簾をくぐる演出
   document.addEventListener('DOMContentLoaded', function() {
     var enter = document.querySelector('.js-enter');
-    var norenClose = document.getElementById('norenClose');
+    var noren = document.getElementById('noren');
     
-    if (enter && norenClose) {
+    if (enter && noren) {
       enter.addEventListener('click', function(e) {
         e.preventDefault();
         var href = enter.getAttribute('href');
@@ -87,18 +307,18 @@
         
         // 暖簾を左右に開く
         setTimeout(function() {
-          norenClose.classList.add('is-active');
-        }, 200);
+          noren.classList.add('is-active');
+        }, 100);
         
-        // 暖簾が奥に消える
+        // 暖簾が消える
         setTimeout(function() {
-          norenClose.classList.add('is-vanish');
-        }, 1200);
+          noren.classList.add('is-vanish');
+        }, 800);
         
         // ページ遷移
         setTimeout(function() {
           window.location.href = href;
-        }, 1800);
+        }, 1200);
       });
     }
   });

@@ -101,7 +101,7 @@
         @auth
           <a href="{{ route('mypage') }}" class="app-header-user-link" title="マイページ">
             @if(auth()->user()->avatar)
-              <img src="{{ auth()->user()->avatar }}" alt="" class="app-header-avatar">
+              <img src="{{ strpos(auth()->user()->avatar, 'http') === 0 ? auth()->user()->avatar : asset(auth()->user()->avatar) }}" alt="" class="app-header-avatar">
             @else
               <span class="app-header-avatar-placeholder">👤</span>
             @endif

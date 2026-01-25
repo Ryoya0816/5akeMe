@@ -59,4 +59,14 @@ return [
         'redirect' => env('TWITTER_REDIRECT_URI', '/auth/twitter/callback'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Services
+    |--------------------------------------------------------------------------
+    */
+
+    'python_api' => [
+        'url' => env('PYTHON_API_URL', 'http://python:8000'),
+    ],
+
 ];

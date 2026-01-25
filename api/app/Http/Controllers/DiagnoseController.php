@@ -344,8 +344,8 @@ class DiagnoseController extends Controller
     private function callPythonScoreApi(array $answers, ?int $seed = null): ?array
     {
         try {
-            // Docker内部ネットワークでPythonコンテナに接続
-            $pythonApiUrl = env('PYTHON_API_URL', 'http://python:8000');
+            // Docker内部ネットワークでPythonコンテナに接続（config経由で取得）
+            $pythonApiUrl = config('services.python_api.url', 'http://python:8000');
             
             $response = Http::timeout(10)
                 ->post("{$pythonApiUrl}/score", [

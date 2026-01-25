@@ -88,6 +88,11 @@ class MypageController extends Controller
     {
         $user = Auth::user();
         
+        // 所有権チェック：ユーザーが登録したお店のみ更新可能
+        if (!$user->visitedStores()->where('store_id', $store->id)->exists()) {
+            abort(403, 'このお店を更新する権限がありません。');
+        }
+        
         $validated = $request->validate([
             'memo' => 'nullable|string|max:1000',
             'visited_at' => 'nullable|date',
@@ -107,6 +112,11 @@ class MypageController extends Controller
     public function removeStore(Store $store)
     {
         $user = Auth::user();
+        
+        // 所有権チェック：ユーザーが登録したお店のみ削除可能
+        if (!$user->visitedStores()->where('store_id', $store->id)->exists()) {
+            abort(403, 'このお店を削除する権限がありません。');
+        }
         
         $user->visitedStores()->detach($store->id);
         

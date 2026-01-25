@@ -40,4 +40,53 @@ docs-doc:
 	@mkdir -p docs/schema
 	$(TBLS) doc --config tbls.yml
 
-.PHONY: assets assets-build assets-dev npm docs docs-doc
+# ---------------------------------------------------------------------------
+# 本番デプロイ用コマンド
+# ---------------------------------------------------------------------------
+
+# 本番用ビルド（アセット + Composer最適化）
+deploy-build:
+	@echo "Building for production..."
+	$(COMPOSE) run --rm node sh -c "npm ci && npm run build"
+	$(COMPOSE) exec app composer install --optimize-autoloader --no-dev
+	$(COMPOSE) exec app php artisan config:cache
+	$(COMPOSE) exec app php artisan route:cache
+	$(COMPOSE) exec app php artisan view:cache
+	@echo "Production build complete!"
+
+# キャッシュクリア
+deploy-clear:
+	@echo "Clearing caches..."
+	$(COMPOSE) exec app php artisan cache:clear
+	$(COMPOSE) exec app php artisan config:clear
+	$(COMPOSE) exec app php artisan route:clear
+	$(COMPOSE) exec app php artisan view:clear
+	@echo "Caches cleared!"
+
+# マイグレーション実行
+deploy-migrate:
+	@echo "Running migrations..."
+	$(COMPOSE) exec app php artisan migrate --force
+	@echo "Migrations complete!"
+
+# 本番デプロイ（フル）
+deploy:
+	@echo "Starting full deployment..."
+	$(MAKE) deploy-clear
+	$(MAKE) deploy-build
+	$(MAKE) deploy-migrate
+	@echo "Deployment complete!"
+
+# メンテナンスモード ON
+maintenance-on:
+	$(COMPOSE) exec app php artisan down
+
+# メンテナンスモード OFF
+maintenance-off:
+	$(COMPOSE) exec app php artisan up
+
+# ヘルスチェック
+health:
+	@curl -s http://localhost:8082/up && echo " OK" || echo " FAILED"
+
+.PHONY: assets assets-build assets-dev npm docs docs-doc deploy-build deploy-clear deploy-migrate deploy maintenance-on maintenance-off health

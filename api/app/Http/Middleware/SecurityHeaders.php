@@ -35,6 +35,20 @@ class SecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
+        // Content Security Policy（XSS対策の強化）
+        $csp = [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com data:",
+            "img-src 'self' data: https: blob:",
+            "connect-src 'self' ws://localhost:* http://localhost:*",
+            "frame-ancestors 'self'",
+            "form-action 'self'",
+            "base-uri 'self'",
+        ];
+        $response->headers->set('Content-Security-Policy', implode('; ', $csp));
+
         return $response;
     }
 }

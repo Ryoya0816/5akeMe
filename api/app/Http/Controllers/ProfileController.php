@@ -64,8 +64,10 @@ class ProfileController extends Controller
                     }
                 }
                 
-                // 新しいアバターを保存
-                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+                // 新しいアバターを保存（ランダムなファイル名でセキュリティ向上）
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                $randomName = \Illuminate\Support\Str::random(40) . '.' . $extension;
+                $avatarPath = $request->file('avatar')->storeAs('avatars', $randomName, 'public');
                 // /storage/で始まるパスを保存（asset()で変換される）
                 $user->avatar = '/storage/' . $avatarPath;
                 

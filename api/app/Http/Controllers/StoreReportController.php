@@ -18,8 +18,8 @@ class StoreReportController extends Controller
 
         // バリデーション
         $validated = $request->validate([
-            'update_types'   => 'nullable|array',
-            'update_types.*' => 'string|max:50',
+            'update_types'   => 'nullable|array|max:10',
+            'update_types.*' => 'string|max:50|alpha_dash',
             'detail'         => 'required|string|min:5|max:2000',
         ]);
 

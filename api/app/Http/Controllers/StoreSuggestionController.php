@@ -8,8 +8,14 @@ class StoreSuggestionController extends Controller
 {
     public function suggest(Request $request)
     {
-        $mood = (int) $request->query('mood', 0); // 1 or 2
-        $primary = (string) $request->query('primary', '');
+        // バリデーション
+        $validated = $request->validate([
+            'mood' => 'nullable|integer|in:0,1,2',
+            'primary' => 'nullable|string|max:50|alpha_dash',
+        ]);
+
+        $mood = (int) ($validated['mood'] ?? 0); // 1 or 2
+        $primary = (string) ($validated['primary'] ?? '');
 
         // 超シンプルなダミーデータ（後でDB化）
         $stores = [

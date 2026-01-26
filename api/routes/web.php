@@ -90,6 +90,7 @@ Route::get('/store/{id}', function ($id) {
 })->name('store.detail');
 
 Route::post('/store/{id}/report', [\App\Http\Controllers\StoreReportController::class, 'store'])
+    ->middleware('throttle:5,1') // 1分間に5回まで（スパム防止）
     ->name('store.report');
 
 

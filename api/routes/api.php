@@ -52,7 +52,9 @@ Route::prefix('diagnose')
  * 店舗レコメンド系（今回はおまけ）
  */
 Route::get('/recommend/stores', [RecommendController::class, 'index'])
+    ->middleware('throttle:30,1') // 1分間に30回まで
     ->name('api.recommend.stores');
 
 Route::get('/stores/suggest', [StoreSuggestionController::class, 'suggest'])
+    ->middleware('throttle:30,1') // 1分間に30回まで
     ->name('api.stores.suggest');

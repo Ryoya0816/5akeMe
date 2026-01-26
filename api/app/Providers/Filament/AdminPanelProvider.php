@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            // ->login() // 一旦ログイン不要（URLのみでアクセス可能）
+            ->login() // ログイン必須
             ->brandName('5akeMe 管理画面')
             ->colors([
                 'primary' => Color::Rose, // 5akeMeのブランドカラーに近い色
@@ -51,9 +51,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
             ]);
-            // ->authMiddleware([
-            //     Authenticate::class,
-            // ]);
     }
 }

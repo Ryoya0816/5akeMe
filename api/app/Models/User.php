@@ -3,13 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -27,6 +29,10 @@ class User extends Authenticatable
         'provider_id',
         'avatar',
         'email_verified_at',
+        'is_admin',
+        'is_active',
+        'suspended_at',
+        'suspended_reason',
     ];
 
     /**
@@ -49,6 +55,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_active' => 'boolean',
+            'suspended_at' => 'datetime',
         ];
     }
 
@@ -90,5 +99,58 @@ class User extends Authenticatable
             'twitter' => 'X (Twitter)',
             default => 'メール',
         };
+    }
+
+    /**
+     * 管理者かどうか
+     */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
+    /**
+     * アカウントが有効かどうか
+     */
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
+    }
+
+    /**
+     * アカウントを停止
+     */
+    public function suspend(string $reason = null): void
+    {
+        $this->update([
+            'is_active' => false,
+            'suspended_at' => now(),
+            'suspended_reason' => $reason,
+        ]);
+    }
+
+    /**
+     * アカウント停止を解除
+     */
+    public function unsuspend(): void
+    {
+        $this->update([
+            'is_active' => true,
+            'suspended_at' => null,
+            'suspended_reason' => null,
+        ]);
+    }
+
+    /**
+     * Filament管理画面へのアクセス権限
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // adminパネルは管理者のみアクセス可能
+        if ($panel->getId() === 'admin') {
+            return $this->isAdmin();
+        }
+
+        return true;
     }
 }

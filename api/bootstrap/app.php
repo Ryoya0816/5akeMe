@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\SanitizeInput::class);
 
+        // webミドルウェアグループに停止ユーザーチェックを追加
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\CheckUserActive::class,
+        ]);
+
         // ルートで ->middleware('age.verified') みたいに使えるように alias 登録
         $middleware->alias([
             'age.verified' => \App\Http\Middleware\AgeVerified::class,

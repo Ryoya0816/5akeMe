@@ -22,4 +22,25 @@ export default defineConfig({
             credentials: true,
         },
     },
+    // 本番ビルド最適化
+    build: {
+        // ファイルサイズを小さく
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true,  // console.log削除
+                drop_debugger: true, // debugger削除
+            },
+        },
+        // チャンク分割（キャッシュ効率向上）
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['alpinejs'],
+                },
+            },
+        },
+        // ソースマップは本番では無効
+        sourcemap: false,
+    },
 });

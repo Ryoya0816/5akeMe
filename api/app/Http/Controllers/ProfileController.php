@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,17 +65,25 @@ class ProfileController extends Controller
                     }
                 }
                 
-                // 新しいアバターを保存（ランダムなファイル名でセキュリティ向上）
-                $extension = $request->file('avatar')->getClientOriginalExtension();
-                $randomName = \Illuminate\Support\Str::random(40) . '.' . $extension;
-                $avatarPath = $request->file('avatar')->storeAs('avatars', $randomName, 'public');
-                // /storage/で始まるパスを保存（asset()で変換される）
-                $user->avatar = '/storage/' . $avatarPath;
+                // 新しいアバターを保存（リサイズ＆圧縮してパフォーマンス向上）
+                $imageService = new ImageService();
+                $avatarPath = $imageService->storeResized(
+                    $request->file('avatar'),
+                    'avatars',
+                    400,  // 最大幅
+                    400,  // 最大高さ
+                    85    // 画質
+                );
                 
-                \Log::info('Avatar uploaded', [
-                    'path' => $user->avatar,
-                    'storage_path' => $avatarPath,
-                ]);
+                if ($avatarPath) {
+                    // /storage/で始まるパスを保存（asset()で変換される）
+                    $user->avatar = '/storage/' . $avatarPath;
+                    
+                    \Log::info('Avatar uploaded and optimized', [
+                        'path' => $user->avatar,
+                        'storage_path' => $avatarPath,
+                    ]);
+                }
             }
             
             // その他のプロフィール情報を更新（avatarは除外）

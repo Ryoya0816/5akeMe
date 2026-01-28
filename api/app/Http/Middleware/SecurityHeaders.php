@@ -36,13 +36,19 @@ class SecurityHeaders
         }
 
         // Content Security Policy（XSS対策の強化）
+        $styleSrc = ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://fonts.bunny.net'];
+        if (!app()->isProduction()) {
+            // 開発時: Viteのスタイル用
+            $styleSrc[] = 'http://localhost:5174';
+            $styleSrc[] = 'http://127.0.0.1:5174';
+        }
         $csp = [
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com data:",
+            'style-src ' . implode(' ', $styleSrc),
+            "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:",
             "img-src 'self' data: https: blob:",
-            "connect-src 'self' ws://localhost:* http://localhost:*",
+            "connect-src 'self' ws://localhost:* http://localhost:* wss://localhost:*",
             "frame-ancestors 'self'",
             "form-action 'self'",
             "base-uri 'self'",

@@ -150,14 +150,14 @@
   /* WELCOMEボタン */
   .welcome-enter {
     position: absolute;
-    bottom: 15%;
+    bottom: 22%;
     left: 50%;
-    transform: translate(-50%, 50%);
+    transform: translate(-50%, 0);
     z-index: 10;
     pointer-events: auto;
     text-decoration: none;
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -174,7 +174,7 @@
   }
   
   .welcome-enter:hover {
-    transform: translate(-50%, 50%) translateY(-3px) scale(1.03);
+    transform: translate(-50%, 0) translateY(-3px) scale(1.03);
     background: radial-gradient(circle at 40% 35%, 
       rgba(255,255,255,.85), 
       rgba(255,255,255,.75) 40%,
@@ -186,14 +186,14 @@
   
   .welcome-enter.is-disabled {
     opacity: 0.4;
-    transform: translate(-50%, 50%) scale(0.95);
+    transform: translate(-50%, 0) scale(0.95);
     pointer-events: none;
   }
   
   .welcome-enter__text {
     letter-spacing: .12em;
     font-weight: 600;
-    font-size: clamp(8px, 1.1vw, 11px);
+    font-size: clamp(16px, 2.2vw, 22px);
     color: var(--brand-main);
     text-transform: uppercase;
     opacity: 0.85;
@@ -230,9 +230,9 @@
       left: 30%;
     }
     .welcome-enter {
-      bottom: 15%;
-      width: 90px;
-      height: 90px;
+      bottom: 20%;
+      width: 180px;
+      height: 180px;
     }
   }
   
@@ -255,9 +255,9 @@
       height: 12%;
     }
     .welcome-enter {
-      bottom: 12%;
-      width: 80px;
-      height: 80px;
+      bottom: 18%;
+      width: 160px;
+      height: 160px;
     }
   }
 </style>

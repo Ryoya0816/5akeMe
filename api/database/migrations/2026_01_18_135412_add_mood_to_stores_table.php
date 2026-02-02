@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('stores', function (Blueprint $table) {
             // 雰囲気タグ: lively（にぎやか）, calm（落ち着き）, both（両方OK）
             $table->string('mood')->nullable()->after('sake_types');
-        });
+        });！
     }
 
     /**

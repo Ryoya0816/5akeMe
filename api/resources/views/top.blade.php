@@ -101,6 +101,8 @@
   .season-banner-recommend { font-size: 12px; color: #8c6d57; flex-shrink: 0; }
   .top-hero { max-width: 960px; margin: 40px auto 60px; padding: 0 20px; text-align: center; position: relative; z-index: 1; }
   .top-title { font-size: 24px; font-weight: bold; margin-bottom: 8px; color: #9c3f2e; }
+  .top-title ruby { ruby-position: over; }
+  .top-title rt { font-size: 14px; font-weight: normal; color: #8c6d57; letter-spacing: 0.05em; }
   .top-lead { font-size: 14px; color: #8c6d57; margin-bottom: 32px; }
   .top-main { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 48px; width: 100%; max-width: 720px; margin: 0 auto; }
   .top-left, .top-right { flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center; }
@@ -141,7 +143,7 @@
   @endif
 
   <section class="top-hero">
-    <h2 class="top-title">5akeMe お酒診断</h2>
+    <h2 class="top-title"><ruby>5akeMe<rt>サケミー</rt></ruby> お酒診断</h2>
     <p class="top-lead">あなたにピッタリのお酒を、5問で提案します。</p>
 
     <div class="top-main">

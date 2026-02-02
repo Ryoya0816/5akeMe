@@ -260,7 +260,7 @@
             <div class="legal-text">
                 <p>本規約に関するお問い合わせは、以下の窓口までお願いいたします。</p>
                 <p>サービス名: 5akeMe<br>
-                運営: 5akeMe運営チーム<br>
+                運営者: Ryoya<br>
                 メール: hello.sagaworld816@gmail.com</p>
             </div>
         </section>

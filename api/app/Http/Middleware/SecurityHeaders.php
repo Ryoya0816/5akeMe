@@ -42,15 +42,22 @@ class SecurityHeaders
             $styleSrc[] = 'http://localhost:5174';
             $styleSrc[] = 'http://127.0.0.1:5174';
         }
+        $connectSrc = ["'self'"];
+        $formAction = ["'self'", 'https://formsubmit.co'];
+        if (!app()->isProduction()) {
+            $connectSrc[] = 'ws://localhost:*';
+            $connectSrc[] = 'http://localhost:*';
+            $connectSrc[] = 'wss://localhost:*';
+        }
         $csp = [
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
             'style-src ' . implode(' ', $styleSrc),
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:",
             "img-src 'self' data: https: blob:",
-            "connect-src 'self' ws://localhost:* http://localhost:* wss://localhost:*",
+            'connect-src ' . implode(' ', $connectSrc),
             "frame-ancestors 'self'",
-            "form-action 'self'",
+            'form-action ' . implode(' ', $formAction),
             "base-uri 'self'",
         ];
         $response->headers->set('Content-Security-Policy', implode('; ', $csp));

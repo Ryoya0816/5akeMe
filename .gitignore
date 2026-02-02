@@ -7,11 +7,29 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Laravel
+# ---------------------------------------------------------
+# 環境変数（秘密情報を含むため絶対にコミットしない）
+# ---------------------------------------------------------
 .env
+.env.*
+!.env.example
+
+# Laravel (api/ 配下は api/.gitignore も参照)
 /storage/*.key
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/logs/*
 /bootstrap/cache/*
+
+# Python（キャッシュ・学習データ）
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+python/app/data/
+
+# 本番用 compose のローカル上書き（コミットしない）
+docker-compose.override.yml
+docker-compose.*.override.yml

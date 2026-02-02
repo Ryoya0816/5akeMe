@@ -138,6 +138,13 @@
     letter-spacing: 0.2em;
     color: var(--brand-main);
   }
+  .welcome-logo__main ruby { ruby-position: over; }
+  .welcome-logo__main rt {
+    font-size: clamp(14px, 2.5vw, 22px);
+    font-weight: normal;
+    letter-spacing: 0.1em;
+    color: var(--text-sub, #8c6d57);
+  }
   
   /* サブテキスト */
   .welcome-logo__sub {
@@ -274,7 +281,7 @@
   <div class="welcome-content">
     <div class="welcome-logo">
       {{-- メインロゴ --}}
-      <span class="welcome-logo__main">5akeMe</span>
+      <span class="welcome-logo__main"><ruby>5akeMe<rt>サケミー</rt></ruby></span>
       
       {{-- サブテキスト --}}
       <span class="welcome-logo__sub">お 酒 診 断</span>

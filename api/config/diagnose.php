@@ -451,8 +451,8 @@ return [
         'A1:a' => [
             'cocktail'     => 3,
             'craft_beer'   => 3,
+            'sake_sweet'   => 2,
             'wine_white'   => 2,
-            'sake_sweet'   => 1,
             'shochu_mugi'  => 1,
         ],
         'A1:b' => [
@@ -494,15 +494,15 @@ return [
         'A2:b' => [
             'cocktail'     => 3,
             'craft_beer'   => 3,
-            'sake_sweet'   => 2,
+            'sake_sweet'   => 3,
+            'sake_dry'     => 2,
             'wine_white'   => 1,
-            'sake_dry'     => 1,
         ],
         'A2:c' => [
+            'sake_dry'     => 2,
+            'sake_sweet'   => 2,
             'wine_white'   => 2,
             'shochu_mugi'  => 2,
-            'sake_dry'     => 1,
-            'sake_sweet'   => 1,
             'shochu_kome'  => 1,
         ],
         'A2:d' => [
@@ -523,17 +523,17 @@ return [
         // ==========================================
         'A3:a' => [
             'cocktail'     => 3,
-            'wine_white'   => 2,
             'craft_beer'   => 2,
-            'sake_sweet'   => 1,
+            'sake_sweet'   => 2,
+            'wine_white'   => 2,
             'shochu_mugi'  => 1,
         ],
         'A3:b' => [
             'craft_beer'   => 2,
             'cocktail'     => 2,
+            'sake_dry'     => 2,
+            'sake_sweet'   => 2,
             'wine_white'   => 2,
-            'sake_dry'     => 1,
-            'sake_sweet'   => 1,
         ],
         'A3:c' => [
             'sake_dry'     => 2,
@@ -560,8 +560,8 @@ return [
         'A4:a' => [
             'cocktail'     => 3,
             'craft_beer'   => 3,
+            'sake_sweet'   => 2,
             'wine_white'   => 2,
-            'sake_sweet'   => 1,
         ],
         'A4:b' => [
             'sake_sweet'   => 3,
@@ -600,7 +600,7 @@ return [
         'A5:b' => [
             'craft_beer'   => 3,
             'cocktail'     => 3,
-            'sake_sweet'   => 1,
+            'sake_sweet'   => 2,
             'wine_white'   => 1,
         ],
         'A5:c' => [
@@ -772,7 +772,8 @@ return [
         // B1: どんなお酒が好き？
         // ==========================================
         'B1:a' => [
-            'sake_sweet'   => 5,
+            'sake_sweet'   => 6,
+            'sake_dry'     => 3,
             'cocktail'     => 5,
             'wine_white'   => 4,
             'shochu_mugi'  => 3,
@@ -790,13 +791,14 @@ return [
             'craft_beer'   => 4,
         ],
         'B1:d' => [
-            'sake_dry'     => 5,
+            'sake_dry'     => 6,
+            'sake_sweet'   => 2,
             'wine_white'   => 4,
             'shochu_kome'  => 3,
         ],
         'B1:e' => [
-            'sake_dry'     => 4,
-            'sake_sweet'   => 4,
+            'sake_dry'     => 5,
+            'sake_sweet'   => 5,
             'shochu_mugi'  => 3,
             'wine_white'   => 3,
         ],
@@ -805,7 +807,8 @@ return [
         // B2: 普段飲むならどんな方向性？
         // ==========================================
         'B2:a' => [
-            'sake_sweet'   => 5,
+            'sake_sweet'   => 6,
+            'sake_dry'     => 3,
             'cocktail'     => 5,
             'wine_white'   => 4,
         ],
@@ -854,8 +857,8 @@ return [
             'sake_sweet'   => 3,
         ],
         'B3:e' => [
-            'sake_dry'     => 3,
-            'sake_sweet'   => 3,
+            'sake_dry'     => 4,
+            'sake_sweet'   => 4,
             'shochu_mugi'  => 3,
             'wine_white'   => 3,
         ],
@@ -1072,14 +1075,16 @@ return [
             'wine_white'   => 3,
         ],
         'C1:b' => [
-            'sake_sweet'   => 3,
+            'sake_sweet'   => 4,
+            'sake_dry'     => 2,
             'wine_white'   => 3,
             'shochu_mugi'  => 2,
         ],
         'C1:c' => [
+            'sake_dry'     => 4,
+            'sake_sweet'   => 2,
             'wine_red'     => 4,
             'shochu_kome'  => 3,
-            'sake_dry'     => 2,
         ],
         'C1:d' => [
             'whisky'       => 4,
@@ -1106,8 +1111,8 @@ return [
             'sake_sweet'   => 2,
         ],
         'C2:c' => [
-            'sake_dry'     => 2,
-            'sake_sweet'   => 2,
+            'sake_dry'     => 3,
+            'sake_sweet'   => 3,
             'shochu_mugi'  => 2,
         ],
         'C2:d' => [
@@ -1164,7 +1169,8 @@ return [
             'sake_sweet'   => 3,
         ],
         'C4:c' => [
-            'sake_dry'     => 2,
+            'sake_dry'     => 3,
+            'sake_sweet'   => 2,
             'shochu_mugi'  => 2,
             'wine_white'   => 1,
         ],
@@ -1222,7 +1228,8 @@ return [
             'wine_white'   => 2,
         ],
         'C6:c' => [
-            'sake_dry'     => 3,
+            'sake_dry'     => 4,
+            'sake_sweet'   => 2,
             'shochu_mugi'  => 2,
             'wine_white'   => 1,
         ],
@@ -1251,7 +1258,8 @@ return [
             'shochu_kome'  => 2,
         ],
         'C7:c' => [
-            'sake_dry'     => 3,
+            'sake_dry'     => 4,
+            'sake_sweet'   => 2,
             'craft_beer'   => 3,
             'wine_white'   => 2,
         ],
@@ -1345,31 +1353,35 @@ return [
         // q2（1.5倍適用対象）
         // ==========================================
         'q2:a' => [
-            'sake_sweet'   => 6,
+            'sake_sweet'   => 7,
+            'sake_dry'     => 4,
             'wine_white'   => 5,
             'cocktail'     => 5,
             'shochu_mugi'  => 3,
         ],
         'q2:b' => [
+            'sake_sweet'   => 5,
+            'sake_dry'     => 4,
             'wine_white'   => 6,
             'wine_red'     => 5,
-            'sake_sweet'   => 4,
             'craft_beer'   => 3,
         ],
         'q2:c' => [
+            'sake_dry'     => 5,
             'wine_red'     => 6,
             'shochu_imo'   => 6,
             'whisky'       => 6,
             'craft_beer'   => 4,
         ],
         'q2:d' => [
-            'sake_dry'     => 6,
+            'sake_dry'     => 7,
+            'sake_sweet'   => 3,
             'wine_white'   => 5,
             'shochu_kome'  => 4,
         ],
         'q2:e' => [
-            'sake_dry'     => 5,
-            'sake_sweet'   => 5,
+            'sake_dry'     => 6,
+            'sake_sweet'   => 6,
             'shochu_mugi'  => 4,
             'wine_white'   => 3,
         ],

@@ -126,7 +126,7 @@
           <span class="footer-brand-icon">🍶</span>
           <span class="footer-brand-text">5akeMe</span>
         </a>
-        <p class="footer-copy">© {{ date('Y') }} 5akeMe</p>
+        <p class="footer-copy">© {{ date('Y') }} Hello.Sagaworld</p>
       </div>
 
       <nav class="footer-nav" aria-label="Footer navigation">

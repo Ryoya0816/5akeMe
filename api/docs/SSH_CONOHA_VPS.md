@@ -119,7 +119,11 @@ cd ..
 - **構成:** nginx（reverse proxy）、Laravel php-fpm（api）、FastAPI（uvicorn workers=1）、MySQL 8（メモリ制限）
 - **Vite ビルド:** サーバでは行わず、ローカルで `npm run build` → 成果物をデプロイする。
 
-リポジトリの **docker-compose.production.yml** を使用する手順は、同梱の **api/docs/DEPLOY_CONOHA_5AKEME.md** を参照。
+リポジトリの **docker-compose.production.yml** を使用する手順は、同梱の **api/docs/** を参照。
+
+- 今すぐやる手順: [DEPLOY_NOW.md](./DEPLOY_NOW.md)
+- チェックリスト: [DEPLOY_CHECKLIST.md](./DEPLOY_CHECKLIST.md)
+- 詳細: [DEPLOY_CONOHA_5AKEME.md](./DEPLOY_CONOHA_5AKEME.md)
 
 ---
 

@@ -30,8 +30,8 @@ class SecurityHeaders
         // 権限ポリシー（不要な機能を無効化）
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
-        // 本番環境ではHSTSを有効化（HTTPSを強制）
-        if (app()->isProduction()) {
+        // HTTPS でアクセスしているときだけ HSTS を付与（HTTP の本番では付与しない）
+        if ($request->secure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 

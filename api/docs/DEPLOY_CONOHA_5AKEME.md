@@ -32,7 +32,10 @@ cd ..
 
 ```bash
 # 例: rsync（.git を除く）
-rsync -avz --exclude='.git' --exclude='node_modules' --exclude='.env' \
+rsync -avz \
+  --exclude='.git' --exclude='node_modules' --exclude='.env' --exclude='.env.*' \
+  --exclude='api/storage/framework/views/' --exclude='api/storage/framework/sessions/' \
+  --exclude='api/storage/framework/cache/' --exclude='api/storage/logs/' \
   ./ ryoya@160.251.214.119:~/5akeme/
 
 # または git clone + pull でサーバ上で取得
@@ -126,7 +129,10 @@ docker compose -f docker-compose.production.yml exec app php artisan view:cache
 cd api && npm run build && cd ..
 
 # サーバにコードを送る
-rsync -avz --exclude='.git' --exclude='node_modules' --exclude='.env' \
+rsync -avz \
+  --exclude='.git' --exclude='node_modules' --exclude='.env' --exclude='.env.*' \
+  --exclude='api/storage/framework/views/' --exclude='api/storage/framework/sessions/' \
+  --exclude='api/storage/framework/cache/' --exclude='api/storage/logs/' \
   ./ ryoya@160.251.214.119:~/5akeme/
 
 # サーバで

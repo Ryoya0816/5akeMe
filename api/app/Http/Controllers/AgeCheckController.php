@@ -23,9 +23,9 @@ class AgeCheckController extends Controller
 
         // セキュアなCookie設定
         // - httpOnly: JavaScriptからアクセス不可（XSS対策）
-        // - secure: 本番環境ではHTTPSのみ
+        // - secure: HTTPS のときだけ。APP_URL が http:// なら必ず false（リバースプロキシで secure() がずれる場合の保険）
         // - sameSite: CSRF対策
-        $secure = app()->isProduction();
+        $secure = $request->secure() && str_starts_with(config('app.url', ''), 'https://');
         
         $cookie = cookie(
             'age_verified',     // 名前

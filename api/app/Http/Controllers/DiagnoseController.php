@@ -34,37 +34,60 @@ class DiagnoseController extends Controller
      */
     public function start(Request $request, DiagnoseService $service)
     {
-        // JSON / フォーム / クエリ どこに来ても OK にしておく
-        $data = $request->validate([
-            'seed' => 'nullable|integer',
-        ]);
-
-        $seed = $data['seed'] ?? null;
-
-        // サービス側で「固定2 + A/B/C 各1問」の 5問セットを組み立て
-        $session = $service->createSession($seed);
-
-        $questions = $session['questions'] ?? [];
-
-        if (!is_array($questions) || count($questions) === 0) {
-            // 想定外パターンはログを吐いて 500
-            Log::error('[Diagnose] empty questions from createSession', [
-                'seed'    => $seed,
-                'session' => $session,
+        try {
+            // JSON / フォーム / クエリ どこに来ても OK にしておく
+            $data = $request->validate([
+                'seed' => 'nullable|integer',
             ]);
 
+            $seed = $data['seed'] ?? null;
+
+            // 設定が読めているか事前チェック（原因切り分け用）
+            $fixed = config('diagnose.fixed_questions', []);
+            if (!is_array($fixed) || count($fixed) === 0) {
+                Log::error('[Diagnose] config diagnose.fixed_questions is empty');
+                return response()->json([
+                    'message' => '質問の取得に失敗しました。',
+                    'debug'   => config('app.debug') ? 'config(diagnose.fixed_questions) is empty' : null,
+                ], 500);
+            }
+
+            // サービス側で「固定2 + A/B/C 各1問」の 5問セットを組み立て
+            $session = $service->createSession($seed);
+
+            $questions = $session['questions'] ?? [];
+
+            if (!is_array($questions) || count($questions) === 0) {
+                // 想定外パターンはログを吐いて 500
+                Log::error('[Diagnose] empty questions from createSession', [
+                    'seed'    => $seed,
+                    'session' => $session,
+                ]);
+
+                return response()->json([
+                    'message' => '質問の取得に失敗しました。',
+                    'debug'   => config('app.debug') ? 'createSession returned empty questions' : null,
+                ], 500);
+            }
+
+            // 念のため 0,1,2... の連番に揃える
+            $questions = array_values($questions);
+
+            return response()->json([
+                'seed'      => $session['seed'] ?? $seed,
+                'questions' => $questions,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('[Diagnose] start exception', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
             return response()->json([
                 'message' => '質問の取得に失敗しました。',
+                'debug'   => config('app.debug') ? $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() : null,
             ], 500);
         }
-
-        // 念のため 0,1,2... の連番に揃える
-        $questions = array_values($questions);
-
-        return response()->json([
-            'seed'      => $session['seed'] ?? $seed,
-            'questions' => $questions,
-        ]);
     }
 
     /**

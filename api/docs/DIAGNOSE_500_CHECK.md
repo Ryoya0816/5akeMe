@@ -19,8 +19,9 @@ docker compose -f docker-compose.production.yml exec app tail -80 storage/logs/l
 
 | 原因 | 対処 |
 |------|------|
+| **Access denied for user 'root'@'...' (using password: NO)** | `api/.env` で **DB_USERNAME=laravel**、**DB_PASSWORD=ルート .env と同じ値**にし、`config:clear`。または [ENV_REQUIRED.md](./ENV_REQUIRED.md) の手順で `scripts/fix-db-env-on-vps.sh` を実行。 |
 | **config('diagnose') が空** | `config:clear` してから再度リクエスト。config/diagnose.php がサーバに存在するか確認。 |
-| **DB 接続エラー** | .env の DB_CONNECTION=mysql, DB_HOST=db とコンテナの db が動いているか確認。 |
+| **DB 接続エラー** | .env の DB_CONNECTION=mysql, DB_HOST=db とコンテナの db が動いているか確認。[ENV_REQUIRED.md](./ENV_REQUIRED.md) 参照。 |
 | **Python API は start では使わない** | /api/diagnose/start は PHP の DiagnoseService のみ。score で 500 のときは Python を疑う。 |
 
 ---

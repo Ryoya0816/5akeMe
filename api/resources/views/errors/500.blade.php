@@ -139,6 +139,15 @@
         問題が続く場合はお問い合わせください。
     </p>
 
+    @if(config('app.debug') && isset($exception))
+    <details class="error-debug" style="max-width: 640px; margin: 0 auto 24px; text-align: left; background: #fff; border: 1px solid #f1dfd0; border-radius: 12px; padding: 16px;">
+        <summary style="cursor: pointer; font-weight: 600; color: var(--brand-main);">デバッグ: 例外の詳細を表示</summary>
+        <pre style="margin: 12px 0 0; padding: 12px; background: #fbf3e8; border-radius: 8px; font-size: 12px; overflow: auto;">{{ $exception->getMessage() }}
+
+{{ $exception->getFile() }}:{{ $exception->getLine() }}</pre>
+    </details>
+    @endif
+
     <div class="error-actions">
         <a href="{{ route('top') }}" class="error-btn error-btn-primary">
             <span>🏠</span>

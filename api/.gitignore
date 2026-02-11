@@ -104,3 +104,11 @@ Desktop.ini
 # do not commit them.
 docker-compose.override.yml
 docker-compose.*.override.yml
+compose.override.yaml
+
+# ---------------------------------------------------------
+# 9) Junk / debug files (accidental or health-check output)
+# ---------------------------------------------------------
+/5
+{pong*
+{redis*

@@ -10,7 +10,14 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 cd "$REPO_ROOT"
 
-echo "==> 1. フロントビルド（api/public/build）"
+echo "==> 1. 事前チェック"
+if [ ! -f api/vendor/autoload.php ]; then
+  echo "    エラー: api/vendor がありません。先に cd api && composer install を実行してください。"
+  exit 1
+fi
+
+echo ""
+echo "==> 2. フロントビルド（api/public/build）"
 if [ ! -f api/public/build/manifest.json ]; then
   (cd api && npm ci && npm run build)
 else
@@ -22,12 +29,13 @@ else
 fi
 
 echo ""
-echo "==> 2. サーバへ rsync（.git / node_modules / .env / サーバ生成の storage は送らない）"
+echo "==> 3. サーバへ rsync（.git / node_modules / .env / hot / サーバ生成の storage は送らない）"
 rsync -avz \
   --exclude='.git' \
   --exclude='node_modules' \
   --exclude='.env' \
   --exclude='.env.*' \
+  --exclude='api/public/hot' \
   --exclude='api/storage/framework/views/' \
   --exclude='api/storage/framework/sessions/' \
   --exclude='api/storage/framework/cache/' \
@@ -35,7 +43,7 @@ rsync -avz \
   "$REPO_ROOT/" "$VPS:$REMOTE_DIR/"
 
 echo ""
-echo "==> 3. サーバで実行するコマンド（コピペ用）"
+echo "==> 4. サーバで実行するコマンド（コピペ用）"
 echo "----------------------------------------"
 cat << 'SERVER_CMDS'
 ssh ryoya@160.251.214.119
@@ -57,7 +65,6 @@ docker compose -f docker-compose.production.yml exec app php artisan config:cach
 docker compose -f docker-compose.production.yml exec app php artisan migrate --force
 docker compose -f docker-compose.production.yml exec app php artisan storage:link
 docker compose -f docker-compose.production.yml exec app php artisan config:cache
-docker compose -f docker-compose.production.yml exec app php artisan route:cache
 docker compose -f docker-compose.production.yml exec app php artisan view:cache
 SERVER_CMDS
 echo "----------------------------------------"

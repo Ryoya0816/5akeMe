@@ -1136,16 +1136,16 @@
                                 @endif
                             </div>
 
-                            @if($store->sake_types && count($store->sake_types) > 0)
+                            @php
+                                $displaySakeTypes = $store->sake_types ? array_values(array_diff($store->sake_types, \App\Models\Store::getDisplayOnlyTags())) : [];
+                            @endphp
+                            @if(count($displaySakeTypes) > 0)
                                 <div class="dr-store-tags">
-                                    @php
-                                        $sakeLabels = \App\Models\Store::sakeTypeOptions();
-                                    @endphp
-                                    @foreach(array_slice($store->sake_types, 0, 3) as $type)
-                                        <span class="dr-store-tag">{{ $sakeLabels[$type] ?? $type }}</span>
+                                    @foreach(array_slice($displaySakeTypes, 0, 3) as $type)
+                                        <span class="dr-store-tag">{{ \App\Models\Store::getSakeTypeLabel($type) }}</span>
                                     @endforeach
-                                    @if(count($store->sake_types) > 3)
-                                        <span class="dr-store-tag">+{{ count($store->sake_types) - 3 }}</span>
+                                    @if(count($displaySakeTypes) > 3)
+                                        <span class="dr-store-tag">+{{ count($displaySakeTypes) - 3 }}</span>
                                     @endif
                                 </div>
                             @endif

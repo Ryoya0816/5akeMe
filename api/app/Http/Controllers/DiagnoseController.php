@@ -281,13 +281,18 @@ class DiagnoseController extends Controller
         $primaryType = $result->primary_type;
         $mood = $result->mood;
 
-        // 店舗モデルをインポート
+        // 診断結果の mood（lively/chill/silent/light/strong）を Store の lively/calm/both にマッピング
+        $storeMood = null;
+        if ($mood) {
+            $storeMood = in_array($mood, ['chill', 'silent'], true) ? 'calm' : 'lively';
+        }
+
         $storeQuery = \App\Models\Store::active();
 
-        // 雰囲気でフィルタリング（moodがあれば）
-        if ($mood) {
-            $storeQuery->where(function ($q) use ($mood) {
-                $q->where('mood', $mood)
+        // 雰囲気でフィルタリング
+        if ($storeMood) {
+            $storeQuery->where(function ($q) use ($storeMood) {
+                $q->where('mood', $storeMood)
                   ->orWhere('mood', 'both');
             });
         }
@@ -310,9 +315,9 @@ class DiagnoseController extends Controller
             // 雰囲気だけでマッチング
             $additionalStores = \App\Models\Store::active()
                 ->whereNotIn('id', $existingIds)
-                ->where(function ($q) use ($mood) {
-                    if ($mood) {
-                        $q->where('mood', $mood)
+                ->where(function ($q) use ($storeMood) {
+                    if ($storeMood) {
+                        $q->where('mood', $storeMood)
                           ->orWhere('mood', 'both');
                     }
                 })

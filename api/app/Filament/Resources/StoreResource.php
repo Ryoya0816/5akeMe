@@ -48,15 +48,22 @@ class StoreResource extends Resource
 
                 Forms\Components\Section::make('営業情報')
                     ->schema([
-                        Forms\Components\TextInput::make('business_hours')
-                            ->label('営業時間')
-                            ->maxLength(255)
-                            ->placeholder('18:00〜24:00'),
-                        Forms\Components\TextInput::make('closed_days')
+                        Forms\Components\Select::make('business_hours_open')
+                            ->label('開店時間')
+                            ->options(Store::businessHoursOpenOptions())
+                            ->searchable()
+                            ->placeholder('選択'),
+                        Forms\Components\Select::make('business_hours_close')
+                            ->label('閉店時間')
+                            ->options(Store::businessHoursCloseOptions())
+                            ->searchable()
+                            ->placeholder('選択'),
+                        Forms\Components\Select::make('closed_days')
                             ->label('定休日')
-                            ->maxLength(255)
-                            ->placeholder('日曜日'),
-                    ])->columns(2),
+                            ->options(Store::closedDaysOptions())
+                            ->searchable()
+                            ->placeholder('選択してください'),
+                    ])->columns(3),
 
                 Forms\Components\Section::make('お酒情報')
                     ->schema([

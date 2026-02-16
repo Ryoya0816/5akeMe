@@ -122,6 +122,12 @@
             border-radius: 999px;
         }
 
+        .store-sake-tag--saga {
+            background: #8a2a1a;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(138, 42, 26, 0.3);
+        }
+
         .store-actions {
             display: flex;
             flex-direction: column;
@@ -318,11 +324,8 @@
             <section class="store-section">
                 <h2 class="store-section-title">🍶 おすすめのお酒</h2>
                 <div class="store-sake-tags">
-                    @php
-                        $sakeLabels = \App\Models\Store::sakeTypeOptions();
-                    @endphp
                     @foreach($store->sake_types as $type)
-                        <span class="store-sake-tag">{{ $sakeLabels[$type] ?? $type }}</span>
+                        <span class="store-sake-tag @if($type === 'saga_local_sake') store-sake-tag--saga @endif">{{ \App\Models\Store::getSakeTypeLabel($type) }}</span>
                     @endforeach
                 </div>
             </section>

@@ -33,3 +33,6 @@ python/app/data/
 # 本番用 compose のローカル上書き（コミットしない）
 docker-compose.override.yml
 docker-compose.*.override.yml
+
+# デプロイ時に一時生成（スクリプトで削除するが念のため）
+db_dump.sql

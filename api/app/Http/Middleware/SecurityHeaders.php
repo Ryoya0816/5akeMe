@@ -37,12 +37,15 @@ class SecurityHeaders
 
         // Content Security Policy（XSS対策の強化）
         $styleSrc = ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://fonts.bunny.net'];
+        $scriptSrc = ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.jsdelivr.net'];
         if (!app()->isProduction()) {
-            // 開発時: Viteのスタイル用
+            // 開発時: Vite dev server (localhost:5174)
             $styleSrc[] = 'http://localhost:5174';
             $styleSrc[] = 'http://127.0.0.1:5174';
+            $scriptSrc[] = 'http://localhost:5174';
+            $scriptSrc[] = 'http://127.0.0.1:5174';
         }
-        $connectSrc = ["'self'"];
+        $connectSrc = ["'self'", 'https://cdn.jsdelivr.net'];
         $formAction = ["'self'", 'https://formsubmit.co'];
         if (!app()->isProduction()) {
             $connectSrc[] = 'ws://localhost:*';
@@ -51,7 +54,7 @@ class SecurityHeaders
         }
         $csp = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+            'script-src ' . implode(' ', $scriptSrc),
             'style-src ' . implode(' ', $styleSrc),
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:",
             "img-src 'self' data: https: blob:",

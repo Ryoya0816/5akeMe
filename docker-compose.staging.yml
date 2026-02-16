@@ -1,0 +1,79 @@
+# 5akeMe ステージング（ローカルで本番と同じ構成を試す）
+# 使い方:
+#   cd api && npm run build && cd ..
+#   docker compose -f docker-compose.staging.yml up -d --build
+#   ブラウザで http://localhost:8080 を開いて確認
+#   OK なら ./scripts/deploy-to-vps.sh でデプロイ
+#
+# 止めるとき:
+#   docker compose -f docker-compose.staging.yml down
+
+services:
+  web:
+    image: nginx:alpine
+    container_name: 5akeme-staging-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api:/var/www/html:ro
+      - ./docker/nginx/production.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - stagingnet
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: 5akeme-staging-app
+    working_dir: /var/www/html
+    volumes:
+      - ./api:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - APP_ENV=local
+      - PYTHON_API_URL=http://python:8000
+    networks:
+      - stagingnet
+
+  python:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    container_name: 5akeme-staging-python
+    working_dir: /app
+    volumes:
+      - ./python:/app
+      - staging_python_data:/app/data
+    environment:
+      - DATABASE_URL=mysql+pymysql://laravel:laravel@db:3306/laravel
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    depends_on:
+      - db
+    networks:
+      - stagingnet
+
+  db:
+    image: mysql:8.0
+    container_name: 5akeme-staging-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    ports:
+      - "3307:3306"
+    volumes:
+      - staging_dbdata:/var/lib/mysql
+    networks:
+      - stagingnet
+
+volumes:
+  staging_dbdata:
+  staging_python_data:
+
+networks:
+  stagingnet:
+    driver: bridge

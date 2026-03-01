@@ -43,13 +43,13 @@ class ImageService
         }
 
         // 元のサイズを取得
-        $originalWidth = imagesx($sourceImage);
-        $originalHeight = imagesy($sourceImage);
+        $originalWidth = \imagesx($sourceImage);
+        $originalHeight = \imagesy($sourceImage);
 
         // リサイズが必要かチェック
         if ($originalWidth <= $maxWidth && $originalHeight <= $maxHeight) {
             // リサイズ不要な場合は圧縮のみ
-            imagedestroy($sourceImage);
+            \imagedestroy($sourceImage);
             return $this->storeCompressed($file, $directory, $quality);
         }
 
@@ -59,18 +59,18 @@ class ImageService
         $newHeight = (int) round($originalHeight * $ratio);
 
         // 新しい画像を作成
-        $newImage = imagecreatetruecolor($newWidth, $newHeight);
+        $newImage = \imagecreatetruecolor($newWidth, $newHeight);
 
         // PNG/GIFの透明度を維持
         if (in_array($extension, ['png', 'gif'])) {
-            imagealphablending($newImage, false);
-            imagesavealpha($newImage, true);
-            $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+            \imagealphablending($newImage, false);
+            \imagesavealpha($newImage, true);
+            $transparent = \imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+            \imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
         }
 
         // リサイズ
-        imagecopyresampled(
+        \imagecopyresampled(
             $newImage,
             $sourceImage,
             0, 0, 0, 0,
@@ -93,8 +93,8 @@ class ImageService
         $this->saveImage($newImage, $fullPath, $extension, $quality);
 
         // メモリ解放
-        imagedestroy($sourceImage);
-        imagedestroy($newImage);
+        \imagedestroy($sourceImage);
+        \imagedestroy($newImage);
 
         return $path;
     }
@@ -105,10 +105,10 @@ class ImageService
     private function createImageFromFile(string $path, string $extension)
     {
         return match ($extension) {
-            'jpg', 'jpeg' => @imagecreatefromjpeg($path),
-            'png' => @imagecreatefrompng($path),
-            'gif' => @imagecreatefromgif($path),
-            'webp' => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($path) : false,
+            'jpg', 'jpeg' => @\imagecreatefromjpeg($path),
+            'png' => @\imagecreatefrompng($path),
+            'gif' => @\imagecreatefromgif($path),
+            'webp' => \function_exists('imagecreatefromwebp') ? @\imagecreatefromwebp($path) : false,
             default => false,
         };
     }
@@ -119,11 +119,11 @@ class ImageService
     private function saveImage($image, string $path, string $extension, int $quality): void
     {
         match ($extension) {
-            'jpg', 'jpeg' => imagejpeg($image, $path, $quality),
-            'png' => imagepng($image, $path, (int) round((100 - $quality) / 10)),
-            'gif' => imagegif($image, $path),
-            'webp' => function_exists('imagewebp') ? imagewebp($image, $path, $quality) : imagejpeg($image, $path, $quality),
-            default => imagejpeg($image, $path, $quality),
+            'jpg', 'jpeg' => \imagejpeg($image, $path, $quality),
+            'png' => \imagepng($image, $path, (int) round((100 - $quality) / 10)),
+            'gif' => \imagegif($image, $path),
+            'webp' => \function_exists('imagewebp') ? \imagewebp($image, $path, $quality) : \imagejpeg($image, $path, $quality),
+            default => \imagejpeg($image, $path, $quality),
         };
     }
 
@@ -149,7 +149,7 @@ class ImageService
         }
 
         $this->saveImage($sourceImage, $fullPath, $extension, $quality);
-        imagedestroy($sourceImage);
+        \imagedestroy($sourceImage);
 
         return $path;
     }

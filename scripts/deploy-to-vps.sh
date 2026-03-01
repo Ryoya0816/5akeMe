@@ -30,7 +30,7 @@ fi
 
 echo ""
 echo "==> 3. サーバへ rsync（.git / node_modules / .env / hot / サーバ生成の storage は送らない）"
-rsync -avz \
+rsync -avz --no-perms --no-owner --no-group --no-times \
   --exclude='.git' \
   --exclude='node_modules' \
   --exclude='.env' \

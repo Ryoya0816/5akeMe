@@ -39,7 +39,11 @@ return [
     |--------------------------------------------------------------------------
     | SNS Login (Socialite)
     |--------------------------------------------------------------------------
+    | SNS_LOGIN_ENABLED=true にすると Google / LINE / X ログインが有効になります。
+    | false のときはボタン押下で「実装予定です」と表示してログイン画面に戻します。
     */
+
+    'sns_login_enabled' => env('SNS_LOGIN_ENABLED', false),
 
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
@@ -57,6 +61,7 @@ return [
         'client_id' => env('TWITTER_CLIENT_ID'),
         'client_secret' => env('TWITTER_CLIENT_SECRET'),
         'redirect' => env('TWITTER_REDIRECT_URI', '/auth/twitter/callback'),
+        'oauth' => 2, // X (Twitter) OAuth 2.0 を使用
     ],
 
     /*

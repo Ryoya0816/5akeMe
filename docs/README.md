@@ -1,6 +1,21 @@
-# データベースドキュメント生成ガイド
+# docs ディレクトリ
 
-このプロジェクトでは、[tbls](https://github.com/k1LoW/tbls)を使用してデータベースのテーブル定義書とER図を自動生成します。
+プロジェクトの設計・運用ドキュメントをまとめています。
+
+## ドキュメント一覧
+
+| ファイル | 内容 |
+|----------|------|
+| [TECH_STACK.md](TECH_STACK.md) | 技術スタック・コンテナ構成 |
+| [DIAGNOSE_ACCURACY.md](DIAGNOSE_ACCURACY.md) | 診断精度の改善方針 |
+| [SNS_LOGIN.md](SNS_LOGIN.md) | SNS ログイン（Google / LINE / X）の設定 |
+| [schema/](schema/) | DB スキーマ（tbls で生成したテーブル定義・ER 図） |
+
+---
+
+## データベースドキュメント生成（tbls）
+
+このプロジェクトでは、[tbls](https://github.com/k1LoW/tbls) を使用してデータベースのテーブル定義書と ER 図を自動生成します。
 
 ## tblsのインストール
 

@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tailwind の img{max-width:100%;height:auto} をヘッダーロゴだけ無効化 */
+@layer base {
+  img.app-header-image {
+    max-width: none !important;
+    height: unset !important;
+  }
+}
+
 /* 5akeMe デザイントークン（var(--xxx) 用） */
 :root {
   --brand-main: #9c3f2e;
@@ -21,15 +29,16 @@ html, body { height: 100%; background-color: var(--bg-base); color: var(--text-m
 .wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 64px; }
 .wrap--welcome { padding: 0; max-width: none; margin: 0; }
 
-/* ヘッダー */
-.app-header { height: 160px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); }
+/* ヘッダー（縦はそのまま・ロゴの幅だけ大きく） */
+header.app-header { height: 160px; border-bottom: 1px solid var(--line-soft); background: var(--bg-base); }
 .app-header .app-header-link { display: flex; align-items: center; height: 100%; }
-.app-header .app-header-image { height: 90%; width: 70vw; max-width: 850px; min-width: 320px; object-fit: contain; }
+header.app-header .app-header-link .app-header-image,
+img.app-header-image { height: 90% !important; width: auto !important; max-width: 100% !important; min-width: 1100px !important; object-fit: contain !important; }
 .app-header-avatar, .app-header-avatar-placeholder { width: 48px; height: 48px; }
 .app-header-avatar-placeholder { font-size: 24px; }
 @media (max-width: 640px) {
-  .app-header { height: 120px; }
-  .app-header .app-header-image { width: 70vw; min-width: 260px; }
+  header.app-header { height: 120px; }
+  header.app-header .app-header-link .app-header-image { height: 90% !important; max-width: 100% !important; min-width: 560px !important; }
   .app-header-avatar, .app-header-avatar-placeholder { width: 42px; height: 42px; }
   .app-header-avatar-placeholder { font-size: 20px; }
 }

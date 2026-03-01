@@ -20,6 +20,10 @@ class SocialiteController extends Controller
      */
     public function redirect(string $provider): RedirectResponse
     {
+        if (!config('services.sns_login_enabled', false)) {
+            return redirect()->route('login')->with('error', 'SNSログインは実装予定です！');
+        }
+
         if (!in_array($provider, $this->providers)) {
             return redirect()->route('login')->with('error', '無効なログイン方法です。');
         }
@@ -36,6 +40,10 @@ class SocialiteController extends Controller
      */
     public function callback(string $provider): RedirectResponse
     {
+        if (!config('services.sns_login_enabled', false)) {
+            return redirect()->route('login')->with('error', 'SNSログインは実装予定です！');
+        }
+
         if (!in_array($provider, $this->providers)) {
             return redirect()->route('login')->with('error', '無効なログイン方法です。');
         }
@@ -62,6 +70,7 @@ class SocialiteController extends Controller
                         'provider' => $provider,
                         'provider_id' => $socialUser->getId(),
                         'avatar' => $socialUser->getAvatar(),
+                        'is_active' => true,
                     ]);
                 }
             }
@@ -83,6 +92,7 @@ class SocialiteController extends Controller
                 'avatar' => $socialUser->getAvatar(),
                 'password' => null, // SNSログインのみなのでパスワードなし
                 'email_verified_at' => now(), // SNS経由なのでメール確認済みとする
+                'is_active' => true,
             ]);
         }
 

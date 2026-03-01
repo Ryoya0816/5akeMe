@@ -43,7 +43,7 @@ fi
 
 echo ""
 echo "==> 3. サーバへ rsync（コード）"
-rsync -avz \
+rsync -avz --no-perms --no-owner --no-group --no-times \
   --exclude='.git' \
   --exclude='node_modules' \
   --exclude='.env' \
@@ -102,3 +102,5 @@ echo "ブラウザで http://160.251.214.119 を開いて確認してくださ�
 echo ""
 echo "※ ローカル Docker の DB がそのまま本番に反映されました。"
 echo "※ 本番にしかないデータは上書きで消えています。"
+echo "※ SNSログイン（Google/LINE/X）を使う場合: 本番サーバで以下を実行し、表示されたコールバックURLを各開発者コンソールに登録して .env に CLIENT_ID/CLIENT_SECRET を設定してください。"
+echo "    ssh $VPS 'cd ~/5akeme && docker compose -f docker-compose.production.yml exec -T app php artisan sns:check'"

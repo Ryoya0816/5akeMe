@@ -45,7 +45,7 @@ return [
     */
     'scoring' => [
         'q2_multiplier'   => 1.5,
-        'candidate_width' => 5,
+        'candidate_width' => 4,  // 5→4: 候補をやや絞り primary をはっきりさせる（精度改善の一例）
     ],
 
     /*

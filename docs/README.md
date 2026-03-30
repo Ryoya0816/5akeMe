@@ -9,7 +9,10 @@
 | [TECH_STACK.md](TECH_STACK.md) | 技術スタック・コンテナ構成 |
 | [DIAGNOSE_ACCURACY.md](DIAGNOSE_ACCURACY.md) | 診断精度の改善方針 |
 | [SNS_LOGIN.md](SNS_LOGIN.md) | SNS ログイン（Google / LINE / X）の設定 |
+| [PAYMENT_OPTIONS.md](PAYMENT_OPTIONS.md) | 決済サービス（Stripe 等）の比較メモ |
 | [schema/](schema/) | DB スキーマ（tbls で生成したテーブル定義・ER 図） |
+
+**Laravel 本番・デプロイの詳細**は [../api/docs/DEPLOY_OPTIMAL.md](../api/docs/DEPLOY_OPTIMAL.md) など `api/docs/` 配下を参照してください。
 
 ---
 

@@ -286,7 +286,7 @@ docker compose -f docker-compose.production.yml exec -T app php artisan view:cle
 | `ダンプが空です` | MySQL 接続失敗 | DB コンテナの状態確認、`docker compose logs db` |
 | `DB_PASSWORD が設定されていません` | VPS の `~/5akeme/.env` に DB_PASSWORD がない | nano で .env を編集して追加 |
 | `DB インポートに失敗しました` | MySQL がまだ起動中、またはパスワード不一致 | 数分待って再実行、または api/.env の DB_PASSWORD をルート .env と一致させる |
-| 本番で 500 エラー | manifest.json なし、hot 残存、DB 接続失敗、APP_KEY なし | [PRODUCTION_500_FIX.md](./PRODUCTION_500_FIX.md) 参照 |
+| 本番で 500 エラー | manifest.json なし、hot 残存、DB 接続失敗、APP_KEY なし | 上記 **「B. 500 が出たとき」** を実行 |
 | `Access denied for user 'laravel'` | api/.env の DB_PASSWORD がルート .env と違う | `fix-db-env-on-vps.sh` を実行 |
 
 ---
@@ -295,4 +295,4 @@ docker compose -f docker-compose.production.yml exec -T app php artisan view:cle
 
 - 初回デプロイの詳細: [DEPLOY_CHECKLIST.md](./DEPLOY_CHECKLIST.md)
 - 本番 .env の必須項目: [ENV_REQUIRED.md](./ENV_REQUIRED.md)
-- 500 の詳細手順（コマンドのみ）: [PRODUCTION_500_FIX.md](./PRODUCTION_500_FIX.md)
+- 500 の手順: このファイルの **「B. 500 が出たとき（まとめて直す）」**。診断 API は [ENV_REQUIRED.md](./ENV_REQUIRED.md) の DB 設定も確認

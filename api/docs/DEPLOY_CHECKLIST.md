@@ -12,7 +12,7 @@
 ### ローカル（Mac）
 
 - [ ] `cd /path/to/5ake-me/api` → `npm ci && npm run build`
-- [ ] **`api/public/build/manifest.json` が存在する**（無いと /top などが 500 になる → [FIX_500_AND_VITE.md](./FIX_500_AND_VITE.md)）
+- [ ] **`api/public/build/manifest.json` が存在する**（無いと /top などが 500 になる → [DEPLOY_OPTIMAL.md](./DEPLOY_OPTIMAL.md) 冒頭・「B. 500 が出たとき」）
 - [ ] `api/.env` と ルート `.env` を用意（**DB_USERNAME=laravel**、**DB_PASSWORD を両方同じ値に** → [ENV_REQUIRED.md](./ENV_REQUIRED.md)）
 - [ ] `./scripts/deploy-to-vps.sh` で rsync、または手動で rsync
 - [ ] .env を送る: `./scripts/send-env-to-vps.sh` または scp
@@ -60,15 +60,14 @@
 
 ## 本番で 500 が出たとき（同じ手順の繰り返しをやめる）
 
-**ここに書いてあるコマンドを順に実行する:** [PRODUCTION_500_FIX.md](./PRODUCTION_500_FIX.md)  
-（スクリプトではなく、Mac でデプロイ → VPS に SSH → ドキュメントに書いたコマンドを 1 行ずつ実行）
+**500 のとき:** [DEPLOY_OPTIMAL.md](./DEPLOY_OPTIMAL.md) の「B. 500 が出たとき（まとめて直す）」を実行
 
 ---
 
 ## リンク
 
 - **本番 .env 必須項目・DB 合わせ方:** [ENV_REQUIRED.md](./ENV_REQUIRED.md)
-- **500 と localhost:5174（Vite ビルド）:** [FIX_500_AND_VITE.md](./FIX_500_AND_VITE.md)
+- **500 と localhost:5174（Vite ビルド）:** [DEPLOY_OPTIMAL.md](./DEPLOY_OPTIMAL.md)（ビルド・`rm api/public/hot`・キャッシュクリア）
 - 詳細手順: [DEPLOY_NOW.md](./DEPLOY_NOW.md)
 - VPS 初期設定: [SSH_CONOHA_VPS.md](./SSH_CONOHA_VPS.md)
 - **ドメイン・SSL（お名前.com）:** [DOMAIN_AND_SSL.md](./DOMAIN_AND_SSL.md)

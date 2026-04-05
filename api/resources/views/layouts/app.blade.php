@@ -10,12 +10,6 @@
   <style>
     html, body { margin: 0; background: #fbf3e8; }
     .icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
-    img.app-header-image {
-      height: 90px !important;
-      width: 240px !important;
-      max-width: none !important;
-      object-fit: fill !important;
-    }
   </style>
 
   <title>@yield('title', '5akeMe - あなたにぴったりのお酒診断')</title>

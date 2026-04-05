@@ -9,8 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 class SanitizeInput
 {
     /**
-     * 入力値のサニタイズ
-     * XSS攻撃を防ぐために危険な文字をエスケープ
+     * Web フォーム向けの入力サニタイズ（web ミドルウェアグループのみ登録）。
+     * NULL バイト・制御文字を除去。API の JSON ペイロードはミュテーションしない。
      */
     public function handle(Request $request, Closure $next): Response
     {

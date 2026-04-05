@@ -6,18 +6,18 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // グローバルミドルウェア（全リクエストに適用）
+        // グローバル: セキュリティヘッダー（Web / API 共通）
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
-        $middleware->append(\App\Http\Middleware\SanitizeInput::class);
 
-        // webミドルウェアグループに停止ユーザーチェックを追加
+        // Web のみ: フォーム入力の制御文字除去（JSON API 本体はバリデーションで扱う）
         $middleware->appendToGroup('web', [
+            \App\Http\Middleware\SanitizeInput::class,
             \App\Http\Middleware\CheckUserActive::class,
         ]);
 

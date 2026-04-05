@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -17,13 +16,15 @@ return new class extends Migration
             $table->string('provider')->nullable()->after('password');        // google, line, twitter
             $table->string('provider_id')->nullable()->after('provider');     // SNSのユーザーID
             $table->string('avatar')->nullable()->after('provider_id');       // プロフィール画像URL
-            
+
             // インデックス
             $table->index(['provider', 'provider_id']);
         });
-        
-        // パスワードをnullable（SNSログインのみのユーザー用）- MySQL直接
-        DB::statement('ALTER TABLE users MODIFY password VARCHAR(255) NULL');
+
+        // パスワードを nullable（SNSのみユーザー用）— MySQL / SQLite 共通（doctrine/dbal）
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('password')->nullable()->change();
+        });
     }
 
     /**

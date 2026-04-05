@@ -204,7 +204,6 @@ img.app-header-image {
   color: var(--brand-main);
   border: 1.5px solid var(--brand-main);
   border-radius: var(--radius-full);
-  font-size: 13px; font-weight: 600;
   text-decoration: none;
   transition: all var(--transition-normal);
   box-shadow: 0 2px 8px rgba(156, 63, 46, 0.2);

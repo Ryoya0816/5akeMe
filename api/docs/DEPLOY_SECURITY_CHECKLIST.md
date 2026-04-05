@@ -48,7 +48,7 @@
 | Referrer-Policy | strict-origin-when-cross-origin |
 | Permissions-Policy | camera/microphone/geolocation 無効 |
 | Strict-Transport-Security | 本番のみ（HTTPS 強制） |
-| Content-Security-Policy | script/style/img/connect/form-action 等を制限 |
+| Content-Security-Policy | `config/security.php` で定義。script/style/img/connect/form-action 等を制限 |
 
 本番では `connect-src` に localhost を含めず、お問い合わせフォーム用に `form-action` に `https://formsubmit.co` を追加済みです。
 
@@ -58,7 +58,7 @@
 
 | 項目 | 状態 |
 |------|------|
-| グローバルサニタイズ | `SanitizeInput` で NULL バイト・制御文字除去 |
+| Web フォーム向けサニタイズ | `SanitizeInput`（**web ミドルウェアのみ**）で NULL バイト・制御文字除去。API の JSON はミュテーションせずバリデーションで扱う |
 | Blade 出力 | `{{ }}` でエスケープ（XSS 対策） |
 | 診断 API | `answers` のキーを許可リストでフィルタ、値は string\|max:50 |
 | 店舗サジェスト API | `mood`（integer in:0,1,2）、`primary`（string\|alpha_dash\|max:50） |
@@ -111,3 +111,14 @@
 ---
 
 以上を満たしたうえでデプロイしてください。漏れや環境差がある場合は都度このチェックリストを更新することを推奨します。
+
+---
+
+## 9. 保守性（開発・CI）
+
+| 項目 | 内容 |
+|------|------|
+| CSP・開発用例外 | `api/config/security.php` を編集（`SecurityHeaders` はここだけ参照） |
+| テスト | `composer test` … `phpunit.xml` で SQLite メモリ＋固定 `APP_KEY`。DB 非依存で GitHub Actions でも通る |
+| コード整形（任意） | `composer lint`（Pint・未整形があると失敗）、`composer lint:fix` で自動修正 |
+| CI | リポジトリ直下 `.github/workflows/ci.yml` … `api` で `composer install` → `composer test` |

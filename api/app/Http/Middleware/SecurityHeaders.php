@@ -8,63 +8,47 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaders
 {
-    /**
-     * セキュリティ関連のHTTPヘッダーを追加
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
-        // XSS対策: ブラウザのXSSフィルターを有効化
         $response->headers->set('X-XSS-Protection', '1; mode=block');
-
-        // クリックジャッキング対策: iframeへの埋め込みを禁止
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
-
-        // MIMEタイプスニッフィング対策
         $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('Referrer-Policy', (string) config('security.referrer_policy', 'strict-origin-when-cross-origin'));
+        $response->headers->set('Permissions-Policy', (string) config('security.permissions_policy', 'camera=(), microphone=(), geolocation=()'));
 
-        // Referrer情報の制御
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-        // 権限ポリシー（不要な機能を無効化）
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-
-        // HTTPS でアクセスしているときだけ HSTS を付与（HTTP の本番では付与しない）
         if ($request->secure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        // Content Security Policy（XSS対策の強化）
-        $styleSrc = ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://fonts.bunny.net'];
-        $scriptSrc = ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.jsdelivr.net'];
-        if (!app()->isProduction()) {
-            // 開発時: Vite dev server (localhost:5174)
-            $styleSrc[] = 'http://localhost:5174';
-            $styleSrc[] = 'http://127.0.0.1:5174';
-            $scriptSrc[] = 'http://localhost:5174';
-            $scriptSrc[] = 'http://127.0.0.1:5174';
-        }
-        $connectSrc = ["'self'", 'https://cdn.jsdelivr.net'];
-        $formAction = ["'self'", 'https://formsubmit.co'];
-        if (!app()->isProduction()) {
-            $connectSrc[] = 'ws://localhost:*';
-            $connectSrc[] = 'http://localhost:*';
-            $connectSrc[] = 'wss://localhost:*';
-        }
-        $csp = [
-            "default-src 'self'",
-            'script-src ' . implode(' ', $scriptSrc),
-            'style-src ' . implode(' ', $styleSrc),
-            "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:",
-            "img-src 'self' data: https: blob:",
-            'connect-src ' . implode(' ', $connectSrc),
-            "frame-ancestors 'self'",
-            'form-action ' . implode(' ', $formAction),
-            "base-uri 'self'",
-        ];
-        $response->headers->set('Content-Security-Policy', implode('; ', $csp));
+        $response->headers->set('Content-Security-Policy', $this->buildCsp());
 
         return $response;
+    }
+
+    private function buildCsp(): string
+    {
+        /** @var array<string, array<int, string>> $directives */
+        $directives = config('security.csp', []);
+
+        if (! app()->isProduction()) {
+            foreach (config('security.csp_non_production', []) as $directive => $tokens) {
+                if (! isset($directives[$directive])) {
+                    $directives[$directive] = [];
+                }
+                $directives[$directive] = array_values(array_merge($directives[$directive], $tokens));
+            }
+        }
+
+        $parts = [];
+        foreach ($directives as $name => $tokens) {
+            if ($tokens === []) {
+                continue;
+            }
+            $parts[] = $name.' '.implode(' ', $tokens);
+        }
+
+        return implode('; ', $parts);
     }
 }

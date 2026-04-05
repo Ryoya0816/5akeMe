@@ -52,17 +52,6 @@
             max-width: 400px;
         }
 
-        .error-message .sake-icon {
-            display: inline-block;
-            animation: roll 2s ease-in-out infinite;
-        }
-
-        @keyframes roll {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(15deg); }
-            75% { transform: rotate(-15deg); }
-        }
-
         .error-actions {
             display: flex;
             flex-wrap: wrap;
@@ -75,11 +64,11 @@
             align-items: center;
             gap: 8px;
             padding: 14px 28px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .error-btn-primary {
@@ -105,10 +94,9 @@
             transform: translateY(-2px);
         }
 
-        .error-decoration {
-            margin-top: 48px;
-            font-size: 32px;
-            opacity: 0.5;
+        .error-btn-icon {
+            display: flex;
+            align-items: center;
         }
 
         @media (max-width: 640px) {
@@ -158,23 +146,18 @@
 
     <p class="error-message">
         お探しのページは、どこかへ転がっていったようです。<br>
-        <span class="sake-icon">🍶</span><br>
         もしかして、ちょっと飲みすぎたかな？
     </p>
 
     <div class="error-actions">
         <a href="{{ route('top') }}" class="error-btn error-btn-primary">
-            <span>🏠</span>
+            <span class="error-btn-icon"><x-svg-icon name="home" size="18" /></span>
             <span>トップに戻る</span>
         </a>
         <a href="{{ route('diagnose') }}" class="error-btn error-btn-secondary">
-            <span>🔍</span>
+            <span class="error-btn-icon"><x-svg-icon name="search" size="18" /></span>
             <span>診断してみる</span>
         </a>
-    </div>
-
-    <div class="error-decoration">
-        🍶 🍷 🍺 🥃 🍾
     </div>
 </div>
 @endsection

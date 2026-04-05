@@ -18,7 +18,7 @@
             width: 100%;
             max-width: 400px;
             background: var(--card-bg, #fff);
-            border-radius: 24px;
+            border-radius: var(--radius-lg, 24px);
             padding: 32px 24px;
             box-shadow: 0 4px 24px rgba(0,0,0,0.08);
         }
@@ -29,7 +29,9 @@
         }
 
         .auth-icon {
-            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 12px;
         }
 
@@ -60,11 +62,11 @@
             justify-content: center;
             gap: 12px;
             padding: 14px 20px;
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .auth-social-btn svg {
@@ -138,10 +140,10 @@
             padding: 12px 14px;
             font-size: 15px;
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 10px;
+            border-radius: var(--radius-sm, 8px);
             background: var(--bg-soft, #fff7ee);
             box-sizing: border-box;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .auth-input:focus {
@@ -166,11 +168,11 @@
             background: var(--brand-main, #9c3f2e);
             color: #fff;
             border: none;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .auth-submit:hover {
@@ -203,7 +205,7 @@
 
     <div class="auth-card">
         <div class="auth-header">
-            <div class="auth-icon">🍶</div>
+            <div class="auth-icon"><x-svg-icon name="wine" size="48" /></div>
             <h1 class="auth-title">新規登録</h1>
             <p class="auth-subtitle">5akeMeで診断履歴を保存しよう</p>
         </div>

@@ -17,7 +17,9 @@
         }
 
         .thanks-icon {
-            font-size: 64px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 24px;
             animation: bounce 1s ease-in-out;
         }
@@ -49,12 +51,17 @@
             padding: 14px 28px;
             background: var(--brand-main, #9c3f2e);
             color: #ffffff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
             box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
+        }
+
+        .thanks-btn-icon {
+            display: flex;
+            align-items: center;
         }
 
         .thanks-btn:hover {
@@ -63,8 +70,9 @@
         }
 
         @media (max-width: 640px) {
-            .thanks-icon {
-                font-size: 48px;
+            .thanks-icon svg {
+                width: 48px;
+                height: 48px;
             }
 
             .thanks-title {
@@ -77,18 +85,18 @@
         }
     </style>
 
-    <div class="thanks-icon">✉️</div>
+    <div class="thanks-icon"><x-svg-icon name="check-circle" size="64" /></div>
 
     <h1 class="thanks-title">送信完了しました！</h1>
 
     <p class="thanks-message">
         お問い合わせありがとうございます。<br>
         内容を確認の上、ご返信いたします。<br>
-        しばらくお待ちください 🍶
+        しばらくお待ちください。
     </p>
 
     <a href="{{ route('top') }}" class="thanks-btn">
-        <span>🏠</span>
+        <span class="thanks-btn-icon"><x-svg-icon name="home" size="18" /></span>
         <span>トップに戻る</span>
     </a>
 </div>

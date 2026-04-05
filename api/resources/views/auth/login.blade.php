@@ -29,8 +29,10 @@
         }
 
         .auth-icon {
-            font-size: 48px;
             margin-bottom: 12px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
         }
 
         .auth-title {
@@ -64,7 +66,7 @@
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .auth-social-btn svg {
@@ -141,7 +143,7 @@
             border-radius: 10px;
             background: var(--bg-soft, #fff7ee);
             box-sizing: border-box;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .auth-input:focus {
@@ -193,11 +195,11 @@
             background: var(--brand-main, #9c3f2e);
             color: #fff;
             border: none;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .auth-submit:hover {
@@ -244,7 +246,7 @@
 
     <div class="auth-card">
         <div class="auth-header">
-            <div class="auth-icon">🍶</div>
+            <div class="auth-icon"><x-svg-icon name="wine" size="48" /></div>
             <h1 class="auth-title">ログイン</h1>
             <p class="auth-subtitle">5akeMeへようこそ</p>
         </div>

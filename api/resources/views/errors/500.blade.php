@@ -17,7 +17,9 @@
         }
 
         .error-icon {
-            font-size: 80px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 24px;
             animation: shake 0.5s ease-in-out;
         }
@@ -63,11 +65,16 @@
             align-items: center;
             gap: 8px;
             padding: 14px 28px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
+        }
+
+        .error-btn-icon {
+            display: flex;
+            align-items: center;
         }
 
         .error-btn-primary {
@@ -94,8 +101,9 @@
         }
 
         @media (max-width: 640px) {
-            .error-icon {
-                font-size: 60px;
+            .error-icon svg {
+                width: 56px;
+                height: 56px;
             }
 
             .error-code {
@@ -127,7 +135,7 @@
         }
     </style>
 
-    <div class="error-icon">🍶💥</div>
+    <div class="error-icon"><x-svg-icon name="alert-circle" size="72" /></div>
 
     <div class="error-code">500</div>
 
@@ -150,11 +158,11 @@
 
     <div class="error-actions">
         <a href="{{ route('top') }}" class="error-btn error-btn-primary">
-            <span>🏠</span>
+            <span class="error-btn-icon"><x-svg-icon name="home" size="18" /></span>
             <span>トップに戻る</span>
         </a>
         <a href="{{ route('contact') }}" class="error-btn error-btn-secondary">
-            <span>📮</span>
+            <span class="error-btn-icon"><x-svg-icon name="mail" size="18" /></span>
             <span>お問い合わせ</span>
         </a>
     </div>

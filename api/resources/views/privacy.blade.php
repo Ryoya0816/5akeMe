@@ -34,9 +34,9 @@
         .legal-content {
             background: var(--card-bg, #ffffff);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
             padding: 32px;
-            box-shadow: var(--shadow, 0 10px 20px rgba(0, 0, 0, 0.06));
+            box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.06));
         }
 
         .legal-section {
@@ -98,12 +98,12 @@
             padding: 12px 24px;
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             color: var(--brand-main, #9c3f2e);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .legal-back:hover {
@@ -261,7 +261,7 @@
     </div>
 
     <a href="{{ route('top') }}" class="legal-back">
-        <span>←</span>
+        <x-svg-icon name="arrow-left" size="16" />
         <span>トップに戻る</span>
     </a>
 </div>

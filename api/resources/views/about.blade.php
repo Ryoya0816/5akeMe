@@ -21,8 +21,10 @@
         }
 
         .about-logo {
-            font-size: 48px;
             margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
         }
 
         .about-title {
@@ -57,7 +59,7 @@
         }
 
         .about-section-icon {
-            font-size: 24px;
+            display: flex;
         }
 
         .about-text {
@@ -129,12 +131,12 @@
             padding: 8px 16px;
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             color: var(--text-main, #3f3f3f);
             text-decoration: none;
             font-size: 13px;
             font-weight: 500;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .creator-social-link:hover {
@@ -168,8 +170,10 @@
         }
 
         .about-feature-icon {
-            font-size: 24px;
-            line-height: 1;
+            display: flex;
+            align-items: flex-start;
+            padding-top: 2px;
+            color: var(--brand-main, #9c3f2e);
         }
 
         .about-feature-text {
@@ -191,12 +195,12 @@
             padding: 12px 24px;
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             color: var(--brand-main, #9c3f2e);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .about-back:hover {
@@ -244,16 +248,16 @@
         }
     </style>
 
-    <header class="about-header">
-        <div class="about-logo">🍶</div>
+    <header class="about-header fade-in">
+        <div class="about-logo"><x-svg-icon name="wine" size="48" /></div>
         <h1 class="about-title">このサービスについて</h1>
         <p class="about-subtitle">5akeMe - あなたにぴったりのお酒を見つけよう</p>
     </header>
 
     <!-- 5akeMeとは -->
-    <section class="about-section">
+    <section class="about-section fade-in">
         <h2 class="about-section-title">
-            <span class="about-section-icon">✨</span>
+            <span class="about-section-icon"><x-svg-icon name="sparkles" size="22" /></span>
             5akeMeとは
         </h2>
         <div class="about-text">
@@ -273,28 +277,28 @@
     </section>
 
     <!-- 特徴 -->
-    <section class="about-section">
+    <section class="about-section fade-in">
         <h2 class="about-section-title">
-            <span class="about-section-icon">🎯</span>
+            <span class="about-section-icon"><x-svg-icon name="target" size="22" /></span>
             5akeMeの特徴
         </h2>
         <div class="about-features">
-            <div class="about-feature">
-                <span class="about-feature-icon">💬</span>
+            <div class="about-feature fade-in stagger-1 hover-lift">
+                <span class="about-feature-icon"><x-svg-icon name="message-square" size="22" /></span>
                 <div class="about-feature-text">
                     <div class="about-feature-title">チャット形式で簡単診断</div>
                     5つの質問に答えるだけ。難しい知識は必要ありません。
                 </div>
             </div>
-            <div class="about-feature">
-                <span class="about-feature-icon">🎨</span>
+            <div class="about-feature fade-in stagger-2 hover-lift">
+                <span class="about-feature-icon"><x-svg-icon name="palette" size="22" /></span>
                 <div class="about-feature-text">
                     <div class="about-feature-title">あなたの好みを可視化</div>
                     診断結果をレーダーチャートで表示。自分の好みの傾向がひと目でわかります。
                 </div>
             </div>
-            <div class="about-feature">
-                <span class="about-feature-icon">🍶</span>
+            <div class="about-feature fade-in stagger-3 hover-lift">
+                <span class="about-feature-icon"><x-svg-icon name="wine" size="22" /></span>
                 <div class="about-feature-text">
                     <div class="about-feature-title">TOP5のおすすめ</div>
                     あなたに合ったお酒のタイプをランキング形式でご紹介します。
@@ -304,9 +308,9 @@
     </section>
 
     <!-- 作った人 -->
-    <section class="about-section">
+    <section class="about-section fade-in">
         <h2 class="about-section-title">
-            <span class="about-section-icon">👨‍💻</span>
+            <span class="about-section-icon"><x-svg-icon name="code" size="22" /></span>
             作った人
         </h2>
         <div class="creator-card">
@@ -326,7 +330,7 @@
                         target="_blank" 
                         rel="noopener noreferrer"
                     >
-                        📷 Instagram
+                        <x-svg-icon name="camera" size="16" /> Instagram
                     </a>
                     <a 
                         href="https://note.com/hello_sagaworld" 
@@ -334,7 +338,7 @@
                         target="_blank" 
                         rel="noopener noreferrer"
                     >
-                        📝 NOTE
+                        <x-svg-icon name="edit" size="16" /> NOTE
                     </a>
                 </div>
             </div>
@@ -342,7 +346,7 @@
     </section>
 
     <a href="{{ route('top') }}" class="about-back">
-        <span>←</span>
+        <x-svg-icon name="arrow-left" size="16" />
         <span>トップに戻る</span>
     </a>
 </div>

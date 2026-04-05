@@ -39,9 +39,9 @@
 
         .profile-section {
             background: var(--card-bg, #fff);
-            border-radius: 20px;
+            border-radius: var(--radius-lg, 24px);
             padding: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
             margin-bottom: 20px;
         }
 
@@ -75,10 +75,10 @@
             padding: 12px 14px;
             font-size: 15px;
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 10px;
+            border-radius: var(--radius-sm, 8px);
             background: var(--bg-soft, #fff7ee);
             box-sizing: border-box;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .profile-input:focus {
@@ -132,11 +132,11 @@
             padding: 10px 20px;
             background: var(--brand-main);
             color: #fff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .profile-avatar-label:hover {
@@ -171,11 +171,11 @@
             background: var(--brand-main);
             color: #fff;
             border: none;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
             min-width: 120px;
             position: relative;
         }
@@ -214,7 +214,7 @@
             padding: 12px 16px;
             background: #dcfce7;
             color: #166534;
-            border-radius: 10px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 14px;
             margin-bottom: 20px;
         }
@@ -229,7 +229,7 @@
             padding: 12px 16px;
             background: #fef3c7;
             color: #92400e;
-            border-radius: 10px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 13px;
             margin-top: 12px;
         }
@@ -313,12 +313,12 @@
                         @if($user->avatar)
                             <img src="{{ strpos($user->avatar, 'http') === 0 ? $user->avatar : asset($user->avatar) }}" alt="{{ $user->name }}">
                         @else
-                            🍶
+                            <x-svg-icon name="wine" size="36" />
                         @endif
                     </div>
                     <div class="profile-avatar-upload">
                         <label for="avatar" class="profile-avatar-label">
-                            📷 アイコンを変更
+                            <x-svg-icon name="camera" size="16" /> アイコンを変更
                         </label>
                         <input 
                             type="file" 
@@ -467,7 +467,7 @@
         function setRemoveAvatar() {
             if (confirm('アイコンを削除しますか？')) {
                 const preview = document.getElementById('avatarPreview');
-                preview.innerHTML = '🍶';
+                preview.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></svg>';
                 const input = document.getElementById('avatar');
                 input.value = '';
                 const removeInput = document.getElementById('remove_avatar');

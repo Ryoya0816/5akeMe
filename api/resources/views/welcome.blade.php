@@ -176,7 +176,7 @@
     box-shadow: 
       0 8px 25px rgba(0,0,0,.08),
       0 3px 8px rgba(0,0,0,.04);
-    transition: transform 200ms ease, box-shadow 200ms ease;
+    transition: transform var(--transition-normal, 200ms ease-out), box-shadow var(--transition-normal, 200ms ease-out);
     cursor: pointer;
   }
   

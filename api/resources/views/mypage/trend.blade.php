@@ -41,7 +41,7 @@
             background: var(--card-bg, #fff);
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
             margin-bottom: 20px;
         }
 
@@ -107,7 +107,9 @@
         }
 
         .trend-empty-icon {
-            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 16px;
         }
 
@@ -121,14 +123,14 @@
             padding: 12px 24px;
             background: var(--brand-main);
             color: #fff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             text-decoration: none;
             font-weight: 600;
         }
 
         .trend-insight {
             background: var(--bg-soft);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
             padding: 20px;
             text-align: center;
         }
@@ -148,7 +150,7 @@
 
     <div class="mypage-container">
         <a href="{{ route('mypage') }}" class="mypage-back">← マイページに戻る</a>
-        <h1 class="mypage-title">📈 好み傾向</h1>
+        <h1 class="mypage-title"><x-svg-icon name="trending-up" size="22" /> 好み傾向</h1>
 
         <div class="trend-card">
             @if($trendData['total'] > 0)
@@ -163,7 +165,7 @@
                 <div class="trend-legend" id="trendLegend"></div>
             @else
                 <div class="trend-empty">
-                    <div class="trend-empty-icon">📈</div>
+                    <div class="trend-empty-icon"><x-svg-icon name="trending-up" size="48" /></div>
                     <p class="trend-empty-text">診断履歴がないため<br>傾向を分析できません</p>
                     <a href="{{ route('diagnose') }}" class="trend-empty-btn">診断してみる</a>
                 </div>

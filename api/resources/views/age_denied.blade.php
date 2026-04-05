@@ -14,9 +14,10 @@
         }
 
         .age-denied-icon {
-            font-size: 64px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 24px;
-            line-height: 1;
         }
 
         .age-denied-title {
@@ -40,7 +41,7 @@
             padding: 16px 24px;
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 14px;
             color: var(--text-sub, #8c6d57);
         }
@@ -79,8 +80,9 @@
                 padding: 40px 16px;
             }
 
-            .age-denied-icon {
-                font-size: 48px;
+            .age-denied-icon svg {
+                width: 44px;
+                height: 44px;
             }
 
             .age-denied-title {
@@ -89,14 +91,14 @@
         }
     </style>
 
-    <div class="age-denied-icon">🍵</div>
+    <div class="age-denied-icon"><x-svg-icon name="coffee" size="56" /></div>
     
     <h1 class="age-denied-title">ごめんね、大人になってまた来てね！</h1>
     
     <p class="age-denied-message">
         5akeMeはお酒に関するサービスのため、<br>
         20歳未満の方はご利用いただけません。<br>
-        大人になったらまた遊びに来てください🍶
+        大人になったらまた遊びに来てください。
     </p>
 
     <div class="age-denied-redirect">
@@ -105,7 +107,7 @@
     </div>
 
     <p class="age-denied-hashtag">
-        佐賀の魅力を発信中 👉 
+        佐賀の魅力を発信中
         <a href="https://www.google.com/search?q=%23HelloSAGAworld" target="_blank" rel="noopener">
             #HelloSAGAworld
         </a>

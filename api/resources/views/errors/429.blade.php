@@ -17,7 +17,9 @@
         }
 
         .error-icon {
-            font-size: 80px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 24px;
         }
 
@@ -51,12 +53,17 @@
             padding: 14px 28px;
             background: var(--brand-main, #9c3f2e);
             color: #ffffff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
             box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
+        }
+
+        .error-btn-icon {
+            display: flex;
+            align-items: center;
         }
 
         .error-btn:hover {
@@ -65,8 +72,9 @@
         }
 
         @media (max-width: 640px) {
-            .error-icon {
-                font-size: 60px;
+            .error-icon svg {
+                width: 56px;
+                height: 56px;
             }
 
             .error-code {
@@ -88,7 +96,7 @@
         }
     </style>
 
-    <div class="error-icon">🍶💨</div>
+    <div class="error-icon"><x-svg-icon name="coffee" size="72" /></div>
 
     <div class="error-code">429</div>
 
@@ -97,11 +105,11 @@
     <p class="error-message">
         リクエストが多すぎます。<br>
         少し休憩してから、もう一度お試しください。<br>
-        1分ほどお待ちいただければ大丈夫です 🍵
+        1分ほどお待ちいただければ大丈夫です。
     </p>
 
     <a href="{{ route('top') }}" class="error-btn">
-        <span>🏠</span>
+        <span class="error-btn-icon"><x-svg-icon name="home" size="18" /></span>
         <span>トップに戻る</span>
     </a>
 </div>

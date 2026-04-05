@@ -45,14 +45,14 @@
 
         .history-card {
             background: var(--card-bg, #fff);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
             padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
             display: flex;
             align-items: center;
             gap: 16px;
             text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .history-card:hover {
@@ -63,7 +63,7 @@
         .history-icon {
             width: 50px;
             height: 50px;
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             background: var(--bg-soft);
             display: flex;
             align-items: center;
@@ -96,11 +96,13 @@
             text-align: center;
             padding: 48px 24px;
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
         }
 
         .history-empty-icon {
-            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 16px;
         }
 
@@ -114,7 +116,7 @@
             padding: 12px 24px;
             background: var(--brand-main);
             color: #fff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             text-decoration: none;
             font-weight: 600;
         }
@@ -128,13 +130,13 @@
 
     <div class="mypage-container">
         <a href="{{ route('mypage') }}" class="mypage-back">← マイページに戻る</a>
-        <h1 class="mypage-title">📊 診断履歴</h1>
+        <h1 class="mypage-title"><x-svg-icon name="bar-chart" size="22" /> 診断履歴</h1>
 
         @if($results->count() > 0)
             <div class="history-list">
                 @foreach($results as $result)
                     <a href="{{ route('diagnose.result', $result->result_id) }}" class="history-card">
-                        <div class="history-icon">🍶</div>
+                        <div class="history-icon"><x-svg-icon name="wine" size="24" /></div>
                         <div class="history-content">
                             <div class="history-type">{{ $result->primary_label }}</div>
                             <div class="history-mood">
@@ -160,7 +162,7 @@
             </div>
         @else
             <div class="history-empty">
-                <div class="history-empty-icon">📊</div>
+                <div class="history-empty-icon"><x-svg-icon name="bar-chart" size="48" /></div>
                 <p class="history-empty-text">まだ診断履歴がありません</p>
                 <a href="{{ route('diagnose') }}" class="history-empty-btn">診断してみる</a>
             </div>

@@ -35,7 +35,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
+            color: var(--brand-main);
             overflow: hidden;
         }
 
@@ -112,8 +112,10 @@
         }
 
         .mypage-menu-icon {
-            font-size: 24px;
+            display: flex;
+            align-items: center;
             margin-right: 16px;
+            color: var(--brand-main);
         }
 
         .mypage-menu-text {
@@ -133,7 +135,7 @@
 
         .mypage-menu-arrow {
             color: var(--text-sub);
-            font-size: 18px;
+            display: flex;
         }
 
         /* 最近の診断 */
@@ -193,7 +195,7 @@
             font-size: 14px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .mypage-logout:hover {
@@ -210,7 +212,7 @@
                 @if($user->avatar)
                     <img src="{{ strpos($user->avatar, 'http') === 0 ? $user->avatar : asset($user->avatar) }}" alt="{{ $user->name }}">
                 @else
-                    🍶
+                    <x-svg-icon name="wine" size="36" />
                 @endif
             </div>
             <div class="mypage-name">{{ $user->name }}</div>
@@ -232,36 +234,36 @@
         {{-- メニュー --}}
         <div class="mypage-menu">
             <a href="{{ route('mypage.history') }}" class="mypage-menu-item">
-                <span class="mypage-menu-icon">📊</span>
+                <span class="mypage-menu-icon"><x-svg-icon name="bar-chart" size="22" /></span>
                 <div class="mypage-menu-text">
                     <div class="mypage-menu-title">診断履歴</div>
                     <div class="mypage-menu-desc">過去の診断結果を見る</div>
                 </div>
-                <span class="mypage-menu-arrow">›</span>
+                <span class="mypage-menu-arrow"><x-svg-icon name="chevron-right" size="18" /></span>
             </a>
             <a href="{{ route('mypage.stores') }}" class="mypage-menu-item">
-                <span class="mypage-menu-icon">🏪</span>
+                <span class="mypage-menu-icon"><x-svg-icon name="store" size="22" /></span>
                 <div class="mypage-menu-text">
                     <div class="mypage-menu-title">行ったお店</div>
                     <div class="mypage-menu-desc">訪問した店舗とメモ</div>
                 </div>
-                <span class="mypage-menu-arrow">›</span>
+                <span class="mypage-menu-arrow"><x-svg-icon name="chevron-right" size="18" /></span>
             </a>
             <a href="{{ route('mypage.trend') }}" class="mypage-menu-item">
-                <span class="mypage-menu-icon">📈</span>
+                <span class="mypage-menu-icon"><x-svg-icon name="trending-up" size="22" /></span>
                 <div class="mypage-menu-text">
                     <div class="mypage-menu-title">好み傾向</div>
                     <div class="mypage-menu-desc">あなたの好みを分析</div>
                 </div>
-                <span class="mypage-menu-arrow">›</span>
+                <span class="mypage-menu-arrow"><x-svg-icon name="chevron-right" size="18" /></span>
             </a>
             <a href="{{ route('profile.edit') }}" class="mypage-menu-item">
-                <span class="mypage-menu-icon">⚙️</span>
+                <span class="mypage-menu-icon"><x-svg-icon name="settings" size="22" /></span>
                 <div class="mypage-menu-text">
                     <div class="mypage-menu-title">プロフィール編集</div>
                     <div class="mypage-menu-desc">名前やアイコンを変更</div>
                 </div>
-                <span class="mypage-menu-arrow">›</span>
+                <span class="mypage-menu-arrow"><x-svg-icon name="chevron-right" size="18" /></span>
             </a>
         </div>
 

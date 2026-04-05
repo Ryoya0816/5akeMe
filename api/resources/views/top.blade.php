@@ -92,29 +92,65 @@
 <style>
   /* TOP ページ専用スタイル */
   .top-bg-stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  .season-banner { margin: 0 0 24px; padding: 12px 16px; background: #fff7ee; border: 1px solid #f1dfd0; border-radius: 12px; position: relative; z-index: 1; }
-  .season-banner-inner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 960px; margin: 0 auto; }
+  .season-banner { margin: 0 0 24px; padding: 14px 18px; background: var(--bg-soft, #fff7ee); border: 1px solid var(--line-soft, #f1dfd0); border-radius: var(--radius-md, 16px); position: relative; z-index: 1; }
+  .season-banner-inner { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; max-width: 960px; margin: 0 auto; }
   .season-banner-icon { font-size: 24px; flex-shrink: 0; }
   .season-banner-content { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-  .season-banner-title { font-weight: 700; font-size: 14px; color: #9c3f2e; }
-  .season-banner-message { font-size: 12px; color: #8c6d57; }
-  .season-banner-recommend { font-size: 12px; color: #8c6d57; flex-shrink: 0; }
-  .top-hero { max-width: 960px; margin: 40px auto 60px; padding: 0 20px; text-align: center; position: relative; z-index: 1; }
-  .top-title { font-size: 24px; font-weight: bold; margin-bottom: 8px; color: #9c3f2e; }
+  .season-banner-title { font-weight: 700; font-size: 14px; color: var(--brand-main, #9c3f2e); }
+  .season-banner-message { font-size: 12px; color: var(--text-sub, #8c6d57); }
+  .season-banner-recommend { font-size: 12px; color: var(--text-sub, #8c6d57); flex-shrink: 0; }
+  .top-hero { max-width: 960px; margin: 48px auto 64px; padding: 0 20px; text-align: center; position: relative; z-index: 1; }
+  .top-title { font-size: 26px; font-weight: 700; margin-bottom: 10px; color: var(--brand-main, #9c3f2e); letter-spacing: 0.02em; }
   .top-title ruby { ruby-position: over; }
-  .top-title rt { font-size: 14px; font-weight: normal; color: #8c6d57; letter-spacing: 0.05em; }
-  .top-lead { font-size: 14px; color: #8c6d57; margin-bottom: 32px; }
+  .top-title rt { font-size: 14px; font-weight: normal; color: var(--text-sub, #8c6d57); letter-spacing: 0.05em; }
+  .top-lead { font-size: 15px; color: var(--text-sub, #8c6d57); margin-bottom: 36px; line-height: 1.7; }
   .top-main { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 48px; width: 100%; max-width: 720px; margin: 0 auto; }
   .top-left, .top-right { flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center; }
+  @keyframes mascot-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
   .top-mascot-wrap { position: relative; display: inline-block; max-width: 220px; }
-  .top-mascot-image { width: 200px; max-width: 200px; height: auto; border-radius: 16px; object-fit: contain; display: block; }
-  .top-speech { position: absolute; top: -20px; right: -40px; min-width: 160px; padding: 10px 14px; background-color: #fff7dd; border-radius: 18px; border: 1px solid #fbbf24; font-size: 13px; color: #444; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+  .top-mascot-image { width: 200px; max-width: 200px; height: auto; border-radius: var(--radius-md, 16px); object-fit: contain; display: block; animation: mascot-float 4s ease-in-out infinite; }
+  @keyframes speech-pop {
+    0% { opacity: 0; transform: scale(0.8) translateY(8px); }
+    60% { transform: scale(1.04) translateY(-2px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .top-speech {
+    position: absolute; top: -24px; right: -44px; min-width: 160px; padding: 12px 16px;
+    background: var(--card-bg, #ffffff); border-radius: var(--radius-md, 16px);
+    border: 1px solid var(--line-soft, #f1dfd0);
+    font-size: 13px; color: var(--text-main, #3f3f3f); line-height: 1.6;
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+    animation: speech-pop 600ms 400ms var(--ease-out, ease-out) both;
+  }
+  .top-speech::after {
+    content: ''; position: absolute; bottom: -8px; left: 24px;
+    width: 16px; height: 16px; background: var(--card-bg, #ffffff);
+    border-right: 1px solid var(--line-soft, #f1dfd0);
+    border-bottom: 1px solid var(--line-soft, #f1dfd0);
+    transform: rotate(45deg);
+  }
+  @keyframes btn-pulse {
+    0%, 100% { box-shadow: 0 12px 24px rgba(185,68,52,0.35), 0 0 0 0 rgba(185,68,52,0.25); }
+    50% { box-shadow: 0 12px 24px rgba(185,68,52,0.35), 0 0 0 16px rgba(185,68,52,0); }
+  }
   .start-button-wrap { display: inline-flex; text-decoration: none; justify-content: center; }
-  .start-button { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #ffd3c8, #e97b6d 65%, #b04434 100%); box-shadow: 0 12px 24px rgba(185,68,52,0.35); display: flex; align-items: center; justify-content: center; transition: transform 0.12s ease-out, box-shadow 0.12s ease-out; }
-  .start-button-label { color: #fff; font-weight: bold; font-size: 18px; line-height: 1.4; }
-  .start-button-wrap:hover .start-button { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 26px rgba(185,68,52,0.45); }
+  .start-button {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #ffd3c8, #e97b6d 65%, #b04434 100%);
+    box-shadow: 0 12px 24px rgba(185,68,52,0.35);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform var(--transition-normal, 200ms ease-out), box-shadow var(--transition-normal, 200ms ease-out);
+    animation: btn-pulse 2.5s ease-in-out infinite;
+  }
+  .start-button-wrap:hover .start-button { animation: none; }
+  .start-button-label { color: #fff; font-weight: 700; font-size: 18px; line-height: 1.4; letter-spacing: 0.04em; }
+  .start-button-wrap:hover .start-button { transform: translateY(-6px) scale(1.04); box-shadow: 0 20px 32px rgba(185,68,52,0.4); }
   @media (max-width: 768px) {
-    .top-main { flex-direction: column; gap: 24px; }
+    .top-hero { margin: 32px auto 48px; }
+    .top-main { flex-direction: column; gap: 28px; }
     .top-left, .top-right { flex: none; width: 100%; }
     .top-mascot-image { width: 160px; max-width: 160px; }
     .top-speech { right: -10px; }
@@ -122,6 +158,7 @@
   }
   @media (max-width: 640px) {
     .season-banner-inner { flex-direction: column; align-items: flex-start; }
+    .top-title { font-size: 22px; }
   }
 </style>
 
@@ -143,11 +180,11 @@
   @endif
 
   <section class="top-hero">
-    <h2 class="top-title"><ruby>5akeMe<rt>サケミー</rt></ruby> お酒診断</h2>
-    <p class="top-lead">あなたにピッタリのお酒を、5問で提案します。</p>
+    <h2 class="top-title fade-in">5akeMe お酒診断</h2>
+    <p class="top-lead fade-in stagger-1">あなたにピッタリのお酒を、5問で提案します。</p>
 
     <div class="top-main">
-      <div class="top-left">
+      <div class="top-left fade-in stagger-2">
         <div class="top-mascot-wrap">
           <img
             src="{{ asset('images/mascot.png') }}"
@@ -160,9 +197,9 @@
         </div>
       </div>
 
-      <div class="top-right">
+      <div class="top-right fade-in-scale stagger-3">
         <a href="{{ route('diagnose') }}" class="start-button-wrap">
-          <div class="start-button">
+          <div class="start-button press-effect">
             <span class="start-button-label">診断をはじめる</span>
           </div>
         </a>

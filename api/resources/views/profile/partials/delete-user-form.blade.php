@@ -7,7 +7,7 @@
     <button
         type="button"
         onclick="document.getElementById('delete-account-modal').style.display='block'"
-        style="padding: 12px 24px; background: #dc2626; color: #fff; border: none; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+        style="padding: 12px 24px; background: #dc2626; color: #fff; border: none; border-radius: var(--radius-full, 999px); font-size: 14px; font-weight: 600; cursor: pointer; transition: all var(--transition-normal, 200ms ease-out);"
         onmouseover="this.style.opacity='0.9'"
         onmouseout="this.style.opacity='1'"
     >
@@ -48,14 +48,14 @@
                     <button
                         type="button"
                         onclick="document.getElementById('delete-account-modal').style.display='none'"
-                        style="padding: 10px 20px; background: var(--bg-soft); color: var(--text-main); border: 1px solid var(--line-soft); border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer;"
+                        style="padding: 10px 20px; background: var(--bg-soft); color: var(--text-main); border: 1px solid var(--line-soft); border-radius: var(--radius-full, 999px); font-size: 14px; font-weight: 600; cursor: pointer;"
                     >
                         キャンセル
                     </button>
 
                     <button
                         type="submit"
-                        style="padding: 10px 20px; background: #dc2626; color: #fff; border: none; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer;"
+                        style="padding: 10px 20px; background: #dc2626; color: #fff; border: none; border-radius: var(--radius-full, 999px); font-size: 14px; font-weight: 600; cursor: pointer;"
                     >
                         アカウントを削除
                     </button>

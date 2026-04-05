@@ -25,12 +25,12 @@
             {{-- ★ この画面専用の簡易スタイル --}}
             <style>
                 .dm-page-wrap { max-width: 42rem; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
-                .dm-page-note { display: block; margin-top: 0.5rem; color: #6b7280; font-size: 12px; }
+                .dm-page-note { display: block; margin-top: 0.5rem; color: var(--text-sub, #8c6d57); font-size: 12px; }
                 .dm-chat-card {
-                    border-radius: 24px;
-                    border: 1px solid #e5e7eb;
-                    background: #f5f7fb;
-                    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+                    border-radius: var(--radius-lg, 24px);
+                    border: 1px solid var(--line-soft, #f1dfd0);
+                    background: var(--bg-soft, #fff7ee);
+                    box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.06));
                     overflow: hidden;
                 }
 
@@ -38,33 +38,34 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    padding: 16px 20px 8px;
-                    background: #ffffff;
-                    border-bottom: 1px solid #e5e7eb;
+                    padding: 16px 20px 12px;
+                    background: var(--card-bg, #ffffff);
+                    border-bottom: 1px solid var(--line-soft, #f1dfd0);
                 }
 
                 .dm-chat-header-title {
                     font-size: 16px;
                     font-weight: 700;
+                    color: var(--brand-main, #9c3f2e);
                 }
 
                 .dm-chat-header-sub {
                     font-size: 12px;
-                    color: #6b7280;
+                    color: var(--text-sub, #8c6d57);
                 }
 
                 .dm-chat-body {
                     padding: 16px 16px 8px;
                     height: 420px;
                     overflow-y: auto;
-                    background: #f5f7fb;
+                    background: var(--bg-soft, #fff7ee);
                 }
 
                 .dm-chat-footer {
                     display: flex;
                     justify-content: flex-end;
                     padding: 8px 16px 16px;
-                    background: #f5f7fb;
+                    background: var(--bg-soft, #fff7ee);
                 }
 
                 .dm-msg-row {
@@ -83,8 +84,8 @@
                 .dm-avatar {
                     width: 32px;
                     height: 32px;
-                    border-radius: 999px;
-                    background: #e5e7eb;
+                    border-radius: var(--radius-full, 999px);
+                    background: var(--line-soft, #f1dfd0);
                     flex-shrink: 0;
                     display: inline-flex;
                     align-items: center;
@@ -101,7 +102,7 @@
                 .dm-msg-bubble {
                     max-width: 70%;
                     padding: 10px 14px;
-                    border-radius: 16px;
+                    border-radius: var(--radius-md, 16px);
                     font-size: 14px;
                     line-height: 1.5;
                     word-break: break-word;
@@ -110,13 +111,14 @@
                 .dm-msg-row.bot .dm-msg-bubble {
                     margin-left: 8px;
                     border-bottom-left-radius: 4px;
-                    background: #ffffff;
+                    background: var(--card-bg, #ffffff);
+                    box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
                 }
 
                 .dm-msg-row.user .dm-msg-bubble {
                     margin-right: 8px;
                     border-bottom-right-radius: 4px;
-                    background: #22c55e;
+                    background: var(--brand-main, #9c3f2e);
                     color: #ffffff;
                 }
 
@@ -126,28 +128,32 @@
                 }
 
                 .dm-choice-bar {
-                    padding: 8px 16px 4px;
-                    background: #f5f7fb;
-                    border-top: 1px solid #e5e7eb;
+                    padding: 10px 16px 6px;
+                    background: var(--bg-soft, #fff7ee);
+                    border-top: 1px solid var(--line-soft, #f1dfd0);
                     display: flex;
                     flex-wrap: wrap;
                     gap: 8px;
                 }
 
                 .dm-choice-pill {
-                    border-radius: 999px;
-                    border: 1px solid #d1d5db;
-                    background: #ffffff;
-                    padding: 6px 12px;
+                    border-radius: var(--radius-full, 999px);
+                    border: 1px solid var(--line-soft, #f1dfd0);
+                    background: var(--card-bg, #ffffff);
+                    padding: 8px 16px;
                     font-size: 13px;
+                    font-weight: 500;
+                    color: var(--text-main, #3f3f3f);
                     cursor: pointer;
-                    transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+                    transition: all var(--transition-normal, 200ms ease-out);
                 }
 
                 .dm-choice-pill:hover {
-                    background: #e5f6ff;
-                    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+                    background: var(--brand-main, #9c3f2e);
+                    color: #ffffff;
+                    border-color: var(--brand-main, #9c3f2e);
                     transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(156, 63, 46, 0.25);
                 }
 
                 .dm-choice-pill:disabled {
@@ -159,6 +165,14 @@
 
                 .dm-restart-btn {
                     font-size: 12px;
+                    color: var(--text-sub, #8c6d57);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    transition: color var(--transition-fast, 150ms ease-out);
+                }
+                .dm-restart-btn:hover {
+                    color: var(--brand-main, #9c3f2e);
                 }
 
                 @media (max-width: 768px) {

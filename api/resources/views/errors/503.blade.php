@@ -17,7 +17,9 @@
         }
 
         .error-icon {
-            font-size: 80px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 24px;
             animation: spin 3s linear infinite;
         }
@@ -73,12 +75,17 @@
             padding: 10px 20px;
             background: var(--card-bg, #ffffff);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             color: var(--text-main, #3f3f3f);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
+        }
+
+        .error-social-icon {
+            display: flex;
+            align-items: center;
         }
 
         .error-social-link:hover {
@@ -87,8 +94,9 @@
         }
 
         @media (max-width: 640px) {
-            .error-icon {
-                font-size: 60px;
+            .error-icon svg {
+                width: 56px;
+                height: 56px;
             }
 
             .error-code {
@@ -114,7 +122,7 @@
         }
     </style>
 
-    <div class="error-icon">🔧</div>
+    <div class="error-icon"><x-svg-icon name="wrench" size="72" /></div>
 
     <div class="error-code">503</div>
 
@@ -123,7 +131,7 @@
     <p class="error-message">
         より良いサービスをお届けするため、<br>
         現在メンテナンスを行っています。<br>
-        しばらくお待ちください 🍶
+        しばらくお待ちください。
     </p>
 
     <div class="error-note">
@@ -137,7 +145,8 @@
             target="_blank" 
             rel="noopener noreferrer"
         >
-            📷 Instagram
+            <span class="error-social-icon"><x-svg-icon name="camera" size="16" /></span>
+            Instagram
         </a>
         <a 
             href="https://note.com/hello_sagaworld" 
@@ -145,7 +154,8 @@
             target="_blank" 
             rel="noopener noreferrer"
         >
-            📝 NOTE
+            <span class="error-social-icon"><x-svg-icon name="edit" size="16" /></span>
+            NOTE
         </a>
     </div>
 </div>

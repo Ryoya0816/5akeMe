@@ -21,7 +21,9 @@
         }
 
         .contact-icon {
-            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 16px;
         }
 
@@ -41,9 +43,9 @@
         .contact-form {
             background: var(--card-bg, #ffffff);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
             padding: 32px;
-            box-shadow: var(--shadow, 0 10px 20px rgba(0, 0, 0, 0.06));
+            box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.06));
         }
 
         .form-group {
@@ -77,8 +79,8 @@
             color: var(--text-main, #3f3f3f);
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 12px;
-            transition: all 0.2s ease-out;
+            border-radius: var(--radius-sm, 8px);
+            transition: all var(--transition-normal, 200ms ease-out);
             font-family: inherit;
         }
 
@@ -135,9 +137,9 @@
             color: #ffffff;
             background: var(--brand-main, #9c3f2e);
             border: none;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             cursor: pointer;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
             box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
         }
 
@@ -154,7 +156,7 @@
             margin-top: 24px;
             padding: 16px;
             background: var(--bg-soft, #fff7ee);
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 13px;
             color: var(--text-sub, #8c6d57);
             line-height: 1.6;
@@ -169,12 +171,12 @@
             padding: 12px 24px;
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             color: var(--brand-main, #9c3f2e);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .contact-back:hover {
@@ -205,7 +207,7 @@
     </style>
 
     <header class="contact-header">
-        <div class="contact-icon">📮</div>
+        <div class="contact-icon"><x-svg-icon name="mail" size="44" /></div>
         <h1 class="contact-title">お問い合わせ</h1>
         <p class="contact-subtitle">
             ご質問・ご要望・不具合報告など<br>
@@ -293,7 +295,7 @@
         </div>
 
         <button type="submit" class="form-submit" id="submit-btn">
-            送信する 📨
+            送信する
         </button>
     </form>
 
@@ -351,7 +353,7 @@
 
             // 二重送信防止
             submitBtn.disabled = true;
-            submitBtn.textContent = '送信中... ⏳';
+            submitBtn.textContent = '送信中...';
         });
     });
     </script>
@@ -362,7 +364,7 @@
     </p>
 
     <a href="{{ route('top') }}" class="contact-back">
-        <span>←</span>
+        <x-svg-icon name="arrow-left" size="16" />
         <span>トップに戻る</span>
     </a>
 </div>

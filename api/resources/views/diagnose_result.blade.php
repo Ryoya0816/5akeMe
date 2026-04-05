@@ -79,7 +79,7 @@
             align-items: center;
             justify-content: center;
             padding: 8px 24px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
 
             /* 以前：border: 2px solid #000;
                → ブランド色に寄せる */
@@ -113,26 +113,23 @@
         }
 
         .dr-hex-wrap {
-            position: relative;
-            width: 468px;
-            height: 468px;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            box-sizing: border-box;
 
             /* チャート周りの“台座”を追加して統一感UP（最小の見栄え改善） */
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 18px;
-            box-shadow: 0 10px 18px rgba(0,0,0,0.05);
-            padding: 10px;
+            border-radius: var(--radius-md, 16px);
+            box-shadow: var(--shadow-md, 0 8px 24px rgba(0,0,0,0.06));
+            padding: 32px;
         }
 
         /* チャートだけ中央に表示 */
         #diagnose-chart {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 115%;
-            height: 115%;
+            width: 100% !important;
+            height: auto !important;
         }
 
         .dr-result-main {
@@ -174,7 +171,7 @@
             justify-content: center;
             min-width: 260px;
             padding: 10px 20px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             border: none;
 
             /* 以前：background: #222;
@@ -239,7 +236,7 @@
         }
 
         .dr-stores-icon {
-            font-size: 24px;
+            display: flex;
         }
 
         .dr-stores-subtitle {
@@ -260,7 +257,7 @@
             border: 1px solid var(--line-soft, #f1dfd0);
             border-radius: 16px;
             padding: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform var(--transition-normal, 200ms ease-out), box-shadow var(--transition-normal, 200ms ease-out);
         }
 
         .dr-store-card:hover {
@@ -288,7 +285,7 @@
             font-size: 12px;
             padding: 4px 10px;
             background: var(--card-bg, #ffffff);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             white-space: nowrap;
         }
 
@@ -323,7 +320,7 @@
             padding: 4px 10px;
             background: var(--brand-main, #9c3f2e);
             color: #ffffff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
         }
 
         .dr-store-actions {
@@ -337,11 +334,11 @@
             align-items: center;
             justify-content: center;
             padding: 10px 16px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 13px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .dr-store-btn-detail {
@@ -385,13 +382,7 @@
             }
 
             .dr-hex-wrap {
-                width: 396px;
-                height: 396px;
-            }
-
-            #diagnose-chart {
-                width: 110%;
-                height: 110%;
+                padding: 20px;
             }
 
             .dr-btn {
@@ -445,7 +436,7 @@
         }
 
         .dr-feedback-icon {
-            font-size: 24px;
+            display: flex;
         }
 
         .dr-feedback-subtitle {
@@ -542,11 +533,11 @@
             background: var(--brand-main, #9c3f2e);
             color: #ffffff;
             border: none;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
             box-shadow: 0 4px 12px rgba(156, 63, 46, 0.3);
         }
 
@@ -642,12 +633,12 @@
             justify-content: center;
             gap: 8px;
             padding: 12px 20px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 14px;
             font-weight: 600;
             text-decoration: none;
             color: #ffffff;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
             min-width: 120px;
         }
 
@@ -753,7 +744,7 @@
         }
 
         .dr-pairing-icon {
-            font-size: 24px;
+            display: flex;
         }
 
         .dr-pairing-subtitle {
@@ -788,11 +779,11 @@
             padding: 10px 16px;
             background: var(--card-bg, #ffffff);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 14px;
             font-weight: 500;
             color: var(--text-main, #3f3f3f);
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .dr-pairing-item:hover {
@@ -982,7 +973,7 @@
         @if(!empty($snacks))
         <section class="dr-pairing-section">
             <h2 class="dr-pairing-title">
-                <span class="dr-pairing-icon">🍽️</span>
+                <span class="dr-pairing-icon"><x-svg-icon name="utensils" size="22" /></span>
                 相性バツグンのおつまみ
             </h2>
             <p class="dr-pairing-subtitle">{{ $pairingLabel }}と一緒に楽しみたい料理</p>
@@ -1029,7 +1020,7 @@
         {{-- SNSシェアセクション --}}
         <section class="dr-share-section">
             <h2 class="dr-share-title">
-                <span>📢</span>
+                <span><x-svg-icon name="share" size="20" /></span>
                 診断結果をシェアしよう！
             </h2>
             <div class="dr-share-buttons">
@@ -1091,7 +1082,7 @@
         {{-- おすすめ店舗セクション --}}
         <section class="dr-stores-section" id="stores-section">
             <h2 class="dr-stores-title">
-                <span class="dr-stores-icon">🍶</span>
+                <span class="dr-stores-icon"><x-svg-icon name="wine" size="22" /></span>
                 佐賀駅周辺のおすすめ店舗
             </h2>
             <p class="dr-stores-subtitle">あなたの診断結果にぴったりのお店を厳選しました</p>
@@ -1116,21 +1107,21 @@
                             <div class="dr-store-info">
                                 @if($store->address)
                                     <div class="dr-store-row">
-                                        <span class="dr-store-label">📍</span>
+                                        <span class="dr-store-label"><x-svg-icon name="map-pin" size="14" /></span>
                                         <span>{{ $store->address }}</span>
                                     </div>
                                 @endif
 
                                 @if($store->business_hours)
                                     <div class="dr-store-row">
-                                        <span class="dr-store-label">🕐</span>
+                                        <span class="dr-store-label"><x-svg-icon name="clock" size="14" /></span>
                                         <span>{{ $store->business_hours }}</span>
                                     </div>
                                 @endif
 
                                 @if($store->closed_days)
                                     <div class="dr-store-row">
-                                        <span class="dr-store-label">📅</span>
+                                        <span class="dr-store-label"><x-svg-icon name="calendar" size="14" /></span>
                                         <span>定休日: {{ $store->closed_days }}</span>
                                     </div>
                                 @endif
@@ -1161,7 +1152,7 @@
                                         rel="noopener noreferrer" 
                                         class="dr-store-btn dr-store-btn-map"
                                     >
-                                        📍 MAP
+                                        <x-svg-icon name="map-pin" size="14" /> MAP
                                     </a>
                                 @endif
                             </div>
@@ -1182,7 +1173,7 @@
         {{-- フィードバックセクション --}}
         <section class="dr-feedback-section" id="feedback-section">
             <h2 class="dr-feedback-title">
-                <span class="dr-feedback-icon">📝</span>
+                <span class="dr-feedback-icon"><x-svg-icon name="message-square" size="22" /></span>
                 この診断結果はいかがでしたか？
             </h2>
             <p class="dr-feedback-subtitle">あなたの評価が、診断の精度向上に役立ちます！</p>
@@ -1209,7 +1200,7 @@
                         maxlength="500"
                     ></textarea>
                     <button type="button" class="dr-feedback-submit" id="feedback-submit">
-                        送信する 📨
+                        送信する
                     </button>
                 </div>
             </div>
@@ -1253,6 +1244,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true,
                     plugins: {
                         legend: { display: false }
                     },
@@ -1261,17 +1253,23 @@
                             suggestedMin: 0,
                             suggestedMax: 5,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                backdropColor: 'transparent',
+                                font: { size: 11 },
+                                color: '#a08070',
+                                z: 1
                             },
                             grid: {
-                                circular: true
+                                circular: true,
+                                color: 'rgba(0,0,0,0.06)'
                             },
                             angleLines: {
                                 color: 'rgba(0,0,0,0.08)'
                             },
                             pointLabels: {
-                                font: { size: 12 },
-                                color: '#6b7280'
+                                font: { size: 14, weight: '600' },
+                                color: '#5a4030',
+                                padding: 18
                             }
                         }
                     }
@@ -1377,7 +1375,7 @@
                 if (!selectedRating || !resultId) return;
 
                 this.disabled = true;
-                this.textContent = '送信中... ⏳';
+                this.textContent = '送信中...';
 
                 try {
                     const response = await fetch(`/api/diagnose/feedback/${resultId}`, {
@@ -1400,12 +1398,12 @@
                     } else {
                         alert(data.message || 'エラーが発生しました');
                         this.disabled = false;
-                        this.textContent = '送信する 📨';
+                        this.textContent = '送信する';
                     }
                 } catch (error) {
                     alert('通信エラーが発生しました');
                     this.disabled = false;
-                    this.textContent = '送信する 📨';
+                    this.textContent = '送信する';
                 }
             });
         }

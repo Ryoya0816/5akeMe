@@ -45,9 +45,9 @@
 
         .store-card {
             background: var(--card-bg, #fff);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
         }
 
         .store-header {
@@ -70,7 +70,7 @@
 
         .store-memo {
             background: var(--bg-soft);
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             padding: 12px;
             font-size: 14px;
             color: var(--text-main);
@@ -96,7 +96,7 @@
             text-align: center;
             cursor: pointer;
             border: none;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .store-btn-edit {
@@ -131,11 +131,13 @@
             text-align: center;
             padding: 48px 24px;
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: var(--radius-md, 16px);
         }
 
         .store-empty-icon {
-            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            color: var(--brand-main, #9c3f2e);
             margin-bottom: 16px;
         }
 
@@ -180,7 +182,7 @@
             width: 100%;
             padding: 12px;
             border: 1px solid var(--line-soft);
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 14px;
             margin-bottom: 12px;
             resize: vertical;
@@ -196,7 +198,7 @@
             width: 100%;
             padding: 12px;
             border: 1px solid var(--line-soft);
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 14px;
             margin-bottom: 16px;
         }
@@ -209,7 +211,7 @@
         .modal-btn {
             flex: 1;
             padding: 12px;
-            border-radius: 12px;
+            border-radius: var(--radius-sm, 8px);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -235,7 +237,7 @@
 
     <div class="mypage-container">
         <a href="{{ route('mypage') }}" class="mypage-back">← マイページに戻る</a>
-        <h1 class="mypage-title">🏪 行ったお店</h1>
+        <h1 class="mypage-title"><x-svg-icon name="store" size="22" /> 行ったお店</h1>
 
         @if(session('success'))
             <div style="background: #dcfce7; color: #166534; padding: 12px; border-radius: 12px; margin-bottom: 16px; font-size: 14px;">
@@ -282,7 +284,7 @@
             </div>
         @else
             <div class="store-empty">
-                <div class="store-empty-icon">🏪</div>
+                <div class="store-empty-icon"><x-svg-icon name="store" size="48" /></div>
                 <p class="store-empty-text">まだ行ったお店がありません<br>診断結果からお店を追加できます</p>
             </div>
         @endif

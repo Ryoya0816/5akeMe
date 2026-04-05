@@ -59,7 +59,7 @@
             padding: 8px 16px;
             background: var(--bg-soft, #fff7ee);
             border: 1px solid var(--line-soft, #f1dfd0);
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             white-space: nowrap;
         }
 
@@ -92,10 +92,12 @@
         }
 
         .store-info-icon {
-            font-size: 18px;
             flex-shrink: 0;
             width: 24px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub, #8c6d57);
         }
 
         .store-info-content {
@@ -119,7 +121,7 @@
             padding: 6px 14px;
             background: var(--brand-main, #9c3f2e);
             color: #ffffff;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
         }
 
         .store-sake-tag--saga {
@@ -143,11 +145,11 @@
             justify-content: center;
             gap: 8px;
             padding: 14px 24px;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease-out;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .store-btn-primary {
@@ -276,11 +278,11 @@
         </header>
 
         <section class="store-section">
-            <h2 class="store-section-title">📍 店舗情報</h2>
+            <h2 class="store-section-title"><x-svg-icon name="map-pin" size="18" /> 店舗情報</h2>
             <div class="store-info-list">
                 @if($store->address)
                     <div class="store-info-row">
-                        <span class="store-info-icon">🏠</span>
+                        <span class="store-info-icon"><x-svg-icon name="map-pin" size="18" /></span>
                         <div class="store-info-content">
                             <div class="store-info-label">住所</div>
                             <div>{{ $store->address }}</div>
@@ -290,7 +292,7 @@
 
                 @if($store->business_hours)
                     <div class="store-info-row">
-                        <span class="store-info-icon">🕐</span>
+                        <span class="store-info-icon"><x-svg-icon name="clock" size="18" /></span>
                         <div class="store-info-content">
                             <div class="store-info-label">営業時間</div>
                             <div>{{ $store->business_hours }}</div>
@@ -300,7 +302,7 @@
 
                 @if($store->closed_days)
                     <div class="store-info-row">
-                        <span class="store-info-icon">📅</span>
+                        <span class="store-info-icon"><x-svg-icon name="calendar" size="18" /></span>
                         <div class="store-info-content">
                             <div class="store-info-label">定休日</div>
                             <div>{{ $store->closed_days }}</div>
@@ -310,7 +312,7 @@
 
                 @if($store->phone)
                     <div class="store-info-row">
-                        <span class="store-info-icon">📞</span>
+                        <span class="store-info-icon"><x-svg-icon name="phone" size="18" /></span>
                         <div class="store-info-content">
                             <div class="store-info-label">電話番号</div>
                             <div>{{ $store->phone }}</div>
@@ -322,7 +324,7 @@
 
         @if($store->sake_types && count($store->sake_types) > 0)
             <section class="store-section">
-                <h2 class="store-section-title">🍶 おすすめのお酒</h2>
+                <h2 class="store-section-title"><x-svg-icon name="wine" size="18" /> おすすめのお酒</h2>
                 <div class="store-sake-tags">
                     @foreach($store->sake_types as $type)
                         <span class="store-sake-tag @if($type === 'saga_local_sake') store-sake-tag--saga @endif">{{ \App\Models\Store::getSakeTypeLabel($type) }}</span>
@@ -339,20 +341,20 @@
                 @endphp
                 @if($isVisited)
                     <div class="store-btn store-btn-visited">
-                        ✅ 行ったお店に登録済み
+                        <x-svg-icon name="check-circle" size="18" /> 行ったお店に登録済み
                     </div>
                 @else
                     <form action="{{ route('mypage.stores.add', $store->id) }}" method="POST">
                         @csrf
                         <input type="hidden" name="visited_at" value="{{ date('Y-m-d') }}">
                         <button type="submit" class="store-btn store-btn-add">
-                            ➕ 行ったお店に追加
+                            <x-svg-icon name="plus" size="18" /> 行ったお店に追加
                         </button>
                     </form>
                 @endif
             @else
                 <a href="{{ route('login') }}" class="store-btn store-btn-add-login">
-                    🔐 ログインして行ったお店に追加
+                    <x-svg-icon name="lock" size="18" /> ログインして行ったお店に追加
                 </a>
             @endauth
 
@@ -363,13 +365,13 @@
                     rel="noopener noreferrer" 
                     class="store-btn store-btn-primary"
                 >
-                    📍 Googleマップで見る
+                    <x-svg-icon name="map-pin" size="18" /> Googleマップで見る
                 </a>
             @endif
 
             @if($store->phone)
                 <a href="tel:{{ $store->phone }}" class="store-btn store-btn-phone">
-                    📞 電話する
+                        <x-svg-icon name="phone" size="18" /> 電話する
                 </a>
             @endif
 
@@ -380,7 +382,7 @@
                     rel="noopener noreferrer" 
                     class="store-btn store-btn-secondary"
                 >
-                    🌐 お店のサイトを見る
+                    <x-svg-icon name="globe" size="18" /> お店のサイトを見る
                 </a>
             @endif
         </div>
@@ -407,7 +409,7 @@
             </div>
         @else
             <button type="button" class="report-toggle" id="report-toggle">
-                📝 情報が違う？報告する
+                <x-svg-icon name="flag" size="16" /> 情報が違う？報告する
             </button>
 
             <div class="report-form-container" id="report-form" style="display: none;">
@@ -426,27 +428,27 @@
                         <div class="report-checkboxes">
                             <label class="report-checkbox">
                                 <input type="checkbox" name="update_types[]" value="営業時間">
-                                <span>🕐 営業時間</span>
+                                <span>営業時間</span>
                             </label>
                             <label class="report-checkbox">
                                 <input type="checkbox" name="update_types[]" value="定休日">
-                                <span>📅 定休日</span>
+                                <span>定休日</span>
                             </label>
                             <label class="report-checkbox">
                                 <input type="checkbox" name="update_types[]" value="電話番号">
-                                <span>📞 電話番号</span>
+                                <span>電話番号</span>
                             </label>
                             <label class="report-checkbox">
                                 <input type="checkbox" name="update_types[]" value="住所">
-                                <span>📍 住所</span>
+                                <span>住所</span>
                             </label>
                             <label class="report-checkbox">
                                 <input type="checkbox" name="update_types[]" value="閉店">
-                                <span>🚫 閉店した</span>
+                                <span>閉店した</span>
                             </label>
                             <label class="report-checkbox">
                                 <input type="checkbox" name="update_types[]" value="その他">
-                                <span>📝 その他</span>
+                                <span>その他</span>
                             </label>
                         </div>
                     </div>
@@ -463,7 +465,7 @@
                         ></textarea>
                     </div>
 
-                    <button type="submit" class="report-submit">送信する 📨</button>
+                    <button type="submit" class="report-submit"><x-svg-icon name="send" size="16" /> 送信する</button>
                 </form>
             </div>
         @endif
@@ -541,7 +543,7 @@
             font-size: 14px;
             color: var(--text-sub, #8c6d57);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .report-toggle:hover {
@@ -616,7 +618,7 @@
             padding: 8px 12px;
             background: var(--bg-soft, #fff7ee);
             border-radius: 8px;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .report-checkbox:hover {
@@ -659,11 +661,11 @@
             background: var(--brand-main, #9c3f2e);
             color: #ffffff;
             border: none;
-            border-radius: 999px;
+            border-radius: var(--radius-full, 999px);
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-normal, 200ms ease-out);
         }
 
         .report-submit:hover {
@@ -693,7 +695,7 @@
                     const isHidden = form.style.display === 'none';
                     form.style.display = isHidden ? 'block' : 'none';
                     toggle.classList.toggle('active', isHidden);
-                    toggle.textContent = isHidden ? '✕ 閉じる' : '📝 情報が違う？報告する';
+                    toggle.innerHTML = isHidden ? '✕ 閉じる' : '<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg> 情報が違う？報告する';
                 });
             }
 

@@ -1,0 +1,384 @@
+/* resources/css/diagnose.css */
+
+/* 画面全体のベース */
+body {
+    background: #f2f4f7;
+}
+
+/* 診断ページ用：中央寄せ & 余白 */
+.diagnose-page {
+    max-width: 960px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+/* カードっぽい箱（Bootstrapの .card を少し補強） */
+.diagnose-card {
+    border-radius: 16px;
+    border: 1px solid #e3e8f0;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
+
+.diagnose-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.diagnose-card-header h4 {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* チャット全体の枠 */
+#chat-root {
+    padding: 16px 16px 8px;
+    background: #ffffff;
+}
+
+/* チャット表示エリア（LINEのトーク画面っぽく） */
+#chat {
+    height: 420px;
+    overflow-y: auto;
+    padding: 16px 12px 12px;
+    background: #f5f7fb;
+    border-radius: 16px;
+    border: 1px solid #e5e7f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 各メッセージ行 */
+.row.bot,
+.row.me {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+/* BOTメッセージ（左寄せ） */
+.row.bot {
+    justify-content: flex-start;
+}
+
+/* ユーザメッセージ（右寄せ） */
+.row.me {
+    justify-content: flex-end;
+}
+
+/* アイコン（アバター） */
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* BOT は左に余白、User は右に余白 */
+.row.bot .avatar {
+    margin-right: 8px;
+}
+
+.row.me .avatar {
+    margin-left: 8px;
+}
+
+/* 吹き出し＋時間をまとめるコンテナ */
+.msg-body {
+    max-width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* 吹き出し本体 */
+.bubble {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 16px;
+    line-height: 1.6;
+    word-break: break-word;
+    box-shadow: 0 1px 1px rgba(15, 23, 42, 0.06);
+}
+
+/* BOT吹き出し（白・左） */
+.row.bot .bubble {
+    background: #ffffff;
+    color: #111827;
+    border-bottom-left-radius: 4px;
+}
+
+/* ユーザ吹き出し（LINEっぽい緑・右寄せ） */
+.row.me .bubble {
+    background: #3bc167;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    margin-left: auto;  /* 右寄せ */
+}
+
+/* 時刻表示 */
+.time {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+/* BOT の時間は左、ユーザは右側っぽく */
+.row.bot .time {
+    margin-left: 4px;
+}
+
+.row.me .time {
+    text-align: right;
+    margin-right: 4px;
+}
+
+/* 選択肢ボタンの並び */
+.choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* 選択肢ボタン（LINEのボタンっぽく丸くする） */
+.choice {
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+    white-space: nowrap;
+}
+
+.choice:hover:not(:disabled) {
+    background: #f3f4ff;
+    box-shadow: 0 1px 4px rgba(129, 140, 248, 0.4);
+    transform: translateY(-1px);
+}
+
+.choice:disabled {
+    opacity: 0.6;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* 「はじめからやり直す」ボタン位置 */
+.diagnose-reset-area {
+    margin-top: 8px;
+    text-align: right;
+}
+
+/* 注意書き */
+.diagnose-note {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 12px;
+}
+
+/* スマホで少し余白を調整 */
+@media (max-width: 768px) {
+    #chat {
+        height: 420px;
+        padding: 12px 8px;
+    }
+
+    .msg-body {
+        max-width: 86%;
+    }
+}
+/* =========================================
+   TOPページ：ヒーロー＆マスコット
+   ========================================= */
+
+.top-hero {
+    max-width: 960px;
+    margin: 40px auto 60px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.top-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--brand-main);
+}
+
+.top-lead {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+.top-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+/* 左側（マスコット＋ふきだし） */
+.top-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.top-mascot-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.top-mascot-image {
+    width: 180px;
+    height: auto;
+    border-radius: 16px;
+}
+
+/* ふきだし */
+.top-speech {
+    position: absolute;
+    top: -20px;
+    right: -40px;
+    min-width: 160px;
+    padding: 10px 14px;
+    background-color: #fff7dd;
+    border-radius: 18px;
+    border: 1px solid #fbbf24;
+    font-size: 13px;
+    color: #444;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* 右側（でっかいスタートボタン） */
+.top-right {
+    flex: 1;
+    text-align: center;
+}
+
+.start-button-wrap {
+    display: inline-flex;
+    text-decoration: none;
+}
+
+.start-button {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 20%, #fff5f5, #f97373, #b91c1c);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+}
+
+.start-button-label {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+/* ホバー時にちょっと浮く */
+.start-button-wrap:hover .start-button {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 26px rgba(0,0,0,0.28);
+}
+
+.start-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+/* スマホレイアウト：縦並びにする */
+@media (max-width: 768px) {
+    .top-main {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .top-mascot-image {
+        width: 150px;
+    }
+
+    .top-speech {
+        right: -10px;
+    }
+
+    .start-button {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* =========================================
+   暖簾アニメーション
+   sakeice.jp みたいな「白い暖簾が上にあがる」イメージ
+   ========================================= */
+
+.noren-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    pointer-events: none; /* クリックを下の要素に通す */
+}
+
+/* 実際の白い幕 */
+.noren-panel {
+    width: 100%;
+    height: 60%;              /* 画面上部6割くらいを覆う */
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(0);
+    animation: noren-slide-up 1.2s ease-in-out forwards;
+}
+
+/* 暖簾のロゴ（中央上部） */
+.noren-logo {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    color: var(--brand-main);
+}
+
+/* 暖簾が上にスッと上がるアニメーション */
+@keyframes noren-slide-up {
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+/* JSから付与して全体をフェードアウトさせる用 */
+.noren-overlay--hide {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+

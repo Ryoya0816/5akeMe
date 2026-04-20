@@ -2,18 +2,60 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+
 /**
- * 診断の中核ロジック。
- * - 出題：固定2（q1,q2）＋カテゴリA/B/Cから各1問（seedで再現性）
- * - 集計：各選択肢のタイプ別スコアを加算、q2のみ×1.5
- * - 候補：最大スコアから「3点幅」以内を候補に残し、同点はfallback順で決定
- * - mood：q1の回答から 1=わいわい / 2=しっとり を返す
+ * 5問の回答から複数タイプのお酒にスコア加算し、
+ * { primary, candidates, mood, top5, scores_map } を返すサービス。
  *
- * 設定は config('diagnose') を優先し、無ければ $this->defaultConf を使用。
+ * ■ 質問セット
+ * - 固定2問: q1, q2
+ * - カテゴリA/B/Cから各1問ランダム
+ *   => 合計5問を createSession() で返す。
+ *
+ * ■ mood（気分タグ）
+ * - q1 の回答で決定
+ *   a = lively   (わいわい飲みたい)
+ *   b = chill    (少人数でしっぽり)
+ *   c = silent   (ひとりで静かに)
+ *   d = light    (サクッと飲みたい)
+ *   e = strong   (がっつり飲みたい)
+ *
+ * ■ スコア加算
+ * - config('diagnose.weights') の
+ *   "<質問キー>:<選択肢キー>" => [type => point, ...]
+ *   を使って各タイプに加点
+ * - q2 だけ multiplier（例：1.5）を掛けて強めに反映
+ *
+ * ■ 候補（candidates）
+ * - 最大スコアとの差が candidate_width 以内のものを候補とし、
+ *   スコア降順で並べる（既存ロジックを維持）
+ *
+ * ■ チャート（top5）
+ * - 候補抽出とは別枠で、全タイプのスコアから上位5種類を返す
+ *   => “提案は1位(primary)だけ、チャートは上位5” を実現する
  */
 class DiagnoseService
 {
+    /**
+     * 設定配列（config('diagnose')）
+     *
+     * @var array<string, mixed>
+     */
     private array $conf;
+
+    /**
+     * q1 の回答(a〜e) -> moodタグ 変換テーブル
+     *
+     * @var array<string, string>
+     */
+    private array $moodMap = [
+        'a' => 'lively',
+        'b' => 'chill',
+        'c' => 'silent',
+        'd' => 'light',
+        'e' => 'strong',
+    ];
 
     public function __construct()
     {
@@ -21,316 +63,302 @@ class DiagnoseService
         $this->conf = is_array($fromConfig) ? $fromConfig : $this->defaultConf();
     }
 
-    /** 出題（固定2＋A/B/C各1）。seedがあれば再現可能なランダム */
+    /**
+     * 質問セッションを作る（固定2 + A/B/C 各1問。足りなければ5問になるまで補充）
+     *
+     * - fixed_questions: config('diagnose.fixed_questions')
+     *   例）[ [..q1..], [..q2..] ]
+     *
+     * - categories: config('diagnose.categories')
+     *   例）[
+     *      'A' => [ [..A1..], [..A2..], ... ],
+     *      'B' => [ ... ],
+     *      'C' => [ ... ],
+     *   ]
+     *
+     * A/B/C は複数あればランダムで1件ずつ取得。
+     * どこか欠けていても、可能な限り5問になるように他の質問から補う。
+     *
+     * @param  int|null  $seed  同じseedなら同じ問題セットになる
+     * @return array{seed:int|null, questions: array<int, array<string, mixed>>}
+     */
     public function createSession(?int $seed = null): array
     {
+        $fixed = $this->conf['fixed_questions'] ?? [];
+        $cats  = $this->conf['categories']      ?? [];
+
+        // seed 未指定なら自前で発番して固定
         if ($seed === null) {
-            $seed = now()->timestamp;
+            try {
+                $seed = random_int(1, PHP_INT_MAX);
+            } catch (\Exception $e) {
+                // random_int が使えない環境向けのフォールバック
+                $seed = mt_rand();
+            }
         }
         mt_srand($seed);
 
-        $qs   = collect($this->getQuestions());
-        $byCat = $qs->groupBy('category');
+        $questions = [];
 
-        // 固定
-        $fixed = $byCat['fixed']->pluck('id')->all(); // ["q1","q2"]
-
-        // 各カテゴリから1問ずつランダム
-        $pick = function (string $cat) use ($byCat): string {
-            $arr = $byCat[$cat]->pluck('id')->values()->all();
-            return $arr[mt_rand(0, count($arr) - 1)];
-        };
-        $A = $pick('A');
-        $B = $pick('B');
-        $C = $pick('C');
-
-        return [
-            'seed'         => $seed,
-            'question_ids' => array_merge($fixed, [$A, $B, $C]),
-        ];
-    }
-
-    /** 回答を集計し、type・候補・mood を返す */
-    public function score(array $answers): array
-    {
-        $qs      = collect($this->getQuestions())->keyBy('id');
-        $weights = $this->conf['weights'] ?? [];
-        $scores  = []; // type_code => float
-
-        foreach ($answers as $a) {
-            $qid   = $a['id']    ?? null;
-            $label = $a['label'] ?? null;
-            if (!$qid || !$label) continue;
-
-            $q   = $qs[$qid] ?? null;
-            if (!$q || empty($q['options'])) continue;
-
-            $opt = collect($q['options'])->firstWhere('label', $label);
-            if (!$opt) continue;
-
-            $w = $weights[$qid] ?? 1.0; // q2は1.5 など
-            foreach (($opt['scores'] ?? []) as $type => $pt) {
-                $scores[$type] = ($scores[$type] ?? 0) + $pt * $w;
+        // ----------------------------
+        // 固定質問（q1, q2）を先に詰める
+        // ----------------------------
+        foreach ($fixed as $q) {
+            if (isset($q['id'], $q['text'], $q['choices'])) {
+                $questions[] = $q;
             }
         }
 
-        $mood       = $this->resolveMood($answers);
-        $candidates = $this->candidates($scores);
-        $primary    = $candidates[0] ?? null;
+        // ----------------------------
+        // A / B / C から 1問ずつ選ぶ
+        // ----------------------------
+        $pickedIds = [];
+        foreach ($questions as $q) {
+            if (isset($q['id'])) {
+                $pickedIds[$q['id']] = true;
+            }
+        }
+
+        foreach (['A', 'B', 'C'] as $groupKey) {
+            if (count($questions) >= 5) {
+                break;
+            }
+
+            if (!isset($cats[$groupKey]) || !is_array($cats[$groupKey]) || count($cats[$groupKey]) === 0) {
+                Log::warning("[Diagnose] category {$groupKey} is empty. Check config/diagnose.php");
+                continue;
+            }
+
+            $group = $cats[$groupKey];
+            $idx   = mt_rand(0, count($group) - 1);
+            $q     = $group[$idx];
+
+            if (!isset($q['id'], $q['text'], $q['choices'])) {
+                continue;
+            }
+            if (isset($pickedIds[$q['id']])) {
+                continue;
+            }
+
+            $questions[]         = $q;
+            $pickedIds[$q['id']] = true;
+        }
+
+        // ----------------------------
+        // まだ5問に満たない場合は、残りを全カテゴリから補充
+        // ----------------------------
+        if (count($questions) < 5) {
+            $pool = [];
+
+            foreach ($cats as $groupKey => $group) {
+                if (!is_array($group)) {
+                    continue;
+                }
+                foreach ($group as $q) {
+                    if (!isset($q['id'], $q['text'], $q['choices'])) {
+                        continue;
+                    }
+                    if (isset($pickedIds[$q['id']])) {
+                        continue;
+                    }
+                    $pool[] = $q;
+                }
+            }
+
+            while (count($questions) < 5 && count($pool) > 0) {
+                $idx = mt_rand(0, count($pool) - 1);
+                $q   = $pool[$idx];
+
+                $questions[]         = $q;
+                $pickedIds[$q['id']] = true;
+
+                // 同じものを2回引かないようにプールから削除
+                array_splice($pool, $idx, 1);
+            }
+        }
+
+        // デバッグ用ログ（あとで邪魔なら消してOK）
+        Log::info('[Diagnose] createSession', [
+            'seed'            => $seed,
+            'fixed_count'     => is_array($fixed) ? count($fixed) : 0,
+            'categories_keys' => array_keys($cats),
+            'question_count'  => count($questions),
+            'question_ids'    => array_map(fn ($q) => $q['id'] ?? null, $questions),
+        ]);
 
         return [
-            'scores'     => $scores,      // 全タイプの素点（小数含む）
-            'candidates' => $candidates,  // 3点幅内の順序付き候補
-            'primary'    => $primary,     // 第1候補
-            'mood'       => $mood,        // 1=わいわい / 2=しっとり
+            'seed'      => $seed,
+            'questions' => array_values($questions),
         ];
     }
 
-    /** 設問一覧 */
-    public function getQuestions(): array
+    /**
+     * 採点処理
+     *
+     * @param  array<string, string>  $answers
+     *   例：['q1' => 'a', 'q2' => 'c', 'A1' => 'b', ...]
+     * @param  int|null               $seed   // 将来の拡張用。今はスコアには未使用。
+     *
+     * @return array{
+     *   primary: string|null,
+     *   candidates: array<int, array{type:string, score:float, label:string}>,
+     *   top5: array<int, array{type:string, score:float, label:string}>,
+     *   scores_map: array<string, float>,
+     *   mood: string|null
+     * }
+     */
+    public function score(array $answers, ?int $seed = null): array
     {
-        return $this->conf['questions'] ?? [];
-    }
+        // seed は今のところ使っていないが、Controller との引数合わせのため受け取っておく
+        if ($seed !== null) {
+            Log::info('[Diagnose] score called with seed', ['seed' => $seed]);
+        }
 
-    /** q1の回答からムードを決定 */
-    private function resolveMood(array $answers): int
-    {
-        $map = $this->conf['mood_map'] ?? [];
-        // q1 を探す
-        foreach ($answers as $a) {
-            if (($a['id'] ?? null) === 'q1') {
-                $label = $a['label'] ?? null;
-                return $map[$label] ?? 1;
+        $types = $this->conf['types'] ?? [];
+        if (empty($types)) {
+            Log::error('[Diagnose] types is empty. Check config/diagnose.php');
+
+            return [
+                'primary'    => null,
+                'candidates' => [],
+                'top5'       => [],
+                'scores_map' => [],
+                'mood'       => null,
+            ];
+        }
+
+        $weights    = $this->conf['weights'] ?? [];
+        $labels     = $this->conf['labels'] ?? [];
+        $multiplier = (float)($this->conf['scoring']['q2_multiplier'] ?? 1.0);
+        $width      = (float)($this->conf['scoring']['candidate_width'] ?? 3.0);
+
+        // ---------------------------
+        // 全タイプ初期化（type => score）
+        // ※ $types は「タイプキーの配列」を想定（例：['nihonshu', 'wine', ...]）
+        // ---------------------------
+        $scores = [];
+        foreach ($types as $t) {
+            $scores[$t] = 0.0;
+        }
+
+        // ---------------------------
+        // mood: q1 の回答から取得
+        // ---------------------------
+        $mood = null;
+        if (isset($answers['q1'])) {
+            $answerKey = $answers['q1']; // a〜e 想定
+            $mood      = $this->moodMap[$answerKey] ?? null;
+        }
+
+        // ---------------------------
+        // スコア加点ループ
+        // ---------------------------
+        foreach ($answers as $qKey => $choiceKey) {
+            // 例： "q2" + "a" -> "q2:a"
+            $mapKey = "{$qKey}:{$choiceKey}";
+            if (!isset($weights[$mapKey]) || !is_array($weights[$mapKey])) {
+                continue;
+            }
+
+            // q2だけ倍率をかける
+            $factor = ($qKey === 'q2') ? $multiplier : 1.0;
+
+            foreach ($weights[$mapKey] as $type => $point) {
+                if (!array_key_exists($type, $scores)) {
+                    continue;
+                }
+                $scores[$type] += (float) $point * $factor;
             }
         }
-        return 1;
-    }
 
-    /** 3点幅 & 同点fallbackで候補を並べる */
-    private function candidates(array $scores): array
-    {
-        if (empty($scores)) return [];
-        $max    = max($scores);
-        $band   = $this->conf['top_band_delta'] ?? 3;
-        $fb     = $this->conf['fallback_order'] ?? [];
+        // ---------------------------
+        // 全タイプをスコア降順に並べた “ランキング用Map” を作る
+        // ---------------------------
+        $sorted = $scores;   // type => score
+        arsort($sorted);     // 値（score）で降順、キー保持
 
-        // 3点幅内だけ対象
-        $inBand = array_filter($scores, fn($v) => $max - $v <= $band);
-        $keys   = array_keys($inBand);
+        $max = 0.0;
+        if (!empty($sorted)) {
+            $max = (float) reset($sorted); // 先頭の値（最大スコア）
+        }
 
-        // 降順。スコア同点は fallback_order の早い方を優先
-        usort($keys, function ($a, $b) use ($inBand, $fb) {
-            if ($inBand[$a] == $inBand[$b]) {
-                $ia = array_search($a, $fb);
-                $ib = array_search($b, $fb);
-                // 見つからないときは末尾扱い
-                $ia = $ia === false ? PHP_INT_MAX : $ia;
-                $ib = $ib === false ? PHP_INT_MAX : $ib;
-                return $ia <=> $ib;
+        // ---------------------------
+        // 候補抽出（既存仕様を維持）
+        // ---------------------------
+        $candidates = [];
+        foreach ($scores as $type => $s) {
+            // 最大スコアとの差が width 以内のみ候補にする
+            if ($max - $s <= $width) {
+                $candidates[] = [
+                    'type'  => $type,
+                    'score' => round((float) $s, 2),
+                    'label' => $labels[$type] ?? $type,
+                ];
             }
-            return $inBand[$b] <=> $inBand[$a];
-        });
+        }
 
-        return array_values($keys);
+        // スコア降順でソート（候補表示の順序を保証）
+        usort($candidates, fn ($a, $b) => $b['score'] <=> $a['score']);
+
+        // primary を決定（候補があれば候補の1位、なければ全タイプの1位）
+        if (!empty($candidates)) {
+            $primary = $candidates[0]['type'];
+        } elseif (!empty($sorted)) {
+            // 候補が空でも、スコアが存在する場合は1位を primary にする
+            $primary = array_key_first($sorted);
+        } else {
+            // すべてのタイプのスコアが0の場合、デフォルトタイプを設定
+            $primary = $types[0] ?? null;
+            Log::warning('[Diagnose] All scores are zero, using default type', [
+                'types' => $types,
+                'answers' => $answers,
+            ]);
+        }
+
+        // ---------------------------
+        // チャート用：上位5種類（候補幅とは別に、純粋なランキング上位）
+        // ---------------------------
+        $top5Map = array_slice($sorted, 0, 5, true); // type => score（キー保持）
+        $top5    = [];
+        foreach ($top5Map as $type => $s) {
+            $top5[] = [
+                'type'  => $type,
+                'score' => round((float) $s, 2),
+                'label' => $labels[$type] ?? $type,
+            ];
+        }
+
+        return [
+            'primary'    => $primary,                 // 1位（提案に使う）
+            'candidates' => $candidates,              // 既存仕様（候補表示に使う）
+            'top5'       => $top5,                    // チャート用（上位5）
+            'scores_map' => array_map(
+                fn ($v) => round((float) $v, 2),
+                $sorted
+            ),                                        // 全タイプ（将来の拡張・デバッグ用）
+            'mood'       => $mood,
+        ];
     }
 
-    /** デフォルト設定（config が無い場合のフォールバック） */
+    /**
+     * 設定が無いときの安全デフォルト（最小構成）
+     * ※ 質問セットまでは持たず、types/labels だけ。
+     *
+     * @return array<string, mixed>
+     */
     private function defaultConf(): array
     {
         return [
-            // 同点時の優先順位
-            'fallback_order' => ['SA-K','WW','RW','SH-I','SP','CB','SA-A','SH-M','SH-K','CT'],
-            // 重み：q2のみ1.5倍
-            'weights' => ['q1' => 1.0, 'q2' => 1.5],
-            // 3点幅
-            'top_band_delta' => 3,
-            // q1 → mood
-            'mood_map' => [
-                'スッキリ'           => 1,
-                '盛り上がりたい'     => 1,
-                'じっくり語りたい'   => 2,
-                'しっとり落ち着きたい' => 2,
-                '静かに味わいたい'   => 2,
+            'types'           => ['craft_beer'],
+            'weights'         => [],
+            'fixed_questions' => [],
+            'categories'      => [],
+            'scoring'         => [
+                'q2_multiplier'   => 1.0,
+                'candidate_width' => 3.0,
             ],
-            // 設問（固定2＋A/B/C 各5問）。必要十分の最小セットを内包。
-            'questions' => [
-                // ==== fixed ====
-                [
-                    'id' => 'q1', 'category' => 'fixed', 'text' => '今の気分／テンションは？',
-                    'options' => [
-                        ['label'=>'スッキリ',             'scores'=>['SA-K'=>3,'WW'=>2,'SP'=>1,'CB'=>1]],
-                        ['label'=>'じっくり語りたい',     'scores'=>['RW'=>3,'SH-I'=>1,'SA-A'=>2,'SH-K'=>1]],
-                        ['label'=>'盛り上がりたい',       'scores'=>['SP'=>3,'CB'=>3,'WW'=>1,'CT'=>1]],
-                        ['label'=>'しっとり落ち着きたい', 'scores'=>['SA-A'=>3,'SH-K'=>2,'RW'=>1]],
-                        ['label'=>'静かに味わいたい',     'scores'=>['SH-K'=>3,'SA-A'=>2,'RW'=>1]],
-                    ]
-                ],
-                [
-                    'id' => 'q2', 'category' => 'fixed', 'text' => 'お酒に求めるものは？',
-                    'options' => [
-                        ['label'=>'香り',           'scores'=>['WW'=>3,'SP'=>3,'CT'=>1,'SA-A'=>2]],
-                        ['label'=>'コク',           'scores'=>['RW'=>3,'SH-I'=>1,'SH-K'=>2,'SA-A'=>1]],
-                        ['label'=>'スッキリ感',     'scores'=>['SA-K'=>3,'SH-M'=>3,'WW'=>1,'CB'=>1]],
-                        ['label'=>'温めてほっと',   'scores'=>['SH-K'=>3,'SA-A'=>3,'SH-I'=>1,'SA-K'=>2]],
-                        ['label'=>'飲みやすさ',     'scores'=>['SA-A'=>3,'WW'=>2,'CT'=>2,'SP'=>1]],
-                    ]
-                ],
-
-                // ==== A ====
-                [
-                    'id'=>'qA1','category'=>'A','text'=>'今回の主役は？',
-                    'options'=>[
-                        ['label'=>'魚',   'scores'=>['SA-K'=>3,'WW'=>3,'SP'=>1,'SA-A'=>1]],
-                        ['label'=>'肉',   'scores'=>['RW'=>3,'SH-I'=>1,'CB'=>2,'SH-M'=>1]],
-                        ['label'=>'揚げ物','scores'=>['CB'=>3,'SP'=>3,'SA-K'=>1]],
-                        ['label'=>'濃い味','scores'=>['RW'=>3,'SH-I'=>1,'SA-A'=>1,'SH-K'=>2]],
-                        ['label'=>'野菜', 'scores'=>['WW'=>3,'SA-K'=>2,'SP'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qA2','category'=>'A','text'=>'一緒に飲みたいのは？',
-                    'options'=>[
-                        ['label'=>'職場仲間','scores'=>['SH-M'=>3,'CB'=>2,'SP'=>1]],
-                        ['label'=>'親友',   'scores'=>['CB'=>3,'RW'=>1,'SA-K'=>1]],
-                        ['label'=>'恋人',   'scores'=>['WW'=>2,'SP'=>2,'SA-A'=>1]],
-                        ['label'=>'家族',   'scores'=>['SA-A'=>2,'SH-K'=>2,'SA-K'=>1]],
-                        ['label'=>'一人',   'scores'=>['RW'=>2,'SH-K'=>2,'SA-A'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qA3','category'=>'A','text'=>'甘党 or 辛党？',
-                    'options'=>[
-                        ['label'=>'甘党強め','scores'=>['SA-A'=>3,'CT'=>2,'SP'=>1]],
-                        ['label'=>'やや甘党','scores'=>['SA-A'=>2,'WW'=>2,'CT'=>1]],
-                        ['label'=>'中間',   'scores'=>['WW'=>2,'SA-K'=>2]],
-                        ['label'=>'やや辛党','scores'=>['SA-K'=>3,'RW'=>1,'SH-M'=>1]],
-                        ['label'=>'辛党強め','scores'=>['SA-K'=>3,'RW'=>2,'SH-M'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qA4','category'=>'A','text'=>'今のおなか空き量は？',
-                    'options'=>[
-                        ['label'=>'がっつり','scores'=>['RW'=>2,'SH-I'=>1,'CB'=>2]],
-                        ['label'=>'ほどほど','scores'=>['SH-M'=>2,'SA-K'=>1]],
-                        ['label'=>'軽く',  'scores'=>['WW'=>2,'SP'=>1]],
-                        ['label'=>'つまむ程度','scores'=>['WW'=>2,'SA-A'=>1]],
-                        ['label'=>'食べない','scores'=>['SP'=>2,'SA-A'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qA5','category'=>'A','text'=>'お酒を飲む時に重視する感覚は？',
-                    'options'=>[
-                        ['label'=>'爽快',       'scores'=>['SA-K'=>3,'CB'=>2,'SP'=>1]],
-                        ['label'=>'香り',       'scores'=>['WW'=>3,'SP'=>2,'SA-A'=>1]],
-                        ['label'=>'余韻',       'scores'=>['RW'=>3,'SH-I'=>1,'SA-A'=>1]],
-                        ['label'=>'食事との一体感','scores'=>['SA-K'=>2,'WW'=>2,'RW'=>1]],
-                        ['label'=>'雰囲気',     'scores'=>['SP'=>2,'SA-A'=>1,'RW'=>1]],
-                    ],
-                ],
-
-                // ==== B ====
-                [
-                    'id'=>'qB1','category'=>'B','text'=>'休日の過ごし方は？',
-                    'options'=>[
-                        ['label'=>'アウトドア','scores'=>['CB'=>3,'SA-K'=>2]],
-                        ['label'=>'家でまったり','scores'=>['SA-A'=>3,'SH-K'=>2]],
-                        ['label'=>'旅行',     'scores'=>['SP'=>3,'WW'=>2]],
-                        ['label'=>'街歩き',   'scores'=>['WW'=>3,'RW'=>1]],
-                        ['label'=>'趣味没頭', 'scores'=>['RW'=>2,'SA-K'=>1,'SH-K'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qB2','category'=>'B','text'=>'理想の旅先は？',
-                    'options'=>[
-                        ['label'=>'温泉','scores'=>['SH-K'=>3,'SA-A'=>2]],
-                        ['label'=>'海外','scores'=>['SP'=>3,'RW'=>1]],
-                        ['label'=>'自然','scores'=>['SA-K'=>3,'SH-I'=>1,'SA-A'=>1]],
-                        ['label'=>'都会','scores'=>['WW'=>3,'CT'=>1]],
-                        ['label'=>'食の街','scores'=>['RW'=>2,'WW'=>2,'SA-A'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qB3','category'=>'B','text'=>'お金をかけるのは？',
-                    'options'=>[
-                        ['label'=>'食事','scores'=>['RW'=>2,'WW'=>2,'SA-K'=>1]],
-                        ['label'=>'お酒','scores'=>['SA-K'=>2,'RW'=>2,'WW'=>1]],
-                        ['label'=>'旅行','scores'=>['SP'=>3,'WW'=>1]],
-                        ['label'=>'ガジェット','scores'=>['CB'=>2,'WW'=>1]],
-                        ['label'=>'ファッション','scores'=>['SP'=>2,'CT'=>2]],
-                    ],
-                ],
-                [
-                    'id'=>'qB4','category'=>'B','text'=>'ストレス発散方法は？',
-                    'options'=>[
-                        ['label'=>'運動','scores'=>['CB'=>3,'SA-K'=>1]],
-                        ['label'=>'睡眠','scores'=>['SA-A'=>3,'SH-K'=>1]],
-                        ['label'=>'食べ歩き','scores'=>['RW'=>2,'WW'=>1,'SA-K'=>1]],
-                        ['label'=>'カラオケ','scores'=>['SP'=>2,'CB'=>2]],
-                        ['label'=>'ひとり時間','scores'=>['SH-K'=>2,'RW'=>1,'SA-A'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qB5','category'=>'B','text'=>'新しいことへの挑戦度は？',
-                    'options'=>[
-                        ['label'=>'とても高い','scores'=>['CB'=>2,'SP'=>2,'CT'=>1]],
-                        ['label'=>'やや高い','scores'=>['SP'=>2,'WW'=>1]],
-                        ['label'=>'ふつう','scores'=>['WW'=>1,'SA-K'=>1]],
-                        ['label'=>'やや低い','scores'=>['SA-A'=>2,'SH-K'=>1]],
-                        ['label'=>'低い','scores'=>['SH-K'=>2,'SA-A'=>1]],
-                    ],
-                ],
-
-                // ==== C ====
-                [
-                    'id'=>'qC1','category'=>'C','text'=>'自分にとってのお酒とは？',
-                    'options'=>[
-                        ['label'=>'ご褒美','scores'=>['SP'=>2,'CT'=>1,'SA-A'=>2]],
-                        ['label'=>'潤滑油','scores'=>['SH-M'=>3,'SA-K'=>1,'CB'=>1]],
-                        ['label'=>'趣味','scores'=>['RW'=>3,'SA-K'=>1,'SH-I'=>1]],
-                        ['label'=>'冒険','scores'=>['CB'=>3,'SP'=>2,'CT'=>1]],
-                        ['label'=>'社交','scores'=>['SP'=>2,'WW'=>1,'CB'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qC2','category'=>'C','text'=>'普段聞く音楽は？',
-                    'options'=>[
-                        ['label'=>'ロック','scores'=>['CB'=>2,'SH-I'=>1]],
-                        ['label'=>'ジャズ','scores'=>['RW'=>2,'SA-A'=>1]],
-                        ['label'=>'クラシック','scores'=>['WW'=>3,'SA-K'=>1]],
-                        ['label'=>'ポップ','scores'=>['SP'=>2,'CT'=>1]],
-                        ['label'=>'EDM','scores'=>['SP'=>2,'CB'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qC3','category'=>'C','text'=>'お酒を人に例えると？',
-                    'options'=>[
-                        ['label'=>'兄貴肌','scores'=>['SH-I'=>1,'RW'=>2]],
-                        ['label'=>'癒し系','scores'=>['SA-A'=>3,'SH-K'=>1]],
-                        ['label'=>'不思議系','scores'=>['WW'=>3,'CT'=>1]],
-                        ['label'=>'華やか','scores'=>['SP'=>3,'CT'=>1]],
-                        ['label'=>'職人肌','scores'=>['SA-K'=>2,'RW'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qC4','category'=>'C','text'=>'お酒飲みながらしたいことは？',
-                    'options'=>[
-                        ['label'=>'語る','scores'=>['RW'=>2,'SA-A'=>1,'SH-K'=>1]],
-                        ['label'=>'食べる','scores'=>['SA-K'=>2,'WW'=>2,'RW'=>1]],
-                        ['label'=>'音楽','scores'=>['SP'=>1,'WW'=>1,'CT'=>2]],
-                        ['label'=>'映画/配信','scores'=>['SA-A'=>2,'RW'=>1]],
-                        ['label'=>'ゲーム','scores'=>['CB'=>2,'SP'=>1]],
-                    ],
-                ],
-                [
-                    'id'=>'qC5','category'=>'C','text'=>'飲み会で一番盛り上がる話題は？',
-                    'options'=>[
-                        ['label'=>'仕事','scores'=>['SH-M'=>2,'RW'=>1]],
-                        ['label'=>'恋バナ','scores'=>['WW'=>2,'SP'=>1,'CT'=>1]],
-                        ['label'=>'グルメ','scores'=>['RW'=>2,'WW'=>1,'SA-K'=>1]],
-                        ['label'=>'趣味','scores'=>['CB'=>2,'RW'=>1]],
-                        ['label'=>'昔話','scores'=>['SA-A'=>2,'SH-K'=>1]],
-                    ],
-                ],
+            'labels'          => [
+                'craft_beer' => 'クラフトビール',
             ],
         ];
     }

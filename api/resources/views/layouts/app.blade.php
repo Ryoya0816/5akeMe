@@ -53,7 +53,7 @@
     <div class="app-header-inner">
       <a href="{{ route('top') }}" class="app-header-link">
         <img
-          src="{{ asset('images/5akeme-header.png') }}"
+          src="{{ asset('images/5akeme-header-transparent.svg') }}?v=20260501"
           alt="5akeMe"
           class="app-header-image"
         >

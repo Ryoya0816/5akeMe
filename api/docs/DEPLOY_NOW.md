@@ -69,11 +69,14 @@ nano api/.env
 
 - `APP_ENV=production`
 - `APP_DEBUG=false`
-- `APP_URL=http://160.251.214.119`
+- `APP_URL=https://your-domain.com`（ドメイン未設定時のみ一時的に `http://IP`）
 - `DB_DATABASE=laravel`
 - `DB_USERNAME=laravel`
 - `DB_PASSWORD=強力なパスワード`
 - `PYTHON_API_URL=http://python:8000`
+- `SESSION_SECURE_COOKIE=true`（HTTPS 運用時）
+- `SESSION_HTTP_ONLY=true`
+- `SESSION_SAME_SITE=lax`
 
 **ルート .env で:**
 
@@ -87,6 +90,24 @@ nano api/.env
 cd ~/5akeme
 docker compose -f docker-compose.production.yml build
 docker compose -f docker-compose.production.yml up -d
+```
+
+### HTTPS で公開する場合（推奨）
+
+1. 先にホスト側で証明書を取得（例: `certbot`）
+2. ルート `.env` に証明書パスを設定
+
+```bash
+SSL_CERT_FULLCHAIN_PATH=/etc/letsencrypt/live/your-domain.com/fullchain.pem
+SSL_CERT_PRIVKEY_PATH=/etc/letsencrypt/live/your-domain.com/privkey.pem
+```
+
+3. HTTPS 用 Compose で起動（80→443 リダイレクト込み）
+
+```bash
+cd ~/5akeme
+docker compose -f docker-compose.production.https.yml build
+docker compose -f docker-compose.production.https.yml up -d
 ```
 
 ### Laravel の初期設定（初回のみ）
@@ -104,7 +125,7 @@ docker compose -f docker-compose.production.yml exec app php artisan view:cache
 
 ## 確認
 
-ブラウザで **http://160.251.214.119** を開く。トップが表示されれば OK。
+ブラウザで **https://your-domain.com** を開く。鍵マーク表示・トップ表示で OK。
 
 ---
 

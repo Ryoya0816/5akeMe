@@ -149,13 +149,14 @@ html, body {
 header.app-header {
   height: 110px;
   border-bottom: 1px solid var(--line-soft);
-  background: var(--bg-base);
+  background: transparent;
   box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 100;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  background: rgba(251, 243, 232, .92);
+  background: rgba(251, 243, 232, .55);
 }
 .app-header-inner {
   display: flex;
@@ -163,9 +164,10 @@ header.app-header {
   justify-content: space-between;
   padding: 0 20px;
   height: 100%;
-  max-width: 960px;
+  max-width: 1280px;
   margin: 0 auto;
   box-sizing: border-box;
+  width: 100%;
 }
 .app-header .app-header-link {
   display: flex;
@@ -174,12 +176,12 @@ header.app-header {
   flex-shrink: 0;
   overflow: visible;
 }
-header.app-header .app-header-link .app-header-image,
+.app-header .app-header-link .app-header-image,
 img.app-header-image {
   height: 90px !important;
-  width: 240px !important;
+  width: 420px !important;
   max-width: none !important;
-  object-fit: fill !important;
+  object-fit: contain !important;
 }
 .app-header-user { display: flex; align-items: center; flex-shrink: 0; margin-left: 16px; }
 .app-header-user-link { display: flex; align-items: center; }
@@ -216,7 +218,7 @@ img.app-header-image {
 @media (max-width: 640px) {
   header.app-header { height: 86px; }
   .app-header-inner { padding: 0 16px; }
-  header.app-header .app-header-link .app-header-image { height: 66px !important; width: 176px !important; }
+  header.app-header .app-header-link .app-header-image { height: 66px !important; width: 290px !important; }
   .app-header-avatar, .app-header-avatar-placeholder { width: 36px; height: 36px; }
 }
 

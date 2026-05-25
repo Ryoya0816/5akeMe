@@ -123,6 +123,15 @@ make assets-dev
 
 ---
 
+## 本番HTTPSメモ
+
+- 本番で Chrome の警告を避けるため、必ず HTTPS で公開してください
+- HTTPS 構成は `docker-compose.production.https.yml` と `docker/nginx/production.ssl.conf` を使用します
+- `api/.env` では `APP_URL=https://<your-domain>` と `SESSION_SECURE_COOKIE=true` を設定してください
+- 手順詳細は [api/docs/DEPLOY_NOW.md](api/docs/DEPLOY_NOW.md) を参照してください
+
+---
+
 ## リポジトリ構成
 
 ```
